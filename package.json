@@ -1,0 +1,34 @@
+{
+  "name": "adalAngular",
+  "author": {
+    "name": "Microsoft Open Technologies Inc",
+    "email": "msopentech@microsoft.com",
+    "url": "http://msopentech.com/"
+  },
+  "licenses": [
+    {
+      "type": "Apache 2.0",
+      "url": "https://github.com/MSOpenTech/aal/raw/master/License.txt"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "version": "0.0.1",
+  "description": "Windows Azure Active Directory Client Library for js",
+  "keywords": [ "implicit", "js", "AAD", "adal", "oauth" ],
+  "main": "./lib/adal.js",
+  "engines": { "node": ">=0.8.0" },
+  "licenses": [ { "type": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0" } ],
+  "dependencies": { },
+  "devDependencies": {
+    "jasmine-node": "~1.14.5"     
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jasmine-node tests/unit/spec"
+  }
+}

@@ -1,0 +1,33 @@
+﻿<html>
+<head>
+    <title>Angular adal sample</title>
+</head>
+<body ng-app="bull" ng-controller="HomeController" ng-init="initAuth()">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+    <script src="https://code.angularjs.org/1.2.25/angular-route.js"></script>
+    <script src="/Scripts/adal.js"></script>
+    <script src="App/Scripts/App.js"></script>
+    <script src="App/Scripts/HomeController.js"></script>
+    <script src="App/Scripts/TodoDetailController.js"></script>
+    <script src="App/Scripts/TodoListController.js"></script>
+    <script src="App/Scripts/TodoService.js"></script>
+
+    <a href="#">Home</a>
+    <a href="#/TodoList">ToDo List</a>
+
+    <!--These links are added to manage login/logout-->
+    <div data-ng-model="adalAuthData">
+        <span data-ng-hide="!adalAuthData.isAuthorized">Welcome {{adalAuthData.userName}}</span>
+        <button data-ng-hide="!adalAuthData.isAuthorized" data-ng-click="logout()">Logout</button>
+        <button data-ng-hide="adalAuthData.isAuthorized" data-ng-click="login()">Login</button>
+        <button data-ng-click="renew()">renewTest</button>
+        <div>
+            {{adalAuthData.loginError}}
+        </div>
+    </div>
+    <div ng-view>
+        Blahhhhhh
+    </div>
+
+</body>
+</html>

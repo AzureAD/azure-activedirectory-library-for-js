@@ -191,6 +191,7 @@
     <Content Include="ADALJSCallback.html" />
     <Content Include="App\Scripts\HomeController.js" />
     <Content Include="App\Scripts\TodoService.js" />
+    <Content Include="App\Views\Login.html" />
     <Content Include="App\Views\Home.html" />
     <Content Include="App\Views\TodoDetail.html" />
     <Content Include="App\Views\TodoList.html" />

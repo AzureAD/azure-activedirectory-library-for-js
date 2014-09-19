@@ -1,7 +1,7 @@
 ﻿'use strict';
 app.controller('HomeController', ['$scope', '$location', 'TokenService', function ($scope, $location, TokenService) {
     // this is referencing adal module to do login
-    $scope.adalAuthData = { isAuthorized: false, userName: "", loginError: "" };
+    $scope.adalAuthData = TokenService.oauthData("");
     $scope.logout = function () {
         TokenService.logOut();
     };
@@ -18,16 +18,24 @@ app.controller('HomeController', ['$scope', '$location', 'TokenService', functio
         });
     };
 
-    $scope.initAuth = function () {
-        $scope.adalAuthData = TokenService.checkAuthorization("");
+    $scope.$on("adal:loginSuccess", function(){
+        console.log("scope gets event login sucsses");
+    });
 
-        // Scope needs to be updated form controller to update username in the text.
-        // this does not get updated inside the TokenService
-        TokenService.getUser().then(function (username) {
-            $scope.adalAuthData.userName = username;
-        }, function (reason) {
-            console.log("User is not available:" + reason);
-            $scope.adalAuthData.userName = null;
-        });
+    $scope.$on("adal:loginFailure", function () {
+        console.log("scope gets event loginFailure");
+    });
+
+    $scope.initAuth = function () {
+        
+
+        //// Scope needs to be updated form controller to update username in the text.
+        //// this does not get updated inside the TokenService
+        //TokenService.getUser().then(function (username) {
+        //    $scope.adalAuthData.userName = username;
+        //}, function (reason) {
+        //    console.log("User is not available:" + reason);
+        //    $scope.adalAuthData.userName = null;
+        //});
     };
 }]);

@@ -49,7 +49,7 @@ if (typeof exports !== 'undefined') {
         exports = module.exports = Adal;
     }
     exports.Adal = Adal;
-} 
+}
 
 function Adal(config) {
     REQUEST_TYPE = {
@@ -82,7 +82,6 @@ Adal.prototype.ERR_MESSAGES = {
 Adal.prototype.login = function (callback) {
     // Token is not present and user needs to login
     expectedState = this._guid();
-    this.callback = callback;
     this.config.state = expectedState;
     logStatus("Expected state: " + expectedState + " startPage:" + window.location);
     this._saveItem(STORAGE_LOGIN_REQUEST, window.location);
@@ -107,19 +106,16 @@ Adal.prototype.login = function (callback) {
 // direct cache lookup
 Adal.prototype.getCachedToken = function (resource) {
     // TODO this will use cache key based on resource
-    console.log("Resource:" + resource);
     var token = this._getItem(STORAGE_ACCESS_TOKEN_KEY);
     var expired = this._getItem(STORAGE_EXPIRATION_KEY);
 
     // TODO expire before actual time
     if (expired && expired > this._now()) {
-        console.log("Not expired token. Expired:" + expired + " Token:" + token);
         return token;
     } else {
         this._saveItem(STORAGE_ACCESS_TOKEN_KEY, "");
         this._saveItem(STORAGE_EXPIRATION_KEY, 0);
         this._saveItem(STORAGE_USERNAME, "");
-        console.log("Expired token. Expired:" + expired + " Token:" + this._now());
         return null;
     }
 };
@@ -149,7 +145,7 @@ Adal.prototype._renewToken = function (resource, callback) {
     this.config.state = expectedState;
     this._saveItem(STORAGE_STATE_RENEW, expectedState);
     this._saveItem(STORAGE_FAILED_RENEW, "");
-    
+
     logStatus("Renew token Expected state: " + expectedState);
     var urlNavigate = this._getNavigateUrl("token") + "&prompt=none";
     this.callback = callback;
@@ -252,18 +248,18 @@ Adal.prototype.getUser = function (callback) {
 
         if (this._getItem(STORAGE_FAILED_RENEW)) {
             logStatus("renewToken is failed:" + this._getItem(STORAGE_FAILED_RENEW));
-            callback(this._getItem(STORAGE_FAILED_RENEW), null);
+            this.callback(this._getItem(STORAGE_FAILED_RENEW), null);
             return;
         }
 
         this._getIdTokenInFrame(callback);
     } else {
         logStatus("User is not authorized");
-        callback(this.ERR_MESSAGES.NO_TOKEN, null);
+        this.callback(this.ERR_MESSAGES.NO_TOKEN, null);
     }
 };
 
-Adal.prototype._getIdTokenInFrame = function(callback) {
+Adal.prototype._getIdTokenInFrame = function (callback) {
     expectedState = this._guid();
     this.config.state = expectedState;
     var frameHandle = addAdalFrame();
@@ -301,20 +297,20 @@ Adal.prototype.isCallback = function (hash) {
             );
 };
 
-Adal.prototype.getLoginError = function(){
-   return this._getItem(STORAGE_LOGIN_ERROR);
+Adal.prototype.getLoginError = function () {
+    return this._getItem(STORAGE_LOGIN_ERROR);
 }
 
 Adal.prototype.getRequestInfo = function (hash) {
     hash = this._getHash(hash);
     var parameters = this._deserialize(hash);
-    var requestInfo = { valid: false, parameters: {}, stateMatch:false, requestType:REQUEST_TYPE.UNKNOWN};
+    var requestInfo = { valid: false, parameters: {}, stateMatch: false, requestType: REQUEST_TYPE.UNKNOWN };
     if (parameters) {
         requestInfo.parameters = parameters;
         if (parameters.hasOwnProperty("error_description") ||
             parameters.hasOwnProperty("access_token") ||
             parameters.hasOwnProperty("id_token")) {
-            
+
             requestInfo.valid = true;
 
             // which call
@@ -352,11 +348,11 @@ Adal.prototype.getRequestInfo = function (hash) {
     return requestInfo;
 }
 
-Adal.prototype.saveTokenFromHash = function (requestInfo) {   
+Adal.prototype.saveTokenFromHash = function (requestInfo) {
     var errorResponse = null;
     var loginRequest = false;
     logStatus("State status:" + requestInfo.stateMatch);
-    this._saveItem(STORAGE_ERROR,"");
+    this._saveItem(STORAGE_ERROR, "");
     this._saveItem(STORAGE_ERROR_DESCRIPTION, "");
 
     // Record error
@@ -367,14 +363,9 @@ Adal.prototype.saveTokenFromHash = function (requestInfo) {
             error: requestInfo.parameters.error,
             error_description: requestInfo.parameters.error_description
         };
-        this._saveItem(STORAGE_FAILED_RENEW, "");
+        this._saveItem(STORAGE_FAILED_RENEW, requestInfo.parameters.error_description);
         this._saveItem(STORAGE_ERROR, requestInfo.parameters.error);
         this._saveItem(STORAGE_ERROR_DESCRIPTION, requestInfo.parameters.error_description);
-        if (requestInfo.requestType == REQUEST_TYPE.RENEW_TOKEN || requestInfo.requestType == REQUEST_TYPE.ID_TOKEN) {
-            logStatus("Request type is for access token");
-            // acquireToken should not repeat iframe renew again in case of wrong calls
-            this._saveItem(STORAGE_FAILED_RENEW, requestInfo.parameters.error_description);
-        }
 
         if (requestInfo.requestType == REQUEST_TYPE.LOGIN) {
             this._saveItem(STORAGE_LOGIN_ERROR, requestInfo.parameters.error_description);
@@ -454,7 +445,7 @@ Adal.prototype._extractUserName = function (encodedIdToken) {
     if (!crackedToken) {
         return null;
     }
-    
+
     try {
         var base64IdToken = crackedToken.JWSPayload;
         var base64Decoded = this._base64DecodeStringUrlSafe(base64IdToken);
@@ -470,14 +461,14 @@ Adal.prototype._extractUserName = function (encodedIdToken) {
         } else if (parsed.hasOwnProperty("email")) {
             return parsed.email;
         }
-    } catch(err) {
+    } catch (err) {
         logStatus('The returned id_token could not be decoded: ' + err.stack);
     }
- 
+
     return null;
 };
 
-Adal.prototype._base64DecodeStringUrlSafe = function(base64IdToken) {
+Adal.prototype._base64DecodeStringUrlSafe = function (base64IdToken) {
     // html5 should support atob function for decoding
     if (window.atob) {
         return atob(base64IdToken);
@@ -507,7 +498,7 @@ Adal.prototype._crackJwt = function (jwtToken) {
     return crackedToken;
 };
 
-Adal.prototype._convertUrlSafeToRegularBase64EncodedString = function(str) {
+Adal.prototype._convertUrlSafeToRegularBase64EncodedString = function (str) {
     return str.replace('-', '+').replace('_', '/');
 };
 
@@ -654,6 +645,30 @@ if (typeof angular != 'undefined') {
     AdalModule.provider('TokenService', function () {
         var _adal = null;
         var _oauthData = { isAuthorized: false, userName: "", loginError: "" };
+        var _profile = { userName: "" };
+        var updateDataFromCache = function (resource) {
+            // only cache lookup here to not interrupt with events
+            var token = _adal.getCachedToken(resource);
+            _oauthData.isAuthorized = token != null && token.length > 0;
+            _oauthData.userName = _adal.getCachedUser();
+            _oauthData.loginError = _adal.getLoginError();
+        };
+
+        var userProfilePromise = function () {
+            var deferred = $q.defer();
+            // idtoken call to get info
+            _profile.userName = "";
+            _adal.getUser(function (error, result) {
+                if (!error) {
+                    _profile.userName = result;
+                    deferred.resolve(_profile);
+                } else {
+                    deferred.reject(_profile);
+                }
+            });
+
+            return deferred.promise;
+        };
 
         // methods exposed with "this" available from config method in the Angular app
         this.init = function (configOptions) {
@@ -664,58 +679,85 @@ if (typeof angular != 'undefined') {
             } else {
                 throw new Error('You must set configOptions, when calling init');
             }
-
-            _oauthData = { isAuthorized: false, userName: "", loginError: "" };
+            updateDataFromCache("");
         };
 
         // Controller related methods exposed with $get
         this.$get = function ($rootScope, $window, $http, $q, $location) {
             $rootScope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
                 var hash = $window.location.hash;
+
                 console.log("$locationChangeStart hash:" + hash + " newurl:" + newUrl + " oldurl:" + oldUrl);
                 if (_adal.isCallback(hash)) {
                     // callback can come from login or iframe request
                     console.log("waiting callback:" + hash);
-                    $location.hash('');
+
                     var requestInfo = _adal.getRequestInfo(hash);
                     _adal.saveTokenFromHash(requestInfo);
-                    
-                    // Return to callback if it is send from iframe
-                    if (requestInfo.requestType != REQUEST_TYPE.LOGIN && typeof _adal.callback === 'function') {
-                        // Call within the same context without full page redirect keeps the callback
-                        if (requestInfo.requestType == REQUEST_TYPE.RENEW_TOKEN) {
-                            _adal.callback(errorResponse, parameters["access_token"]);
-                            return;
-                        } else if (requestInfo.requestType == REQUEST_TYPE.ID_TOKEN) {
-                            _adal.callback(errorResponse, _adal._getItem(STORAGE_USERNAME));
-                            return;
-                        }                        
+
+                    if (requestInfo.requestType != REQUEST_TYPE.LOGIN) {
+                        // coming in iframe
+                        $window.parent.location.hash = "";
+                        _adal.callback = $window.parent.Adal().callback;
                     } else {
-                        // normal redirect on the page itself happened
-                        var token = _adal.getCachedToken("");
-                        if (token != null && token.length > 0) {
-                            $rootScope.$broadcast("adal:loginSuccess");
+                        $location.hash('');
+                        $window.location.hash = "";
+                    }
+
+                    // Return to callback if it is send from iframe
+                    if (requestInfo.stateMatch) {
+                        if (typeof _adal.callback === 'function') {
+                            // Call within the same context without full page redirect keeps the callback
+                            if (requestInfo.requestType == REQUEST_TYPE.RENEW_TOKEN) {
+                                _adal.callback(_adal._getItem(STORAGE_ERROR_DESCRIPTION), requestInfo.parameters["access_token"]);
+                                return;
+                            } else if (requestInfo.requestType == REQUEST_TYPE.ID_TOKEN) {
+                                _adal.callback(_adal._getItem(STORAGE_ERROR_DESCRIPTION), _adal._getItem(STORAGE_USERNAME));
+                                return;
+                            }
                         } else {
-                            $rootScope.$broadcast("adal:loginFailure", _adal._getItem(STORAGE_ERROR_DESCRIPTION));
+                            // normal redirect on the page itself happened
+                            updateDataFromCache("");
+                            var token = _adal.getCachedToken("");
+                            if (token != null && token.length > 0) {
+                                _adal.getUser(function (error, userName) {
+                                    _oauthData.userName = userName;
+                                    $rootScope.$broadcast("adal:loginSuccess", userName);
+                                });
+                            } else {
+                                $rootScope.$broadcast("adal:loginFailure", _adal._getItem(STORAGE_ERROR_DESCRIPTION));
+                            }
                         }
                     }
-                    return;
                 } else {
-                    // no callback
-                    // check token and username
-                    var token = _adal.getCachedToken("");
-                    _oauthData.isAuthorized = token != null && token.length > 0;
-                    _oauthData.userName = _adal.getCachedUser();
-                    _oauthData.loginError = _adal.getLoginError();
-
-                    // auto renew
-
-                    // username
+                    // No callback. App resumes after closing or moving to new page.
+                    // Check token and username
+                    updateDataFromCache("");
+                    if (!_oauthData.isAuthorized) {
+                        if (!_adal._getItem(STORAGE_FAILED_RENEW)) {
+                            _adal.acquireToken(_adal.config.resource, function (error, tokenOut) {
+                                if (error) {
+                                    $rootScope.$broadcast("adal:loginFailure", "auto renew failure");
+                                } else {
+                                    if (tokenOut) {
+                                        _oauthData.isAuthorized = true;
+                                        // need to get user as well
+                                        _adal.getUser(function (error, userName) {
+                                            _oauthData.userName = userName;
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
                 }
             });
+
+            updateDataFromCache("");
+
             return {
 
-                // public methods will be here
+                // public methods will be here that are accessible from Controller
                 login: function () {
                     _adal.login();
                 },
@@ -727,13 +769,7 @@ if (typeof angular != 'undefined') {
                     var token = _adal.getCachedToken(resource);
                     return token;
                 },
-                oauthData: function (resource) {                    
-                    var token = _adal.getCachedToken(resource);
-                    _oauthData.isAuthorized = token != null && token.length > 0;
-                    _oauthData.userName = _adal.getCachedUser();
-                    _oauthData.loginError = _adal.getLoginError();
-                    return _oauthData;
-                },
+                oauthData: _oauthData,
                 acquireToken: function (resource) {
                     // automated token request call
                     var deferred = $q.defer();
@@ -751,18 +787,10 @@ if (typeof angular != 'undefined') {
 
                     return deferred.promise;
                 },
-                getUser: function () {
-                    var deferred = $q.defer();
-                    // idtoken call to get info
-                    _adal.getUser(function (error, result) {
-                        if (!error) {
-                            deferred.resolve(result);
-                        } else {
-                            deferred.reject(error);
-                        }
+                userProfile: function () {
+                    return userProfilePromise.then(function (profileResult) {
+                        _profile = profileResult;
                     });
-
-                    return deferred.promise;
                 }
             }
         };

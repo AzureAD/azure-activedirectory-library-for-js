@@ -34,7 +34,7 @@ app.config(function ($routeProvider, TokenServiceProvider) {
             redirect_uri: "http://localhost:49724/mySPA.html",
             resource: "b6a68585-5287-45b2-ba82-383ba1f60932",
             endpoint: "https://login.windows-ppe.net/",
-            loginSuccessUrl : "/home",
+            loginUrl: "/login",
             post_logout_redirect_uri: "http://localhost:49724/mySPA.html"
         });
 });

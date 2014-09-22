@@ -19,7 +19,7 @@ app.controller('HomeController', ['$scope', '$location', 'TokenService', functio
         // test renew for default resource
         TokenService.acquireToken().then(
             function (token) {
-
+                $scope.testMessage = "It received token";
             }, function (err) {
                 $scope.testMessage = " Renew error:" + err;
             });
@@ -34,11 +34,17 @@ app.controller('HomeController', ['$scope', '$location', 'TokenService', functio
     $scope.$on("adal:loginFailure", function () {
         console.log("scope gets event loginFailure");
         $scope.testMessage = "loginFailure";
+        $location.path("/login");
     });
 
-    $scope.$on("adal:notAuthorized", function (rejection) {
+    $scope.$on("adal:notAuthorized", function (event, rejection, forResource) {
         console.log("scope gets event loginFailure");
-        $scope.testMessage = "notAuthorized";
+        $scope.testMessage = "It is not Authorized for resource:" + forResource;
+
     });
+
+    $scope.init = function () {
+        $scope.testMessage = "";
+    };
 
 }]);

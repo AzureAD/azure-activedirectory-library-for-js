@@ -48,9 +48,12 @@ var RESOURCE_DELIMETER = "|";
 // node.js usage for tests
 if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
-        exports = module.exports = Adal;
+        exports = module.exports.inject = function (windowInj, localStorageInj, conf) {
+            window = windowInj;
+            localStorage = localStorageInj;
+            return new Adal(conf);
+        };
     }
-    exports.Adal = Adal;
 }
 
 function Adal(config) {
@@ -105,7 +108,6 @@ Adal.prototype.login = function (callback) {
     // callback from redirected page will receive fragment. It needs to call oauth2Callback
 };
 
-
 Adal.prototype._hasResource = function (key) {
     var keys = this._getItem(STORAGE_TOKEN_KEYS);
     return keys && !this._isEmpty(keys) && (keys.indexOf(key + RESOURCE_DELIMETER) > -1);
@@ -123,6 +125,7 @@ Adal.prototype.getCachedToken = function (resource) {
 
     // Expire before actual time based on config to renew token before expired
     var offset = this.config.expireOffsetSeconds || 120;
+    console.log("expired:" + expired + " now:" + this._now() + " offset:" + offset);
     if (expired && (expired > this._now() + offset)) {
         return token;
     } else {
@@ -214,7 +217,6 @@ Adal.prototype.promptUser = function (urlNavigate) {
 };
 
 Adal.prototype.clearCache = function (resource) {
-    // TODO clear for multiple resources
     this._saveItem(STORAGE_ACCESS_TOKEN_KEY, "");
     this._saveItem(STORAGE_EXPIRATION_KEY, 0);
     this._saveItem(STORAGE_FAILED_RENEW, "");
@@ -233,6 +235,19 @@ Adal.prototype.clearCache = function (resource) {
             this._saveItem(STORAGE_ACCESS_TOKEN_KEY + keys[i], "");
             this._saveItem(STORAGE_EXPIRATION_KEY + keys[i], 0);
         }
+    }
+};
+
+Adal.prototype.clearCacheForResource = function (resource) {
+    // TODO allow firing renew for different resources at the same time
+    this._saveItem(STORAGE_FAILED_RENEW, "");
+    this._saveItem(STORAGE_STATE_RENEW, "");
+    this._saveItem(STORAGE_STATE_IDTOKEN, "");
+    this._saveItem(STORAGE_ERROR, "");
+    this._saveItem(STORAGE_ERROR_DESCRIPTION, "");
+    if (this._hasResource(resource)) {
+        this._saveItem(STORAGE_ACCESS_TOKEN_KEY + resource, "");
+        this._saveItem(STORAGE_EXPIRATION_KEY + resource, 0);
     }
 };
 
@@ -418,8 +433,8 @@ Adal.prototype.saveTokenFromHash = function (requestInfo) {
                     this._saveItem(STORAGE_TOKEN_KEYS, resource + RESOURCE_DELIMETER);
                 }
 
-                if (requestInfo.requestType == REQUEST_TYPE.RENEW_TOKEN){
-                    resource =  this._getItem(STORAGE_STATE_RENEW_RESOURCE);
+                if (requestInfo.requestType == REQUEST_TYPE.RENEW_TOKEN) {
+                    resource = this._getItem(STORAGE_STATE_RENEW_RESOURCE);
                 }
 
                 // save token with related resource
@@ -441,8 +456,8 @@ Adal.prototype.saveTokenFromHash = function (requestInfo) {
     }
 };
 
-Adal.prototype.getResourceForEndpoint = function(endpoint){
-    if( this.config && this.config.endpoints){
+Adal.prototype.getResourceForEndpoint = function (endpoint) {
+    if (this.config && this.config.endpoints) {
         if (this.config.endpoints.hasOwnProperty(endpoint) && !this._isEmpty(this.config.endpoints[endpoint])) {
             return this.config.endpoints[endpoint];
         }
@@ -662,12 +677,13 @@ if (typeof angular != 'undefined') {
 
     // Interceptor for http if needed
     AdalModule.factory('TokenInterceptor', ['$q', '$rootScope', function ($q, $rootScope) {
+        var adalRef = new Adal();
         return {
             request: function (config) {
                 if (config) {
                     config.headers = config.headers || {};
-                    var resource = Adal().getResourceForEndpoint(config.url);
-                    var tokenStored = Adal().getCachedToken(resource);
+                    var resource = adalRef.getResourceForEndpoint(config.url);
+                    var tokenStored = adalRef.getCachedToken(resource);
                     // TODO selective endpoints to add token
                     if (tokenStored) {
                         // check endpoint mapping if provided
@@ -688,7 +704,10 @@ if (typeof angular != 'undefined') {
                 if (rejection.status === 401) {
                     // Send event for unauthorized so that app can handle this
                     // TODO who send this call
-                    $rootScope.$broadcast('adal:notAuthorized', rejection);
+                    // provide resource that sends 401 based on declared endpoint mapping
+                    var resource = adalRef.getResourceForEndpoint(rejection.config.url);
+                    adalRef.clearCacheForResource(resource);
+                    $rootScope.$broadcast('adal:notAuthorized', rejection, resource);
                 }
 
                 return $q.reject(rejection);

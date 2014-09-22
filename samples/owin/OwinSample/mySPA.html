@@ -3,7 +3,7 @@
 <head>
     <title>Angular Adal Sample</title>
 </head>
-<body ng-app="bull" ng-controller="HomeController" ng-init="initAuth()">
+<body ng-app="bull" ng-controller="HomeController" ng-init="init()">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
     <script src="https://code.angularjs.org/1.2.25/angular-route.js"></script>
     <script src="/Scripts/adal.js"></script>
@@ -26,7 +26,7 @@
         <div>
             {{adalAuthData.loginError}}
         </div>
-        <div>
+        <div >
             {{testMessage}}
         </div>
     </div>

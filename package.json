@@ -23,7 +23,7 @@
   "licenses": [ { "type": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0" } ],
   "dependencies": { },
   "devDependencies": {
-    "jasmine-node": "~1.14.5"     
+    "jasmine-node": "~1.14.5"         
   },
   "directories": {
     "test": "tests"

@@ -15,7 +15,8 @@ app.config(function ($routeProvider, TokenServiceProvider) {
 
     $routeProvider.when("/TodoList", {
         controller: "TodoListController",
-        templateUrl: "/App/Views/TodoList.html"
+        templateUrl: "/App/Views/TodoList.html",
+        requiresAdalLogin: true
     });
 
     $routeProvider.when("/TodoList/Detail/:param", {
@@ -24,6 +25,12 @@ app.config(function ($routeProvider, TokenServiceProvider) {
     });
 
     $routeProvider.otherwise({ redirectTo: "/home" });
+
+    // endpoint to resource mapping(optional)
+    var endpoints = {
+        "/api/Values": "b6a68585-5287-45b2-ba82-383ba1f60932",
+        
+    };
 
     TokenServiceProvider.init(
         {
@@ -35,7 +42,8 @@ app.config(function ($routeProvider, TokenServiceProvider) {
             resource: "b6a68585-5287-45b2-ba82-383ba1f60932",
             endpoint: "https://login.windows-ppe.net/",
             loginUrl: "/login",
-            post_logout_redirect_uri: "http://localhost:49724/mySPA.html"
+            post_logout_redirect_uri: "http://localhost:49724/mySPA.html",
+            endpoints: endpoints  // optional
         });
 });
 

@@ -1,6 +1,7 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
-    <title>Angular adal sample</title>
+    <title>Angular Adal Sample</title>
 </head>
 <body ng-app="bull" ng-controller="HomeController" ng-init="initAuth()">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
@@ -11,16 +12,17 @@
     <script src="App/Scripts/TodoDetailController.js"></script>
     <script src="App/Scripts/TodoListController.js"></script>
     <script src="App/Scripts/TodoService.js"></script>
-
+    <script src="App/Scripts/ContactService.js"></script>
     <a href="#">Home</a>
     <a href="#/TodoList">ToDo List</a>
-
     <!--These links are added to manage login/logout-->
     <div data-ng-model="adalAuthData">
-        <span data-ng-hide="!adalAuthData.isAuthorized">Welcome {{adalAuthData.userName}} profileusername {{profile.userName}}</span>
+        <span data-ng-hide="!adalAuthData.isAuthorized">Welcome {{adalAuthData.userName}} </span>
         <button data-ng-hide="!adalAuthData.isAuthorized" data-ng-click="logout()">Logout</button>
         <button data-ng-hide="adalAuthData.isAuthorized" data-ng-click="login()">Login</button>
-        <button data-ng-click="renew()">renewTest</button>
+        <button data-ng-click="renew()">Renew Test</button>
+        <button data-ng-click="clearCache()">Clear Cache</button>
+        <button data-ng-click="clearCache()">User test</button>
         <div>
             {{adalAuthData.loginError}}
         </div>

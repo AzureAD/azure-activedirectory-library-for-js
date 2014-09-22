@@ -179,6 +179,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ContactsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -190,6 +191,7 @@
   <ItemGroup>
     <Content Include="ADALJSCallback.html" />
     <Content Include="App\Scripts\HomeController.js" />
+    <Content Include="App\Scripts\ContactService.js" />
     <Content Include="App\Scripts\TodoService.js" />
     <Content Include="App\Views\Login.html" />
     <Content Include="App\Views\Home.html" />

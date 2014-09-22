@@ -7,33 +7,32 @@ using System.Web.Http;
 
 namespace OmerSample.Controllers
 {
-    [Authorize]
-    public class ValuesController : ApiController
+    public class ContactsController : ApiController
     {
 
-        // GET api/values
+        // GET api/<controller>
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "person1", "person2" };
         }
 
-        // GET api/values/5
+        // GET api/<controller>/5
         public string Get(int id)
         {
-            return "value";
+            return "person" + id;
         }
 
-        // POST api/values
+        // POST api/<controller>
         public void Post([FromBody]string value)
         {
         }
 
-        // PUT api/values/5
+        // PUT api/<controller>/5
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        // DELETE api/values/5
+        // DELETE api/<controller>/5
         public void Delete(int id)
         {
         }

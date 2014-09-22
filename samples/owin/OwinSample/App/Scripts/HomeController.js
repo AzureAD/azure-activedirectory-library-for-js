@@ -11,22 +11,34 @@ app.controller('HomeController', ['$scope', '$location', 'TokenService', functio
         TokenService.login();
     };
 
-    // to test token renewing with iframe
+    $scope.clearCache = function () {
+        TokenService.clearCache();
+    };
+
     $scope.renew = function () {
-        TokenService.acquireToken().then(function (token) {
-            $scope.testMessage = "Renewed token:" + token;
-        }, function (reason) {
-            $scope.testMessage = "Token renewable failed";
-        });
+        // test renew for default resource
+        TokenService.acquireToken().then(
+            function (token) {
+
+            }, function (err) {
+                $scope.testMessage = " Renew error:" + err;
+            });
     };
 
     $scope.$on("adal:loginSuccess", function () {
         console.log("scope gets event login sucsses");
+        $scope.testMessage = "loginSuccess";
         $location.path("/home");
     });
 
     $scope.$on("adal:loginFailure", function () {
         console.log("scope gets event loginFailure");
+        $scope.testMessage = "loginFailure";
+    });
+
+    $scope.$on("adal:notAuthorized", function (rejection) {
+        console.log("scope gets event loginFailure");
+        $scope.testMessage = "notAuthorized";
     });
 
 }]);

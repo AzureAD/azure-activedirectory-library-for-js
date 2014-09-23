@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Angular Adal Sample</title>
+</head>
+<body ng-app="bull" ng-controller="HomeController" ng-init="init()">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+    <script src="https://code.angularjs.org/1.2.25/angular-route.js"></script>
+    <script src="/Scripts/adal.js"></script>
+    <script src="App/Scripts/App.js"></script>
+    <script src="App/Scripts/HomeController.js"></script>
+    <script src="App/Scripts/TodoDetailController.js"></script>
+    <script src="App/Scripts/TodoListController.js"></script>
+    <script src="App/Scripts/TodoService.js"></script>
+    <script src="App/Scripts/ContactService.js"></script>
+    <a href="#">Home</a>
+    <a href="#/TodoList">ToDo List</a>
+    <!--These links are added to manage login/logout-->
+    <div data-ng-model="userInfo">
+        <span data-ng-hide="!userInfo.isAuthenticated">Welcome {{userInfo.userName}} </span>
+        <button data-ng-hide="!userInfo.isAuthenticated" data-ng-click="logout()">Logout</button>
+        <button data-ng-hide="userInfo.isAuthenticated" data-ng-click="login()">Login</button>
+        <button data-ng-click="renew()">Renew Test</button>
+        <button data-ng-click="clearCache()">Clear Cache</button>
+        <button data-ng-click="clearCache()">User test</button>
+        <div>
+            {{userInfo.loginError}}
+        </div>
+        <div>
+            {{testMessage}}
+        </div>
+    </div>
+    <div ng-view>
+        Your view will appear here.
+    </div>
+
+</body>
+</html>

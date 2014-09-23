@@ -189,7 +189,6 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ADALJSCallback.html" />
     <Content Include="App\Scripts\HomeController.js" />
     <Content Include="App\Scripts\ContactService.js" />
     <Content Include="App\Scripts\TodoService.js" />

@@ -1,28 +1,14 @@
 ﻿'use strict';
-app.controller('HomeController', ['$scope', '$location', 'TokenService', function ($scope, $location, TokenService) {
+app.controller('HomeController', ['$scope', '$location', 'AuthenticationService', function ($scope, $location, AuthenticationService) {
     // this is referencing adal module to do login
-    $scope.adalAuthData = TokenService.oauthData;
+    //$scope.adalAuthData = AuthenticationService.userInfo;
     $scope.testMessage = "";
     $scope.logout = function () {
-        TokenService.logOut();
+        AuthenticationService.logOut();
     };
 
     $scope.login = function () {
-        TokenService.login();
-    };
-
-    $scope.clearCache = function () {
-        TokenService.clearCache();
-    };
-
-    $scope.renew = function () {
-        // test renew for default resource
-        TokenService.acquireToken().then(
-            function (token) {
-                $scope.testMessage = "It received token";
-            }, function (err) {
-                $scope.testMessage = " Renew error:" + err;
-            });
+        AuthenticationService.login();
     };
 
     $scope.$on("adal:loginSuccess", function () {

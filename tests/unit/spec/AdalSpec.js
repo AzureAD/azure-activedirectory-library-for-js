@@ -51,14 +51,14 @@ describe("Adal", function () {
     });
 
     it("gets specific resource for defined endpoint mapping", function () {
-        adal.config = { resource: "default resource" };
+        adal.config = { loginResource: "default resource" };
         adal.config.endpoints = { "a": "resource for a" };
         expect(adal.getResourceForEndpoint("a")).toBe("resource for a");
         expect(adal.getResourceForEndpoint("b")).toBe("");
     });
 
     it("gets default resource for empty endpoint mapping", function () {
-        adal.config = { resource: "default resource" };
+        adal.config = { loginResource: "default resource" };
         adal.config.endpoints = null;
         expect(adal.getResourceForEndpoint("a")).toBe("default resource");
         expect(adal.getResourceForEndpoint("b")).toBe("default resource");

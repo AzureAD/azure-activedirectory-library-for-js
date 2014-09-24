@@ -1,36 +1,36 @@
 ﻿'use strict';
-app.controller('HomeController', ['$scope', '$location', 'AuthenticationService', function ($scope, $location, AuthenticationService) {
+app.controller('homeController', ['$scope', '$location', 'adalAuthenticationService', function ($scope, $location, adalAuthenticationService) {
     // this is referencing adal module to do login
-    //$scope.adalAuthData = AuthenticationService.userInfo;
+
+    //userInfo is defined at the $rootscope with adalAngular module
     $scope.testMessage = "";
-    $scope.logout = function () {
-        AuthenticationService.logOut();
-    };
-
-    $scope.login = function () {
-        AuthenticationService.login();
-    };
-
-    $scope.$on("adal:loginSuccess", function () {
-        console.log("scope gets event login sucsses");
-        $scope.testMessage = "loginSuccess";
-        $location.path("/home");
-    });
-
-    $scope.$on("adal:loginFailure", function () {
-        console.log("scope gets event loginFailure");
-        $scope.testMessage = "loginFailure";
-        $location.path("/login");
-    });
-
-    $scope.$on("adal:notAuthorized", function (event, rejection, forResource) {
-        console.log("scope gets event loginFailure");
-        $scope.testMessage = "It is not Authorized for resource:" + forResource;
-
-    });
-
     $scope.init = function () {
         $scope.testMessage = "";
     };
 
+    $scope.logout = function () {
+        adalAuthenticationService.logOut();
+    };
+
+    $scope.login = function () {
+        adalAuthenticationService.login();
+    };
+
+    // optional
+    $scope.$on("adal:loginSuccess", function () {
+        $scope.testMessage = "loginSuccess";
+    });
+
+    // optional
+    $scope.$on("adal:loginFailure", function () {
+        $scope.testMessage = "loginFailure";
+        $location.path("/login");
+    });
+
+    // optional
+    $scope.$on("adal:notAuthorized", function (event, rejection, forResource) {
+        $scope.testMessage = "It is not Authorized for resource:" + forResource;
+    });
+
+  
 }]);

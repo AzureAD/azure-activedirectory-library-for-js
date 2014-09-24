@@ -1,9 +1,9 @@
 ﻿'use strict';
-app.controller('TodoListController', ['$scope', '$location', 'TodoService', function ($scope, $location, TodoService) {
+app.controller('todoDetailController', ['$scope', '$location', 'todoService', function ($scope, $location, todoService) {
 
     $scope.TodoList = null;
     $scope.Populate = function () {
-        TodoService.getItems().then(function (results) {
+        todoService.getItems().then(function (results) {
             $scope.TodoList = results;  
         })
     };

@@ -18,9 +18,11 @@
 
 // node.js usage for tests
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports.inject = function (windowInj, localStorageInj, conf) {
+    module.exports.inject = function (windowInj, localStorageInj, documentInj, MathInj, conf) {
         window = windowInj;
         localStorage = localStorageInj;
+        Math = MathInj;
+        document = documentInj;
         return new AuthenticationContext(conf);
     };
 }
@@ -94,7 +96,7 @@ function AuthenticationContext(config) {
 };
 
 // callback is used if it does not do full page redirect and keeps the JS context
-AuthenticationContext.prototype.login = function (callback) {
+AuthenticationContext.prototype.login = function () {
     // Token is not present and user needs to login
     var expectedState = this._guid();
     this.config.state = expectedState;
@@ -169,7 +171,7 @@ AuthenticationContext.prototype._renewToken = function (resource, callback) {
         var keys = this._getItem(CONSTANTS.STORAGE.TOKEN_KEYS) || '';
         this._saveItem(CONSTANTS.STORAGE.TOKEN_KEYS, resource + CONSTANTS.RESOURCE_DELIMETER);
     }
-    var frameHandle = addAdalFrame('adalRenewFrame');
+    var frameHandle = this._addAdalFrame('adalRenewFrame');
     var expectedState = this._guid();
 
     this.config.state = expectedState;
@@ -198,13 +200,17 @@ AuthenticationContext.prototype.acquireToken = function (resource, callback) {
     var token = this.getCachedToken(resource);
     if (token) {
         logStatus('Token in cache');
-        callback(null, token);
+        if (typeof callback === 'function') {
+            callback(null, token);
+        }
         return;
     }
 
     if (this._getItem(CONSTANTS.STORAGE.FAILED_RENEW)) {
         logStatus('renewToken is failed:' + this._getItem(CONSTANTS.STORAGE.FAILED_RENEW));
-        callback(this._getItem(CONSTANTS.STORAGE.FAILED_RENEW), null);
+        if (typeof callback === 'function') {
+            callback(this._getItem(CONSTANTS.STORAGE.FAILED_RENEW), null);
+        }
         return;
     }
 
@@ -313,7 +319,7 @@ AuthenticationContext.prototype.getUser = function (callback) {
 AuthenticationContext.prototype._getIdTokenInFrame = function (callback) {
     var expectedState = this._guid();
     this.config.state = expectedState;
-    var frameHandle = addAdalFrame('adalIdTokenFrame');
+    var frameHandle = this._addAdalFrame('adalIdTokenFrame');
     logStatus('Expected state: ' + expectedState + ' start for iframe');
 
     this._saveItem(CONSTANTS.STORAGE.STATE_IDTOKEN, expectedState);
@@ -507,11 +513,11 @@ function oauth2Callback(hash, iframeRequest) {
 
 AuthenticationContext.prototype._getNavigateUrl = function (responseType) {
     var tenant = 'common';
-    if (this.config.tenant != 'undefined') {
+    if (this.config.tenant) {
         tenant = this.config.tenant;
     }
 
-    if (this.config.instance != 'undefined') {
+    if (this.config.instance) {
         this.instance = this.config.instance;
     }
 
@@ -587,12 +593,12 @@ AuthenticationContext.prototype._serialize = function (responseType, obj) {
     var str = [];
     if (obj != null) {
         str.push('?response_type=' + responseType);
-        str.push('&client_id=' + encodeURIComponent(obj['clientId']));
-        str.push('&resource=' + encodeURIComponent(obj['resource']));
-        str.push('&redirect_uri=' + encodeURIComponent(obj['redirect_uri']));
-        str.push('&state=' + encodeURIComponent(obj['state']));
+        str.push('client_id=' + encodeURIComponent(obj['clientId']));
+        str.push('resource=' + encodeURIComponent(obj['resource']));
+        str.push('redirect_uri=' + encodeURIComponent(obj['redirect_uri']));
+        str.push('state=' + encodeURIComponent(obj['state']));
         if (obj.hasOwnProperty('slice')) {
-            str.push('&slice=' + encodeURIComponent(obj['slice']));
+            str.push('slice=' + encodeURIComponent(obj['slice']));
         }
     }
 
@@ -627,7 +633,7 @@ AuthenticationContext.prototype._now = function () {
     return Math.round(new Date().getTime() / 1000.0);
 };
 
-function addAdalFrame(iframeId) {
+AuthenticationContext.prototype._addAdalFrame = function(iframeId) {
     console.log('Add adal frame to document:' + iframeId);
     var adalFrame = document.getElementById(iframeId);
 

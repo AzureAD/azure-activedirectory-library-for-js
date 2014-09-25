@@ -273,7 +273,38 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith('https://login.windows.net/common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
 
-    // TODO get user
+    it('gets user from cache', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user from cache');
+        adal.config.loginResource = RESOURCE1;
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
+        var err = '';
+        var user = '';
+        var callback = function (valErr, valResult) {
+            err = valErr;
+            user = valResult;
+        };
+        spyOn(adal, 'getCachedToken').andCallThrough();
+        adal.getUser(callback);
+        expect(user).toBe('test user from cache');
+        expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
+    });
+
+    it('navigates for idtoken if user is not in cache', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user from cache');
+        adal.config.loginResource = RESOURCE1;
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
+        var err = '';
+        var user = '';
+        var callback = function (valErr, valResult) {
+            err = valErr;
+            user = valResult;
+        };
+        spyOn(adal, 'getCachedToken').andCallThrough();
+        adal.getUser(callback);
+        expect(user).toBe('test user from cache');
+        expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
+    });
+
     // TODO idtoken handling
     // TODO iscallback
     // TOOD getrequestinfo

@@ -289,10 +289,10 @@ describe('Adal', function () {
         expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
     });
 
-    it('navigates for idtoken if user is not in cache', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user from cache');
+    it('has user but token is invalid', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'user1@contoso.com');
         adal.config.loginResource = RESOURCE1;
-        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var err = '';
         var user = '';
         var callback = function (valErr, valResult) {
@@ -301,8 +301,32 @@ describe('Adal', function () {
         };
         spyOn(adal, 'getCachedToken').andCallThrough();
         adal.getUser(callback);
-        expect(user).toBe('test user from cache');
+        expect(user).toBe(null);
+        expect(err).toBe(CONSTANTS.ERR_MESSAGES.NO_TOKEN);
         expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
+    });
+
+    it('has token but not user, so it navigates to get idtoken', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, '');
+        adal.config.loginResource = RESOURCE1;
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
+        adal.config.clientId = 'client';
+        adal.config.tenant = "testtenant"
+        var err = '';
+        var user = '';
+        var callback = function (valErr, valResult) {
+            err = valErr;
+            user = valResult;
+        };
+        spyOn(adal, 'getCachedToken').andCallThrough();
+
+        adal.getUser(callback);
+        // callback should not be called here
+        // It will wait frame to be loaded and then receive callback
+        expect(user).toBe('');
+        expect(err).toBe('');
+        expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
+        expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&resource=default%20resource&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333&prompt=none&nonce=33333333-3333-4333-b333-333333333333');
     });
 
     // TODO idtoken handling

@@ -35,6 +35,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
             loginResource: "b6a68585-5287-45b2-ba82-383ba1f60932",
             instance: "https://login.windows-ppe.net/",
             //localLoginUrl: "/login",  // optional
+            //redirectUri : "your site", optional
             endpoints: endpoints  // optional
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens

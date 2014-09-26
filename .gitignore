@@ -79,3 +79,6 @@ packages/
 
 #Test files
 *.testsettings
+
+#copied adal
+samples/owin/OwinSample/Scripts/adal.js

@@ -1,6 +1,23 @@
+//----------------------------------------------------------------------
+// Copyright (c) Microsoft Open Technologies, Inc.
+// All Rights Reserved
+// Apache License 2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//----------------------------------------------------------------------
+'use strict'
 var jasmine = require('jasmine-node');
 var confighash = { hash: '#' };
-//var window = {}; //require('../mocks/window.js')(confighash);
 var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
@@ -11,7 +28,8 @@ describe('Adal', function () {
             href: "href",
             replace: function (val) {
             }
-        }
+        },
+        localStorage: {}
     };
     var mathMock = {
         random: function () {
@@ -30,6 +48,7 @@ describe('Adal', function () {
             return frameMock;
         }
     };
+    var angularMock = {};
     var conf = { loginResource: 'default resource', tenant: 'testtenant' };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
@@ -38,6 +57,7 @@ describe('Adal', function () {
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + '.token.keys';
     var RESOURCE1 = 'token.resource1';
     var SECONDS_TO_EXPIRE = 3600;
+ 
     var storageFake = function () {
         var store = {};
         return {
@@ -68,15 +88,16 @@ describe('Adal', function () {
         // add key
         storageFake.setItem(STORAGE_TOKEN_KEYS, RESOURCE1 + '|');
 
-        Object.defineProperty(window, 'localStorage', storageFake);
+        window.localStorage = storageFake;
 
-        // Init adal
-        adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, conf);
+        // Init adal 
+        adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
+ 
     });
 
     it('set start page', function () {
         adal.setStartPage(testPage);
-        expect(adal.startPage).toEqual(testPage);
+        expect(adal._startPage).toEqual(testPage);
     });
 
     it('gets specific resource for defined endpoint mapping', function () {
@@ -115,7 +136,7 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
-        adal.config.redirect_uri = 'contoso_site';
+        adal.config.redirectUri = 'contoso_site';
         spyOn(adal, 'promptUser');
         console.log('instance:' + adal.instance);
         adal.login();
@@ -127,7 +148,7 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
 
         adal.config.clientId = 'client';
-        adal.config.redirect_uri = 'contoso_site';
+        adal.config.redirectUri = 'contoso_site';
         var urlToGo = '';
         var displayCallback = function (url) {
             urlToGo = url;
@@ -181,8 +202,8 @@ describe('Adal', function () {
         adal.acquireToken(RESOURCE1, callback);
         expect(adal.callback).toBe(callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
-        expect(storageFake.getItem(CONSTANTS.STORAGE.STATE_RENEW)).toBe('33333333-3333-4333-b333-333333333333');
-        expect(storageFake.getItem(CONSTANTS.STORAGE.STATE_RENEW_RESOURCE)).toBe(RESOURCE1);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.STATE_RENEW)).toBe('33333333-3333-4333-b333-333333333333');
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.STATE_RENEW_RESOURCE)).toBe(RESOURCE1);
         expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=default%20resource&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333&prompt=none');
     });
 
@@ -243,7 +264,7 @@ describe('Adal', function () {
 
     it('clears cache before logout', function () {
         adal.config.clientId = 'client';
-        adal.config.redirect_uri = 'contoso_site';
+        adal.config.redirectUri = 'contoso_site';
         spyOn(adal, 'clearCache');
         spyOn(adal, 'promptUser');
         adal.logOut();
@@ -256,7 +277,7 @@ describe('Adal', function () {
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
         adal.config.tenant = "testtenant"
-        adal.config.post_logout_redirect_uri = 'https://contoso.com/logout';
+        adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();
         expect(adal.promptUser).toHaveBeenCalledWith('https://login.windows.net/' + adal.config.tenant + '/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
@@ -267,7 +288,7 @@ describe('Adal', function () {
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
         delete adal.config.tenant;
-        adal.config.post_logout_redirect_uri = 'https://contoso.com/logout';
+        adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();
         expect(adal.promptUser).toHaveBeenCalledWith('https://login.windows.net/common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
@@ -302,7 +323,7 @@ describe('Adal', function () {
         spyOn(adal, 'getCachedToken').andCallThrough();
         adal.getUser(callback);
         expect(user).toBe(null);
-        expect(err).toBe(CONSTANTS.ERR_MESSAGES.NO_TOKEN);
+        expect(err).toBe(adal.CONSTANTS.ERR_MESSAGES.NO_TOKEN);
         expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
     });
 
@@ -338,4 +359,4 @@ describe('Adal', function () {
     // TODO angular authenticaitonService
 });
 
-env = jasmine.getEnv().execute();
+var env = jasmine.getEnv().execute();

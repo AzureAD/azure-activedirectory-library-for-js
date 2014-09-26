@@ -1,3 +1,4 @@
+'use strict'
 var jasmine = require('jasmine-node');
 
 var AdalModule = require('../../../lib/adal.js');
@@ -13,6 +14,8 @@ describe("Adal", function () {
     var RESOURCE1 = "token.resource1";
     var SECONDS_TO_EXPIRE = 3600;
     var window = {};
+    var angular = {};
+    var document = {};
     var storageFake = function () {
         var store = {};
         return {
@@ -41,13 +44,13 @@ describe("Adal", function () {
         Object.defineProperty(window, 'localStorage', storageFake);
 
         // Init adal
-        adal = new AdalModule.inject(window, storageFake, conf);
+        adal = new AdalModule.inject(window, storageFake, conf, angular, document);
     });
 
 
     it("set start page", function () {
         adal.setStartPage(testPage);
-        expect(adal.startPage).toEqual(testPage);
+        expect(adal._startPage).toEqual(testPage);
     });
 
     it("gets specific resource for defined endpoint mapping", function () {
@@ -84,4 +87,4 @@ describe("Adal", function () {
 
 });
 
-env = jasmine.getEnv().execute();
+var env = jasmine.getEnv().execute();

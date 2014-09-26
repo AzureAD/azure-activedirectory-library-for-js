@@ -1,7 +1,5 @@
 ﻿'use strict';
-app.factory('TodoService', ['$http', function ($http) {
-
-
+app.factory('todoService', ['$http', function ($http) {
     var serviceFactory = {};
 
     var _getItems = function () {
@@ -16,5 +14,4 @@ app.factory('TodoService', ['$http', function ($http) {
     serviceFactory.getItem = _getItem;
 
     return serviceFactory;
-
 }]);

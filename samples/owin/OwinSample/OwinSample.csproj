@@ -189,13 +189,12 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\Scripts\HomeController.js" />
-    <Content Include="App\Scripts\ContactService.js" />
-    <Content Include="App\Scripts\TodoService.js" />
-    <Content Include="App\Views\Login.html" />
-    <Content Include="App\Views\Home.html" />
-    <Content Include="App\Views\TodoDetail.html" />
-    <Content Include="App\Views\TodoList.html" />
+    <Content Include="App\Scripts\homeController.js" />
+    <Content Include="App\Scripts\todoService.js" />
+    <Content Include="App\Views\login.html" />
+    <Content Include="App\Views\landingPage.html" />
+    <Content Include="App\Views\todoDetail.html" />
+    <Content Include="App\Views\todoList.html" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -203,10 +202,15 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="mySPA.html" />
-    <Content Include="App\Scripts\App.js" />
-    <Content Include="App\Scripts\TodoDetailController.js" />
-    <Content Include="App\Scripts\TodoListController.js" />
+    <Content Include="App\Scripts\app.js" />
+    <Content Include="App\Scripts\todoDetailController.js" />
+    <Content Include="App\Scripts\todoListController.js" />
     <Content Include="Scripts\adal.js" />
+    <Content Include="Scripts\angular-mocks.js" />
+    <Content Include="Scripts\angular-route.js" />
+    <Content Include="Scripts\angular-route.min.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -228,6 +232,8 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\angular-route.min.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

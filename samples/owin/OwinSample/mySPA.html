@@ -3,26 +3,17 @@
 <head>
     <title>Angular Adal Sample</title>
 </head>
-<body ng-app="bull" ng-controller="HomeController" ng-init="init()">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
-    <script src="https://code.angularjs.org/1.2.25/angular-route.js"></script>
-    <script src="/Scripts/adal.js"></script>
-    <script src="App/Scripts/App.js"></script>
-    <script src="App/Scripts/HomeController.js"></script>
-    <script src="App/Scripts/TodoDetailController.js"></script>
-    <script src="App/Scripts/TodoListController.js"></script>
-    <script src="App/Scripts/TodoService.js"></script>
-    <script src="App/Scripts/ContactService.js"></script>
+<body ng-app="adalDemo" ng-controller="homeController" ng-init="hmCtl.init()">
     <a href="#">Home</a>
-    <a href="#/TodoList">ToDo List</a>
+    <a href="#/todoList">ToDo List</a>
+
+
     <!--These links are added to manage login/logout-->
     <div data-ng-model="userInfo">
         <span data-ng-hide="!userInfo.isAuthenticated">Welcome {{userInfo.userName}} </span>
         <button data-ng-hide="!userInfo.isAuthenticated" data-ng-click="logout()">Logout</button>
         <button data-ng-hide="userInfo.isAuthenticated" data-ng-click="login()">Login</button>
-        <button data-ng-click="renew()">Renew Test</button>
-        <button data-ng-click="clearCache()">Clear Cache</button>
-        <button data-ng-click="clearCache()">User test</button>
+
         <div>
             {{userInfo.loginError}}
         </div>
@@ -34,5 +25,13 @@
         Your view will appear here.
     </div>
 
+    <script src="/Scripts/angular.min.js"></script>
+    <script src="/Scripts/angular-route.min.js"></script>
+    <script src="/Scripts/adal.js"></script>
+    <script src="App/Scripts/app.js"></script>
+    <script src="App/Scripts/homeController.js"></script>
+    <script src="App/Scripts/todoDetailController.js"></script>
+    <script src="App/Scripts/todoListController.js"></script>
+    <script src="App/Scripts/todoService.js"></script>
 </body>
 </html>

@@ -1,18 +1,21 @@
+'use strict'
 var jasmine = require('jasmine-node');
 
 var AdalModule = require('../../../lib/adal.js');
 
 describe("Adal", function () {
     var adal;
-    var conf = {};
+    var conf = { loginResource: "default resource" };
     var testPage = "this is a song";
     var STORAGE_PREFIX = "adal";
-    var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + ".access.token";
-    var STORAGE_EXPIRATION_KEY = STORAGE_PREFIX + ".expiration";
+    var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + ".access.token.key";
+    var STORAGE_EXPIRATION_KEY = STORAGE_PREFIX + ".expiration.key";
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + ".token.keys";
     var RESOURCE1 = "token.resource1";
     var SECONDS_TO_EXPIRE = 3600;
     var window = {};
+    var angular = {};
+    var document = {};
     var storageFake = function () {
         var store = {};
         return {
@@ -41,27 +44,29 @@ describe("Adal", function () {
         Object.defineProperty(window, 'localStorage', storageFake);
 
         // Init adal
-        adal = new AdalModule.inject(window, storageFake, conf);
+        adal = new AdalModule.inject(window, storageFake, conf, angular, document);
     });
 
 
     it("set start page", function () {
         adal.setStartPage(testPage);
-        expect(adal.startPage).toEqual(testPage);
+        expect(adal._startPage).toEqual(testPage);
     });
 
     it("gets specific resource for defined endpoint mapping", function () {
-        adal.config = { loginResource: "default resource" };
         adal.config.endpoints = { "a": "resource for a" };
         expect(adal.getResourceForEndpoint("a")).toBe("resource for a");
         expect(adal.getResourceForEndpoint("b")).toBe("");
     });
 
     it("gets default resource for empty endpoint mapping", function () {
-        adal.config = { loginResource: "default resource" };
         adal.config.endpoints = null;
         expect(adal.getResourceForEndpoint("a")).toBe("default resource");
         expect(adal.getResourceForEndpoint("b")).toBe("default resource");
+    });
+
+    it("sets default resource", function () {
+        expect(adal.config.resource).toBe("default resource");
     });
 
     it("says token expired", function () {
@@ -73,9 +78,13 @@ describe("Adal", function () {
 
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 1;
         expect(adal.getCachedToken(RESOURCE1)).toBe(null);
+    });
 
+    it("gets cache username", function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, "test user");
+        expect(adal.getCachedUser()).toBe("test user");
     });
 
 });
 
-env = jasmine.getEnv().execute();
+var env = jasmine.getEnv().execute();

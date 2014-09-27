@@ -70,6 +70,9 @@ _ReSharper*/
 packages/
 *.nupkg
 
+#bower
+bower_components
+
 #ncrunch
 *ncrunch*
 *crunch*.local.xml

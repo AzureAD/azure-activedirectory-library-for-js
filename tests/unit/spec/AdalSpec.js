@@ -16,7 +16,11 @@
 // limitations under the License.
 //----------------------------------------------------------------------
 'use strict'
+/* Directive tells jshint that it, describe are globals defined by jasmine */
+/* global it */
+/* global describe */
 var jasmine = require('jasmine-node');
+var atobHelper = require('atob');
 var confighash = { hash: '#' };
 var AdalModule = require('../../../lib/adal.js');
 
@@ -24,12 +28,13 @@ describe('Adal', function () {
     var adal;
     var window = {
         location: {
-            hash: "#hash",
-            href: "href",
+            hash: '#hash',
+            href: 'href',
             replace: function (val) {
             }
         },
-        localStorage: {}
+        localStorage: {},
+        atob: atobHelper
     };
     var mathMock = {
         random: function () {
@@ -40,7 +45,7 @@ describe('Adal', function () {
         }
     };
     var frameMock = {
-        src: "start"
+        src: 'start'
     };
 
     var documentMock = {
@@ -57,7 +62,7 @@ describe('Adal', function () {
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + '.token.keys';
     var RESOURCE1 = 'token.resource1';
     var SECONDS_TO_EXPIRE = 3600;
- 
+
     var storageFake = function () {
         var store = {};
         return {
@@ -66,7 +71,7 @@ describe('Adal', function () {
             },
             setItem: function (key, value) {
                 if (typeof value != 'undefined') {
-                    store[key] = value.toString();
+                    store[key] = value + '';
                 }
             },
             clear: function () {
@@ -81,6 +86,7 @@ describe('Adal', function () {
     beforeEach(function () {
 
         // one item in cache
+        storageFake.clear();
         storageFake.setItem(STORAGE_ACCESS_TOKEN_KEY + RESOURCE1, 'access_token_in_cache' + RESOURCE1);
         var secondsNow = mathMock.round(0);
         storageFake.setItem(STORAGE_EXPIRATION_KEY + RESOURCE1, secondsNow + SECONDS_TO_EXPIRE); // seconds to expire
@@ -92,7 +98,6 @@ describe('Adal', function () {
 
         // Init adal 
         adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
- 
     });
 
     it('set start page', function () {
@@ -212,7 +217,7 @@ describe('Adal', function () {
         spyOn(window.location, 'replace');
         adal.promptUser();
         expect(window.location.replace).not.toHaveBeenCalled();
-        adal.promptUser("test");
+        adal.promptUser('test');
         expect(window.location.replace).toHaveBeenCalled();
     });
 
@@ -276,7 +281,7 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
-        adal.config.tenant = "testtenant"
+        adal.config.tenant = 'testtenant'
         adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();
@@ -332,7 +337,7 @@ describe('Adal', function () {
         adal.config.loginResource = RESOURCE1;
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         adal.config.clientId = 'client';
-        adal.config.tenant = "testtenant"
+        adal.config.tenant = 'testtenant'
         var err = '';
         var user = '';
         var callback = function (valErr, valResult) {
@@ -350,12 +355,142 @@ describe('Adal', function () {
         expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&resource=default%20resource&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333&prompt=none&nonce=33333333-3333-4333-b333-333333333333');
     });
 
-    // TODO idtoken handling
-    // TODO iscallback
-    // TOOD getrequestinfo
-    // TODO savetokenfromhash
-    // TODO getResourceForEndpoint
+    it('is callback if has error or access token or idtoken', function () {
+        expect(adal.isCallback('not a callback')).toBe(false);
+        expect(adal.isCallback('#error_description=someting_wrong')).toBe(true);
+        expect(adal.isCallback('#/error_description=someting_wrong')).toBe(true);
+        expect(adal.isCallback('#access_token=token123')).toBe(true);
+        expect(adal.isCallback('#id_token=idtoken234')).toBe(true);
+    });
+
+    it('gets login error if any recorded', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_ERROR, '');
+        expect(adal.getLoginError()).toBe('');
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_ERROR, 'err');
+        expect(adal.getLoginError()).toBe('err');
+    });
+
+    it('gets request info from hash', function () {
+        var requestInfo = adal.getRequestInfo('invalid');
+        expect(requestInfo.valid).toBe(false);
+        requestInfo = adal.getRequestInfo('#error_description=someting_wrong');
+        expect(requestInfo.valid).toBe(true);
+        expect(requestInfo.stateResponse).toBe('');
+
+        requestInfo = adal.getRequestInfo('#error_description=someting_wrong&state=1232');
+        expect(requestInfo.valid).toBe(true);
+        expect(requestInfo.stateResponse).toBe('1232');
+        expect(requestInfo.stateMatch).toBe(false);
+
+        checkStateType(adal.CONSTANTS.STORAGE.STATE_LOGIN, '1234', adal.REQUEST_TYPE.LOGIN);
+        checkStateType(adal.CONSTANTS.STORAGE.STATE_RENEW, '1235', adal.REQUEST_TYPE.RENEW_TOKEN);
+        checkStateType(adal.CONSTANTS.STORAGE.STATE_IDTOKEN, '1236', adal.REQUEST_TYPE.ID_TOKEN);
+    });
+
+    var checkStateType = function (state, stateExpected, requestType) {
+        storageFake.setItem(state, stateExpected);
+        var requestInfo = adal.getRequestInfo('#error_description=someting_wrong&state=' + stateExpected);
+        expect(requestInfo.valid).toBe(true);
+        expect(requestInfo.stateResponse).toBe(stateExpected);
+        expect(requestInfo.stateMatch).toBe(true);
+        expect(requestInfo.requestType).toBe(requestType);
+        storageFake.setItem(state, '');
+    }
+
+    it('saves errors token from callback', function () {
+        var requestInfo = {
+            valid: false,
+            parameters: { 'error_description': 'error description', 'error': 'invalid' },
+            stateMatch: false,
+            stateResponse: '',
+            requestType: adal.REQUEST_TYPE.UNKNOWN
+        };
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR)).toBe('invalid');
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('error description');
+    });
+
+    it('saves token if state matches', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: { 'access_token': 'token123', 'state': '123' },
+            stateMatch: true,
+            stateResponse: '123',
+            requestType: adal.REQUEST_TYPE.LOGIN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'loginResource1')).toBe('token123');
+    });
+
+    it('saves expiry if state matches', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: { 'access_token': 'token123', 'state': '123', 'expires_in': 3589 },
+            stateMatch: true,
+            stateResponse: '123',
+            requestType: adal.REQUEST_TYPE.LOGIN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589 + '');
+    });
+
+    it('saves username after extracting idtoken', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: {
+                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiI2NTBhNjYwOS01NDYzLTRiYzQtYjdjNi0xOWRmNzk5MGE4YmMiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8wZmQxNTdmYy0yOWVhLTRmYjUtYmRiYy1hMTk1YmQxNmZmODAvIiwiaWF0IjoxNDExNzcxNTc5LCJuYmYiOjE0MTE3NzE1NzksImV4cCI6MTQxMTc3NTQ3OSwidmVyIjoiMS4wIiwidGlkIjoiMGZkMTU3ZmMtMjllYS00ZmI1LWJkYmMtYTE5NWJkMTZmZjgwIiwiYW1yIjpbInB3ZCJdLCJvaWQiOiI3MzhmNjA3MS1jY2Q4LTQ2YWQtYTMwNy03MTU2NWE5MjcwYjUiLCJ1cG4iOiJmYXJ1a0BvbWVyY2FudGVzdC5vbm1pY3Jvc29mdC5jb20iLCJ1bmlxdWVfbmFtZSI6ImZhcnVrQG9tZXJjYW50ZXN0Lm9ubWljcm9zb2Z0LmNvbSIsInN1YiI6IlFMbXM4eXRicnR4TWtuXzhFU2VfazhJWnFzRFpSWHZGanRjVTFURzMyQkUiLCJmYW1pbHlfbmFtZSI6InRlc3QiLCJnaXZlbl9uYW1lIjoiZmFydWsiLCJwd2RfZXhwIjoiMzY0OTc0IiwicHdkX3VybCI6Imh0dHBzOi8vcG9ydGFsLm1pY3Jvc29mdG9ubGluZS5jb20vQ2hhbmdlUGFzc3dvcmQuYXNweCJ9.',
+                'state': '123'
+            },
+            stateMatch: true,
+            stateResponse: '123',
+            requestType: adal.REQUEST_TYPE.ID_TOKEN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBe('faruk@omercantest.onmicrosoft.com');
+    });
+
+    it('saves null for username if idtoken is invalid', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: {
+                'id_token': 'invalid',
+                'state': '123'
+            },
+            stateMatch: true,
+            stateResponse: '123',
+            requestType: adal.REQUEST_TYPE.ID_TOKEN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBeUndefined();
+    });
+
+    it('saves null for username if idtoken is invalid', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: {
+                'id_token': 'invalid',
+                'state': '123'
+            },
+            stateMatch: true,
+            stateResponse: '123',
+            requestType: adal.REQUEST_TYPE.ID_TOKEN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBeUndefined();
+    });
+
     // TODO angular intercepptor
+   
     // TODO angular authenticaitonService
 });
 

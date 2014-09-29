@@ -54,7 +54,7 @@ describe('Adal', function () {
         }
     };
     var angularMock = {};
-    var conf = { loginResource: 'default resource', tenant: 'testtenant' };
+    var conf = { loginResource: 'default resource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
@@ -62,7 +62,7 @@ describe('Adal', function () {
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + '.token.keys';
     var RESOURCE1 = 'token.resource1';
     var SECONDS_TO_EXPIRE = 3600;
-
+    var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
     var storageFake = function () {
         var store = {};
         return {
@@ -98,6 +98,7 @@ describe('Adal', function () {
 
         // Init adal 
         adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
+        adal._user = null;       
     });
 
     it('set start page', function () {
@@ -133,8 +134,8 @@ describe('Adal', function () {
     });
 
     it('gets cache username', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
-        expect(adal.getCachedUser()).toBe('test user');
+        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
+        expect(adal.getCachedUser().userName).toBe('user@oauthimplicit.ccsctp.net');
     });
 
     it('navigates user to login by default', function () {
@@ -300,19 +301,20 @@ describe('Adal', function () {
     });
 
     it('gets user from cache', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user from cache');
+        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
         adal.config.loginResource = RESOURCE1;
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         var err = '';
-        var user = '';
+        var user = {};
         var callback = function (valErr, valResult) {
             err = valErr;
             user = valResult;
         };
         spyOn(adal, 'getCachedToken').andCallThrough();
         adal.getUser(callback);
-        expect(user).toBe('test user from cache');
         expect(adal.getCachedToken).toHaveBeenCalledWith(RESOURCE1);
+        expect(user.userName).toBe('user@oauthimplicit.ccsctp.net');
     });
 
     it('has user but token is invalid', function () {
@@ -333,7 +335,7 @@ describe('Adal', function () {
     });
 
     it('has token but not user, so it navigates to get idtoken', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, '');
+        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, '');
         adal.config.loginResource = RESOURCE1;
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         adal.config.clientId = 'client';
@@ -442,17 +444,18 @@ describe('Adal', function () {
         var requestInfo = {
             valid: true,
             parameters: {
-                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiI2NTBhNjYwOS01NDYzLTRiYzQtYjdjNi0xOWRmNzk5MGE4YmMiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8wZmQxNTdmYy0yOWVhLTRmYjUtYmRiYy1hMTk1YmQxNmZmODAvIiwiaWF0IjoxNDExNzcxNTc5LCJuYmYiOjE0MTE3NzE1NzksImV4cCI6MTQxMTc3NTQ3OSwidmVyIjoiMS4wIiwidGlkIjoiMGZkMTU3ZmMtMjllYS00ZmI1LWJkYmMtYTE5NWJkMTZmZjgwIiwiYW1yIjpbInB3ZCJdLCJvaWQiOiI3MzhmNjA3MS1jY2Q4LTQ2YWQtYTMwNy03MTU2NWE5MjcwYjUiLCJ1cG4iOiJmYXJ1a0BvbWVyY2FudGVzdC5vbm1pY3Jvc29mdC5jb20iLCJ1bmlxdWVfbmFtZSI6ImZhcnVrQG9tZXJjYW50ZXN0Lm9ubWljcm9zb2Z0LmNvbSIsInN1YiI6IlFMbXM4eXRicnR4TWtuXzhFU2VfazhJWnFzRFpSWHZGanRjVTFURzMyQkUiLCJmYW1pbHlfbmFtZSI6InRlc3QiLCJnaXZlbl9uYW1lIjoiZmFydWsiLCJwd2RfZXhwIjoiMzY0OTc0IiwicHdkX3VybCI6Imh0dHBzOi8vcG9ydGFsLm1pY3Jvc29mdG9ubGluZS5jb20vQ2hhbmdlUGFzc3dvcmQuYXNweCJ9.',
+                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk2MDkwMiwibmJmIjoxNDExOTYwOTAyLCJleHAiOjE0MTE5NjQ4MDIsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiIxOWU2N2IyNC1jZDk5LTQ1YjYtYTU4OC04NDBlM2Y4ZjJhNzAiLCJwd2RfZXhwIjoiNTc3ODAwOCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.GzbTwMXhjs4uJFogd1B46C_gKX6uZ4BfgJIpzFS-n-HRXEWeKdZWboRC_-C4UnEy6G9kR6vNFq7zi3DY1P8uf1lUavdOFUE27xNY1McN1Vjm6HKxKNYOLU549-wIb6SSfGVycdyskdJfplf5VRasMGclwHlY0l9bBCTaPunjhfcg-mQmGKND-aO0B54EGhdGs740NiLMCh6kNXbp1WAv7V6Yn408qZEIsOQoPO0dW-wO54DTqpbLtqiwae0pk0hDxXWczaUPxR_wcz0f3TgF42iTp-j5bXTf2GOP1VPZtN9PtdjcjDIfZ6ihAVZCEDB_Y9czHv7et0IvB1bzRWP6bQ',
                 'state': '123'
             },
             stateMatch: true,
             stateResponse: '123',
             requestType: adal.REQUEST_TYPE.ID_TOKEN
         };
-        adal.config.loginResource = 'loginResource1';
+        adal.config.clientId = conf.clientId;
+        adal._user = null;
         adal.saveTokenFromHash(requestInfo);
-
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBe('faruk@omercantest.onmicrosoft.com');
+        expect(adal.getCachedUser().userName).toBe('user@oauthimplicit.ccsctp.net');
+        console.log('test extract idtoken done');
     });
 
     it('saves null for username if idtoken is invalid', function () {

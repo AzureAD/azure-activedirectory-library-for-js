@@ -31,6 +31,5 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
     $scope.$on("adal:notAuthorized", function (event, rejection, forResource) {
         $scope.testMessage = "It is not Authorized for resource:" + forResource;
     });
-
   
 }]);

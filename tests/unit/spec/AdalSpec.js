@@ -19,7 +19,6 @@
 /* Directive tells jshint that it, describe are globals defined by jasmine */
 /* global it */
 /* global describe */
-var jasmine = require('jasmine-node');
 var atobHelper = require('atob');
 var confighash = { hash: '#' };
 var AdalModule = require('../../../lib/adal.js');
@@ -100,12 +99,7 @@ describe('Adal', function () {
         adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
         adal._user = null;       
     });
-
-    it('set start page', function () {
-        adal.setStartPage(testPage);
-        expect(adal._startPage).toEqual(testPage);
-    });
-
+     
     it('gets specific resource for defined endpoint mapping', function () {
         adal.config.endpoints = { 'a': 'resource for a' };
         expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
@@ -164,11 +158,6 @@ describe('Adal', function () {
         adal.login();
         expect(adal.config.displayCall).toHaveBeenCalledWith('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=default%20resource&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
-    });
-
-    it('returns renewing true if renewtoken state registered', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, '345');
-        expect(adal.isRenewingToken()).toBe('345');
     });
 
     it('returns from cache for auto renewable if not expired', function () {
@@ -496,5 +485,3 @@ describe('Adal', function () {
    
     // TODO angular authenticaitonService
 });
-
-var env = jasmine.getEnv().execute();

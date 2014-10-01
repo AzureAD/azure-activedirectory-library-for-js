@@ -13,24 +13,33 @@ module.exports = function (grunt) {
             }
         },
         jshint: {
-            options: {
-                jshintrc: '.jshintrc',
-                ignores: []
-            }
-        },
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-            },
-            build: {
-                src: 'src/<%= pkg.name %>.js',
-                dest: 'build/<%= pkg.name %>.min.js'
+            src: {
+                options: {
+                  jshintrc: '.jshintrc'
+                },
+                src: ['lib/*.js']
             }
         },
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
             }
+        },
+        jasmine_node: {
+            options: {
+                forceExit: true,
+                match: '.',
+                matchall: false,
+                extensions: 'js',
+                specNameMatcher: 'spec',
+                jUnit: {
+                    report: true,
+                    savePath: "./build/reports/jasmine/",
+                    useDotNotation: true,
+                    consolidate: true
+                }
+            },
+            all: ['tests/unit/spec/']
         }
     });
 
@@ -38,7 +47,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-jasmine-node');
 
-    grunt.registerTask('build', ['jshint', 'karma', 'jsdoc']);
+    // jasmine node directly js api 
+    grunt.registerTask('default', ['jshint', 'jasmine_node']);
+    
+    // browser tests for angular modules
+    grunt.registerTask('karma', ['karma']);
 };

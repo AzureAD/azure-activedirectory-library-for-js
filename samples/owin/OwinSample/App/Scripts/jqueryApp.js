@@ -33,11 +33,9 @@ $(document).ready(function () {
     $('.authenticated').hide();
     $('.notauthenticated').show();
 
-    // handle the redirect to same page for iframe and login redirect
+    // handle the redirect at the same page for iframe and login redirect
     if (adal.isCallback(window.location.hash)) {
-        var requestInfo = adal.getRequestInfo(hash);
         adal.handleWindowCallback();
-        if(requestInfo && requestInfo.requestType == adal.REQUEST_TYPE.LOGIN)
     }
 
     var token = adal.getCachedToken(adal.config.loginResource);

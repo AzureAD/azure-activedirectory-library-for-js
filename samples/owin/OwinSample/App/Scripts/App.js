@@ -46,7 +46,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 
     // endpoint to resource mapping(optional)
     var endpoints = {
-        '/api/Todo': 'b6a68585-5287-45b2-ba82-383ba1f60932',
+        '/api/Todo/': 'b6a68585-5287-45b2-ba82-383ba1f60932',
     };
 
     adalAuthenticationServiceProvider.init(

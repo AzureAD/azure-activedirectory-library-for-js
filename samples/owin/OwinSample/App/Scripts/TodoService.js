@@ -20,7 +20,7 @@ app.factory('todoService', ['$http', function ($http) {
     var serviceFactory = {};
 
     var _getItems = function () {
-        return $http.get('/api/Todo');
+        return $http.get('/api/Todo/');
     };
 
     var _getItem = function (id) {

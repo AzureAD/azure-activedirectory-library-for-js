@@ -14,7 +14,7 @@ module.exports = function(config) {
       'bower_components/angular-route/angular-route.js',
       'lib/*.js',
       'tests/unit/mocks/*.js',
-      'tests/unit/spec/*.js'
+      'tests/unit/spec/angularModuleSpec.js'
     ],
 
     // list of files / patterns to exclude
@@ -43,6 +43,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: true
   });
 };

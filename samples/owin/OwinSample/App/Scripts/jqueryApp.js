@@ -33,16 +33,23 @@ $(document).ready(function () {
     $('.authenticated').hide();
     $('.notauthenticated').show();
 
-    // handle the redirect to same page
+    // handle the redirect to same page for iframe and login redirect
     if (adal.isCallback(window.location.hash)) {
+        var requestInfo = adal.getRequestInfo(hash);
         adal.handleWindowCallback();
+        if(requestInfo && requestInfo.requestType == adal.REQUEST_TYPE.LOGIN)
     }
 
     var token = adal.getCachedToken(adal.config.loginResource);
     if (token) {
         // received token
-        getUser();        
-        refreshItems();
+        $('.authenticated').show();
+        $('.notauthenticated').hide();
+        adal.getUser(function (err, user) {
+            $('#welcomeText').text('Welcome ' + user.userName);
+            activeUser = user;
+            refreshItems();
+        });
     } else {
         console.log('need to login');
     }
@@ -61,15 +68,6 @@ function login() {
 
 function logout() {
     adal.logOut();
-}
-
-function getUser() {
-    $('.authenticated').show();
-    $('.notauthenticated').hide();
-    adal.getUser(function (err, user) {
-        $('#welcomeText').text('Welcome ' + user.userName);
-        activeUser = user;
-    });
 }
 
 function deleteTodo(id) {
@@ -111,10 +109,20 @@ function saveTodo(id) {
     }
 }
 
+function showList() {
+    if (activeUser) {
+        refreshItems();
+    } else {
+        adal.login();
+    }
+}
+
 function refreshItems() {
-    $('#displayEdit').hide();
-    $('#displayList').show();
-    handleItemGets();
+    if (activeUser) {
+        $('#displayEdit').hide();
+        $('#displayList').show();
+        handleItemGets();
+    }
 }
 
 // ========  Service  ========
@@ -152,8 +160,6 @@ function sendServerRequest(ajaxConfig) {
     if (activeUser) {
         adal.acquireToken(targetResourceForEndpoint, function (err, token) {
             if (token) {
-                // get user as well if not setup
-                getUser();
                 // send request in async
                 $.ajax(ajaxConfig);
             }

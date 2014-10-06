@@ -1,3 +1,21 @@
-﻿<div>
-    Detail
+﻿<div data-ng-model="todo" ng-init="populate()">
+    <h2>Detail</h2>
+    <p>{{error}}</p>
+    <p>{{loadingMsg}}</p>
+    <form>
+        <input type="hidden" data-ng-model="todo.TodoItemId" />
+        <div>
+            <input type="text" data-ng-model="todo.Title" value="todo.Title" />
+        </div>
+        <div>
+            <input type="text" data-ng-model="todo.Content" value="todo.Content"/>
+        </div>
+        <div>
+            completed<input type="checkbox" data-ng-model="todo.Completed">
+        </div>
+       
+        <br />
+        <br />
+        <input type="submit" value="Save" data-ng-click="save(todo.TodoItemId)" />
+    </form>
 </div>

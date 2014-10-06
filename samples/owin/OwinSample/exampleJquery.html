@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Adal JS Sample that uses Jquery</title>
+    <link rel="stylesheet" href="/Content/Site.css">
+</head>
+<body>
+
+    <!--These links are added to manage login/logout-->
+    <div id="userInfo">
+        <a href="#" onclick="showList()">ToDo List</a> |
+
+        <span id="welcomeText" class="welcome authenticated"></span>
+        <button class="authenticated" onclick="logout()">Logout</button>
+        <button class="notauthenticated" onclick="login()">Login</button>
+        <span id="wait" style="display: none; position: relative; padding: 2px;">
+            <img src='/Content/demo_wait.gif' width="24" height="24" /></span>
+        <div id="loginError">
+        </div>
+        <div id="testMessage">
+        </div>
+    </div>
+
+    <div id="serverIssues">
+    </div>
+
+    <div class="notauthenticated">
+        <p>Please login to continue</p>
+    </div>
+    <div id="displayList" class="authenticated">
+        <p>My Todos List</p>
+        <div><a href="#" onclick="addNew()">Add new</a></div>
+        <br />
+        <table>
+            <tbody id="todoList"></tbody>
+        </table>
+    </div>
+
+    <div id="displayEdit" class="authenticated"></div>
+
+
+
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script src="/Scripts/adal.js"></script>
+    <script id="todoTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td>
+                <input type="checkbox" onclick="deleteTodo(${TodoItemId})"></td>
+            <td>${Title}</td>
+            <td>
+                <a href="#" onclick="edit(${TodoItemId})">detail</a>
+            </td>
+        </tr>
+    </script>
+    <script id="todoTemplateEdit" type="text/x-jquery-tmpl">
+        <form id="editForm">
+            <input type="hidden" name="todoItemId" value="${TodoItemId}" />
+            <div>
+                <input type="text" placeholder="Add Title" name="title" value="${Title}" autofocus/>
+            </div>
+            <div>
+                <input type="text" placeholder="Add description" name="content" value="${Content}" />
+            </div>
+            <div>
+                {{if TodoItemId > 0}}
+				     <input type="checkbox" name="completed">Complete
+			    {{/if}}               
+            </div>
+            <br />
+            <br />
+            <input type="button" value="Save" onclick="saveTodo(${TodoItemId})" />
+        </form>
+    </script>
+    <script src="/App/Scripts/jqueryApp.js"></script>
+
+</body>
+</html>

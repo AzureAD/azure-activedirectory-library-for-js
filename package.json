@@ -8,7 +8,7 @@
   "licenses": [
     {
       "type": "Apache 2.0",
-      "url": "https://github.com/MSOpenTech/aal/raw/master/License.txt"
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
   "repository": {
@@ -17,11 +17,18 @@
   },
   "version": "0.0.1",
   "description": "Windows Azure Active Directory Client Library for js",
-  "keywords": [ "implicit", "js", "AAD", "adal", "oauth" ],
+  "keywords": [
+    "implicit",
+    "js",
+    "AAD",
+    "adal",
+    "oauth"
+  ],
   "main": "./lib/adal.js",
-  "engines": { "node": ">=0.8.0" },
-  "licenses": [ { "type": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0" } ],
-  "dependencies": { },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {},
   "devDependencies": {
     "jasmine-node": "~1.14.5",
     "jshint": "*",
@@ -37,10 +44,10 @@
     "grunt-contrib-watch": "~0.2.0",
     "grunt-karma": "^0.8.2",
     "atob": "~1.1.2",
-	"karma-chrome-launcher": "~0.1",
-    "karma": "~0.12",
-    "karma-jasmine": "~0.2.0",
-	"bower": "^1.3.3",
+    "karma-chrome-launcher": "~0.1.5",
+    "karma": "~0.12.24",
+    "karma-jasmine": "~0.1.5",
+    "bower": "^1.3.3",
     "grunt-jasmine-node": "~0.2.1"
   },
   "directories": {

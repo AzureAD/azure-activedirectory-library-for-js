@@ -20,11 +20,6 @@ module.exports = function (grunt) {
                 src: ['lib/*.js']
             }
         },
-        karma: {
-            unit: {
-                configFile: 'karma.conf.js'
-            }
-        },
         jasmine_node: {
             options: {
                 forceExit: true,
@@ -45,13 +40,11 @@ module.exports = function (grunt) {
 
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-jsdoc');
-    grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jasmine-node');
 
     // jasmine node directly js api 
     grunt.registerTask('default', ['jshint', 'jasmine_node']);
+     grunt.registerTask('doc', ['jsdoc']);
     
-    // browser tests for angular modules
-    grunt.registerTask('karma', ['karma']);
 };

@@ -124,8 +124,17 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 
 ** To run tests**
 npm install
+bower install
 npm test
+// angular tests
+karma start
 
-You can also run grunt default task to build documentation.
+** documentation **
 Install grunt and then call
-grunt
+grunt doc
+
+
+Karma as test runner:
+You need to install karma command line
+npm install -g karma
+npm install -g karma-cli

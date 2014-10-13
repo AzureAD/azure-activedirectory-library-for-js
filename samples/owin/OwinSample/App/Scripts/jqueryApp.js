@@ -38,8 +38,8 @@ $(document).ready(function () {
         adal.handleWindowCallback();
     }
 
-    var token = adal.getCachedToken(adal.config.loginResource);
-    if (token) {
+    var user = adal.getCachedUser();
+    if (user) {
         // received token
         $('.authenticated').show();
         $('.notauthenticated').hide();
@@ -49,7 +49,7 @@ $(document).ready(function () {
             refreshItems();
         });
     } else {
-        console.log('need to login');
+        console.log('Need to login');
     }
 });
 

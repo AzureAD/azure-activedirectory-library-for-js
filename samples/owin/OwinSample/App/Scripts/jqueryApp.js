@@ -68,6 +68,19 @@ function logout() {
     adal.logOut();
 }
 
+function renewTest() {
+    var user = adal.getCachedUser();
+    var targetResourceForEndpoint = adal.config.loginResource;
+
+    // clear flag for tests
+    adal._saveItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+    adal.acquireToken(targetResourceForEndpoint, function (err, token) {
+        if (token) {
+            console.log('Token is received:' + token);
+        }
+    });
+}
+
 function deleteTodo(id) {
     handleItemDelete(id);
 }

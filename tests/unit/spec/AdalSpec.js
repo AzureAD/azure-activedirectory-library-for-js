@@ -200,7 +200,12 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.STATE_RENEW)).toBe('33333333-3333-4333-b333-333333333333');
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.STATE_RENEW_RESOURCE)).toBe(RESOURCE1);
-        expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
+        // Wait for initial timeout load
+        waits(2000);
+        runs(function () {
+            expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
+        });
+        
     });
 
     it('check guid masking', function () {

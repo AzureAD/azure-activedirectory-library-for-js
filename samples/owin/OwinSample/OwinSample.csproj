@@ -192,10 +192,13 @@
   <ItemGroup>
     <Content Include="App\Scripts\homeController.js" />
     <Content Include="App\Scripts\jqueryApp.js" />
+    <Content Include="App\Scripts\contactController.js" />
+    <Content Include="App\Scripts\contactService.js" />
     <Content Include="App\Scripts\todoService.js" />
     <Content Include="App\Views\login.html" />
     <Content Include="App\Views\landingPage.html" />
     <Content Include="App\Views\todoDetail.html" />
+    <Content Include="App\Views\contact.html" />
     <Content Include="App\Views\todoList.html" />
     <Content Include="App\Views\todoNew.html" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -296,7 +299,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>47726</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:49724/</IISUrl>
+          <IISUrl>http://localhost:49726/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

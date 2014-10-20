@@ -27,8 +27,7 @@ $(document).ready(function () {
         // Config to specify endpoints and similar for your app
         tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1",
         clientId: "44d0ebf6-0eef-4186-89c2-7edce2fb3964",
-        instance: "https://login.windows-ppe.net/",
-        redirectUri: window.location
+        instance: "https://login.windows-ppe.net/"
     });
     $('.authenticated').hide();
     $('.notauthenticated').show();

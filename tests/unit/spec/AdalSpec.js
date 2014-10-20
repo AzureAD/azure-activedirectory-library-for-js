@@ -144,6 +144,15 @@ describe('Adal', function () {
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
 
+    it('sets loginprogress to true for login', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.redirectUri = 'contoso_site';
+        adal.login();
+        expect(adal.loginInProgress()).toBe(true);
+    });
+
     it('calls displaycall if given for login', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
 

@@ -23,7 +23,8 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 
     $routeProvider.when('/home', {
         controller: 'homeController',
-        templateUrl: '/App/Views/landingPage.html'
+        templateUrl: '/App/Views/landingPage.html',
+        requireADLogin: true
     }).
     when('/login', {
         controller: 'homeController',

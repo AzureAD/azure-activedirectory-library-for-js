@@ -26,7 +26,7 @@ $(document).ready(function () {
     adal = new AuthenticationContext({
         // Config to specify endpoints and similar for your app
         tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1",
-        clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e",
+        clientId: "44d0ebf6-0eef-4186-89c2-7edce2fb3964",
         instance: "https://login.windows-ppe.net/",
         redirectUri: window.location
     });

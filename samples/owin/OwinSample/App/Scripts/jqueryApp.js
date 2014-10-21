@@ -21,14 +21,13 @@
 var todos = [];
 var adal;
 var activeUser = null;
+var testResource = 'b6a68585-5287-45b2-ba82-383ba1f60932';
 $(document).ready(function () {
     adal = new AuthenticationContext({
         // Config to specify endpoints and similar for your app
         tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1",
-        clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e",
-        loginResource: "b6a68585-5287-45b2-ba82-383ba1f60932",
-        instance: "https://login.windows-ppe.net/",
-        redirectUri: window.location
+        clientId: "44d0ebf6-0eef-4186-89c2-7edce2fb3964",
+        instance: "https://login.windows-ppe.net/"
     });
     $('.authenticated').hide();
     $('.notauthenticated').show();
@@ -38,19 +37,19 @@ $(document).ready(function () {
         adal.handleWindowCallback();
     }
 
-    var user = adal.getCachedUser();
-    if (user) {
-        // received token
-        $('.authenticated').show();
-        $('.notauthenticated').hide();
-        adal.getUser(function (err, user) {
+    adal.getUser(function (err, user) {
+        if (user) {
             $('#welcomeText').text('Welcome ' + user.userName);
             activeUser = user;
+            $('.authenticated').show();
+            $('.notauthenticated').hide();
             refreshItems();
-        });
-    } else {
-        console.log('Need to login');
-    }
+        } else {
+            console.log('Need to login');
+            $('.authenticated').hide();
+            $('.notauthenticated').show();
+        }
+    });
 });
 
 $(document).ajaxStart(function () {
@@ -66,6 +65,30 @@ function login() {
 
 function logout() {
     adal.logOut();
+}
+
+function renewTest() {
+    var user = adal.getCachedUser();
+
+    // clear flag for tests
+    adal._saveItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+    adal.acquireToken(testResource, function (err, token) {
+        if (token) {
+            console.log('Token is received:' + token);
+        }
+    });
+}
+
+function renewIdTokenTest() {
+    var user = adal.getCachedUser();
+
+    // clear flag for tests
+    adal._saveItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+    adal._renewIdToken(function (err, token) {
+        if (token) {
+            console.log('Token is received:' + token);
+        }
+    });
 }
 
 function deleteTodo(id) {
@@ -138,7 +161,9 @@ function handleSuccessCommon(result) {
 function getAjaxConfig() {
     var conf = {
         beforeSend: function (xhr) {
-            var token = adal.getCachedToken(adal.config.loginResource);
+            // only sending for itself in this sample
+            // need to look up resource for this endpoint
+            var token = adal.getCachedToken(adal.config.clientId);
             if (token) {
                 xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             }
@@ -152,7 +177,7 @@ function getAjaxConfig() {
 
 function sendServerRequest(ajaxConfig) {
     // target different resources based on target url
-    var targetResourceForEndpoint = adal.config.loginResource;
+    var targetResourceForEndpoint = adal.config.clientId;
 
     // renew token if possible or redirect to login
     if (activeUser) {

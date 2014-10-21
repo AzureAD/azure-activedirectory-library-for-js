@@ -182,6 +182,18 @@ describe('Adal', function () {
         expect(token).toBe('access_token_in_cache' + RESOURCE1);
     });
 
+    it('returns error for acquireToken without resource', function () {
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
+        var err = '';
+        var token = '';
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        adal.acquireToken(null, callback);
+        expect(err).toBe('resource is required');
+    });
+
     it('returns err msg if token expired and renew failed before', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'renew has failed');
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;

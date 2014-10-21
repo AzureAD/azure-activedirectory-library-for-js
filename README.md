@@ -6,20 +6,19 @@ This library supports regular javascript usage and angular.js usage.
 1- Include reference to angular.js libraries and adal.js at your main app page.
 2- include reference to adal module
 ```js
-var app = angular.module('bull', ['ngRoute', 'AdalAngular']);
+var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 ```
 3- Configure the adal at config of your app
 ```js
 // endpoint to resource mapping(optional)
     var endpoints = {
-        "/api/Values": "b6a68585-5287-45b2-ba82-383ba1f60932",
+        "https://yourhost/api": "b6a68585-5287-45b2-ba82-383ba1f60932",
     };
 adalAuthenticationServiceProvider.init(
         {
             // Config to specify endpoints and similar for your app
             tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1",
             clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e",
-            loginResource: "b6a68585-5287-45b2-ba82-383ba1f60932",
             instance: "https://login.windows-ppe.net/",
             //localLoginUrl: "/login",  // optional
             //redirectUri : "your site", optional
@@ -120,6 +119,15 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 }]);
 
 
+```
+
+8- You have access to user data from userInfo at rootScope level. You can access all fields with userInfo.profile.
+
+9- Sending CORS requests in Angular
+
+```js
+        $http.defaults.useXDomain = true;
+        delete $http.defaults.headers.common['X-Requested-With'];
 ```
 
 ** To run tests**

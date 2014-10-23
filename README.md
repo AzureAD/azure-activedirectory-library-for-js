@@ -1,6 +1,32 @@
-azure-activedirectory-library-for-js
+Active Directory Authentication Library (ADAL) for JavaScript 
 ====================================
-This library supports regular javascript usage and angular.js usage. 
+
+Active Directory Authentication Library for JavaScript (ADAL JS) helps you to use Azure AD for handling authentication in your single page applications.
+This preview is optimized for working together with AngularJS.
+
+## The Library
+
+This is an early developer preview, released for the purpose of eliciting feedback.
+The current version is **0.0.1**.
+ 
+You have multiple ways of getting ADAL JS:
+
+Via CDN:
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://secure.aadcdn.microsoftonline-p.com/ests/0.0.1/js/adal.min.js"></script>
+
+
+Via Bower: 
+
+    $ bower install adal
+
+The source is [here](https://raw.githubusercontent.com/AzureAD/azure-activedirectory-library-for-js/dev/lib/adal.js?token=ACGxhMoqqbpA5-DApz4r-322ueaIyLBIks5UUotnwA%3D%3D).
+
+## Samples and Documentation 
+
+For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet). 
+Below you can find a quick reference.
 
 **Usage in angular**
 1- Include reference to angular.js libraries and adal.js at your main app page.

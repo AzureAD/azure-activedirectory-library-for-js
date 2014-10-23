@@ -16,6 +16,7 @@ node_modules
 /.c9revisions/
 doc/
 build/
+samples/
 
 #Visual Studio files
 *.[Oo]bj

@@ -23,18 +23,42 @@ Via Bower:
 
 The source is [here](https://raw.githubusercontent.com/AzureAD/azure-activedirectory-library-for-js/dev/lib/adal.js?token=ACGxhMoqqbpA5-DApz4r-322ueaIyLBIks5UUotnwA%3D%3D).
 
-## Samples and Documentation 
+## Samples, tests and documentation 
 
 For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet). 
-Below you can find a quick reference.
 
-**Usage in angular**
-1- Include reference to angular.js libraries and adal.js at your main app page.
-2- include reference to adal module
+**To run tests**
+
+    npm install
+    bower install
+    npm test
+    // angular tests
+    karma start
+
+Karma as test runner:
+You need to install the karma command line.
+
+    npm install -g karma
+    npm install -g karma-cli
+    
+
+**documentation generation**
+Install grunt; call
+
+    grunt doc
+
+
+
+**Quick usage guide**
+
+Below you can find a quick reference for the most common operations you need to perform to use adal js.
+
+1- Include references to angular.js libraries and adal.js in your main app page.
+2- include a reference to adal module
 ```js
 var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 ```
-3- Configure the adal at config of your app
+3- Initialize adal with the AAD app coordinates at app config time
 ```js
 // endpoint to resource mapping(optional)
     var endpoints = {
@@ -53,7 +77,7 @@ adalAuthenticationServiceProvider.init(
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );
 ```
-4- Define protected routes at config for the route definitions with keyword requireADLogin
+4- Define which routes you want to secure via adal - by adding `requireADLogin: true` to their definition
 ```js
 $routeProvider.
     when("/todoList", {
@@ -63,10 +87,10 @@ $routeProvider.
     });
 
 ```
-5- Your service code will remain unchanged since interceptor will add tokens for you this endpoint. When user clicks for todoList link, it will be redirected to login page.
+5- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call. 
 
-***Optioinal***
-6- You can also put login/logout buttons and show userinfo. Userinfo is available at rootContext as follows:
+***Optional***
+6- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile):
 ```html
 <!DOCTYPE html>
 <html>
@@ -106,7 +130,8 @@ $routeProvider.
 </body>
 </html>
 ```
-7- Controller can declare the login and logout methods similar to this:
+7- You have full control on how to trigger sign in, sign out and how to deal with errors:
+
 ```js
 'use strict';
 app.controller('homeController', ['$scope', '$location', 'adalAuthenticationService', function ($scope, $location, adalAuthenticationService) {
@@ -147,28 +172,3 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 
 ```
 
-8- You have access to user data from userInfo at rootScope level. You can access all fields with userInfo.profile.
-
-9- Sending CORS requests in Angular
-
-```js
-        $http.defaults.useXDomain = true;
-        delete $http.defaults.headers.common['X-Requested-With'];
-```
-
-** To run tests**
-npm install
-bower install
-npm test
-// angular tests
-karma start
-
-** documentation **
-Install grunt and then call
-grunt doc
-
-
-Karma as test runner:
-You need to install karma command line
-npm install -g karma
-npm install -g karma-cli

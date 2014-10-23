@@ -20,18 +20,6 @@ module.exports = function (grunt) {
                 src: ['lib/*.js']
             }
         },
-        uglify: {
-            options: {
-                banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-                    '<%= pkg.author.name %> - <%= pkg.author.url %> - ' +
-                  '<%= grunt.template.today("yyyy-mm-dd") %> */\n'
-            },
-            my_target: {
-                files: {
-                    'build/adal.min.js': ['lib/adal.js']
-                }
-            }
-        },
         jasmine_node: {
             options: {
                 forceExit: true,
@@ -54,7 +42,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jasmine-node');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    // uglify task is producing invalid js file
 
     // jasmine node directly js api 
     grunt.registerTask('default', ['jshint', 'jasmine_node']);

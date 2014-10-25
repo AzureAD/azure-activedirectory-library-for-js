@@ -14,7 +14,7 @@ You have multiple ways of getting ADAL JS:
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/ests/0.0.1/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/0.0.1/js/adal.min.js"></script>
 
 
 Via Bower: 

@@ -1,0 +1,32 @@
+{
+  "name": "adalAngular",
+  "version": "0.0.1",
+  "main": "./lib/adal.js",
+  "description": "Windows Azure Active Directory Client Library for js",
+  "licenses": [
+    {
+      "type": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "ignore": [
+    "coffee",
+    "coverage",
+    "js",
+    "node_modules",
+    "tests",
+    "templates",
+    "Gruntfile.js",
+    "package.json",
+    ".gitignore"
+  ],
+  "dependencies": {
+    "angular": "*"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.16",
+    "angular-route": "~1.2.26",
+    "jasmine": "2.0.0",
+    "angular-resource": "~1.2.26"
+  }
+}

@@ -21,7 +21,7 @@ Via Bower:
 
     $ bower install adal-angular
 
-The source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib).
+The source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal.js).
 
 ## Samples, tests and documentation 
 

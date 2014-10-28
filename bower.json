@@ -1,5 +1,5 @@
 {
-  "name": "adalAngular",
+  "name": "adal-angular",
   "version": "0.0.1",
   "homepage": "https://github.com/AzureAD/azure-activedirectory-library-for-js",
   "authors": [
@@ -31,6 +31,9 @@
     "tests"
   ],
   "dependencies": {
+    "angular": "*"
+  },
+  "devDependencies": {
     "angular-resource": "~1.2.26",
     "angular-mocks": "~1.2.16",
     "jasmine": "2.0.0",

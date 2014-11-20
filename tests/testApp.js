@@ -32,6 +32,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 
     var endpoints = {
         '/api/Todo/': 'resource1',
+	'/anotherApi/Item/': 'resource2'
     };
 
     adalAuthenticationServiceProvider.init(
@@ -48,7 +49,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 app.factory('ItemFactory', ['$http', function ($http) {
     var serviceFactory = {};
     var _getItem = function (id) {
-        return $http.get('/api/Item/' + id);
+        return $http.get('/anotherApi/Item/' + id);
     };
     serviceFactory.getItem = _getItem;
     return serviceFactory;

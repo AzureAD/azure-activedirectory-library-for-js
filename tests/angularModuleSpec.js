@@ -42,9 +42,14 @@ describe('TaskCtl', function () {
 
         adalServiceProvider.getCachedToken = function (resource) {
             console.log('Requesting token for resource:' + resource);
-            if (resource) {
+            if (resource === 'resource1') {
                 return 'Token3434';
             }
+
+            if (resource === 'resource2') {
+                return 'Token123';
+            }
+
 
             return '';
         };
@@ -69,9 +74,9 @@ describe('TaskCtl', function () {
     });
 
     it('does not sent tokens for other webapi calls', function () {
-        $httpBackend.expectGET('/api/Item/13', function (headers) {
+        $httpBackend.expectGET('/anotherApi/Item/13', function (headers) {
             console.log('headers test' + headers.Authorization);
-            return !headers.Authorization;
+            return headers.Authorization === 'Bearer Token123';
         }).respond(200, { id: 5, itemName: 'ItemWithoutAuth' });
         scope.itemCall();
         $httpBackend.flush();

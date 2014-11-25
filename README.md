@@ -7,7 +7,7 @@ This preview is optimized for working together with AngularJS.
 ## The Library
 
 This is an early developer preview, released for the purpose of eliciting feedback.
-The current version is **0.0.1**.
+The current version is **0.0.3**.
  
 You have multiple ways of getting ADAL JS:
 
@@ -16,6 +16,7 @@ Via CDN:
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://secure.aadcdn.microsoftonline-p.com/lib/0.0.1/js/adal.min.js"></script>
 
+CDN will be updated to latest version 0.0.3.
 
 Via Bower: 
 

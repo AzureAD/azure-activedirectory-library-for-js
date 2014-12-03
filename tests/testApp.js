@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------
 
 'use strict';
-
+// Test app
 var app = angular.module('TestApplication', ['ngResource', 'ngRoute', 'AdalAngular']);
 
 app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvider', function ($httpProvider, $routeProvider, adalAuthenticationServiceProvider) {

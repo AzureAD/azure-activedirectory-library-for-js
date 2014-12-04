@@ -6,7 +6,9 @@
     "MSOpentech"
   ],
   "description": "Azure Active Directory Client Library for js",
-  "main": "./lib/adal.js",
+  "main": ["./lib/adal.js",
+	"./lib/adal-angular.js"
+  ],
   "moduleType": [
     "node"
   ],

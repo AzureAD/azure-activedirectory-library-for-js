@@ -8,23 +8,24 @@ This preview is optimized for working together with AngularJS.
 ## The Library
 
 This is an early developer preview, released for the purpose of eliciting feedback.
-The current version is **0.0.3**.
+The current version is **0.0.4**.
  
 You have multiple ways of getting ADAL JS:
 
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/0.0.1/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/0.0.4/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/0.0.4/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 0.0.3.
+CDN will be updated to latest version 0.0.4.
 
 Via Bower: 
 
     $ bower install adal-angular
 
-The source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal.js).
-
+The adal.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal.js).
+The adal-angular.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal-angular.js).
 ## Samples, tests and documentation 
 
 For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet). 
@@ -55,7 +56,7 @@ Install grunt; call
 
 Below you can find a quick reference for the most common operations you need to perform to use adal js.
 
-1- Include references to angular.js libraries and adal.js in your main app page.
+1- Include references to angular.js libraries, adal.js, adal-angular.js in your main app page.
 2- include a reference to adal module
 ```js
 var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
@@ -124,6 +125,7 @@ $routeProvider.
     <script src="/Scripts/angular.min.js"></script>
     <script src="/Scripts/angular-route.min.js"></script>
     <script src="/Scripts/adal.js"></script>
+    <script src="/Scripts/adal-angular.js"></script>
     <script src="App/Scripts/app.js"></script>
     <script src="App/Scripts/homeController.js"></script>
     <script src="App/Scripts/todoDetailController.js"></script>

@@ -33,6 +33,7 @@ describe('Adal', function () {
             }
         },
         localStorage: {},
+        sessionStorage: {},
         atob: atobHelper
     };
     var mathMock = {
@@ -94,6 +95,7 @@ describe('Adal', function () {
         storageFake.setItem(STORAGE_TOKEN_KEYS, RESOURCE1 + '|');
 
         window.localStorage = storageFake;
+        window.sessionStorage = storageFake;
 
         // Init adal 
         adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);

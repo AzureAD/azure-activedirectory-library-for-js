@@ -69,12 +69,11 @@ var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 adalAuthenticationServiceProvider.init(
         {
             // Config to specify endpoints and similar for your app
-            tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1",
-            clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e",
-            instance: "https://login.windows-ppe.net/",
+            tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1", // Optional by default, it sends common
+            clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e", // Required
             //localLoginUrl: "/login",  // optional
             //redirectUri : "your site", optional
-            endpoints: endpoints  // optional
+            endpoints: endpoints  // If you need to send CORS api requests.
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );
@@ -172,5 +171,23 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 }]);
 
 
+```
+
+### Multi-Tenant
+
+By default, you have multi-tenant support. Adal will set tenant to 'common', if it is not specified in the config.
+
+### Cache Location
+Default storage location is sessionStorage. You can specify localStorage in the config as well.
+
+```js
+adalAuthenticationServiceProvider.init(
+        {
+            // Config to specify endpoints and similar for your app
+            clientId: 'cb68f72f...',
+            cacheLocation: 'localStorage' // optional cache location default is sessionStorage
+        },
+        $httpProvider   // pass http provider to inject request interceptor to attach tokens
+        );
 ```
 

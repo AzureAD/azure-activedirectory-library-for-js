@@ -1,3 +1,8 @@
+Version 0.0.5
+==========================
+Storage option for localStorage and sessionStorage.
+Simple js sample
+
 Version 0.0.4
 ==========================
 Split adal.js to adal.js and adal-angular.js

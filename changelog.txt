@@ -1,3 +1,9 @@
+Version 0.0.6
+==========================
+Fix to refresh token for external endpoints
+Ui router
+
+
 Version 0.0.5
 ==========================
 Storage option for localStorage and sessionStorage.

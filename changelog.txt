@@ -1,3 +1,7 @@
+Version 0.0.7
+==========================
+idtoken fix
+
 Version 0.0.6
 ==========================
 Fix to refresh token for external endpoints

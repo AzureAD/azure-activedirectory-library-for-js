@@ -215,6 +215,8 @@ describe('Adal', function () {
 
     it('attempts to renew if token expired and renew is allowed', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+        adal.config.redirectUri = 'contoso_site';
+        adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var err = '';
         var token = '';
@@ -229,8 +231,11 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
+        console.log('Waiting for initial timeout');
         waits(2000);
+
         runs(function () {
+            console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe('https://login.windows.net/' + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
         });

@@ -1,6 +1,6 @@
 {
   "name": "adal-angular",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "homepage": "https://github.com/AzureAD/azure-activedirectory-library-for-js",
   "authors": [
     "MSOpentech"

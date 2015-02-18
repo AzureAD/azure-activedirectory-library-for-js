@@ -3,13 +3,11 @@ Active Directory Authentication Library (ADAL) for JavaScript
 [![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=master)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)
 
 Active Directory Authentication Library for JavaScript (ADAL JS) helps you to use Azure AD for handling authentication in your single page applications.
-This preview is optimized for working together with AngularJS.
+This library is optimized for working together with AngularJS.
 
 ## The Library
 
-This is an early developer preview, released for the purpose of eliciting feedback.
-
-The current version is **1.0.0**.
+This is a GA released version. The current version is **1.0.0**.
  
 You have multiple ways of getting ADAL JS:
 
@@ -194,3 +192,5 @@ adalAuthenticationServiceProvider.init(
         );
 ```
 
+### Security
+Tokens are accessible from javascript since stored in HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should ask user to login again for important operations.

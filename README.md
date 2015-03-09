@@ -29,6 +29,8 @@ The adal-angular.js source is [here](https://github.com/AzureAD/azure-activedire
 
 For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet). 
 
+CORS API [sample ](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet).
+
 **To run tests**
 
     npm install

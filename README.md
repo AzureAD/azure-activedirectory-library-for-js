@@ -225,3 +225,6 @@ http://www.andrewconnell.com/blog/adal-js-cors-with-o365-apis-files-sharepoint
 Vittorio’s blog
 http://www.cloudidentity.com/blog/2015/02/19/introducing-adal-js-v1/
 http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-dive/
+
+### Trusted Site settings in IE
+If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority url for the login to the trusted sites as well.

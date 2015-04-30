@@ -1,4 +1,4 @@
-Active Directory Authentication Library (ADAL) for JavaScript 
+﻿Active Directory Authentication Library (ADAL) for JavaScript 
 ====================================
 [![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=master)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)
 
@@ -196,6 +196,8 @@ adalAuthenticationServiceProvider.init(
 
 ### Security
 Tokens are accessible from javascript since Adal.JS is using HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should ask user to login again for important operations on your app.
+You should protect your site for XSS. Please check the article here: https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
+
 
 ### CORS API usage and IE
 Adal will get access token for given CORS API endpoints in the config. Access token is requested using Iframe. Iframe needs to access the cookies for the same domain that you did the initial sign in. IE does not allow to access cookies in IFrame for localhost. Your url needs to be fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
@@ -220,11 +222,12 @@ app.factory('contactService', ['$http', function ($http) {
 ```
 
 You can read extended blogs for CORS API related to learn about Office365 usage.
-Andrew’s related to Cors and office365 usage
+Andrew's related to Cors and office365 usage
 http://www.andrewconnell.com/blog/adal-js-cors-with-o365-apis-files-sharepoint
-Vittorio’s blog
+Vittorio's blog
 http://www.cloudidentity.com/blog/2015/02/19/introducing-adal-js-v1/
 http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-dive/
 
 ### Trusted Site settings in IE
 If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority url for the login to the trusted sites as well.
+

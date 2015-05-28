@@ -1,3 +1,7 @@
+Version 1.0.2
+==========================
+Move the check for the boolean value isEndPoint in AdalAngular interceptor (issue #127)
+
 Version 0.0.7
 ==========================
 idtoken fix

@@ -1,3 +1,8 @@
+Version 1.0.3
+==========================
+Revert the change from prevous release "Move the check for the boolean value isEndPoint in AdalAngular interceptor (issue #127)"
+update minified version of adal and adal_angular. 
+
 Version 1.0.2
 ==========================
 Move the check for the boolean value isEndPoint in AdalAngular interceptor (issue #127)

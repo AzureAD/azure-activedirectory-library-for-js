@@ -99,7 +99,14 @@ describe('Adal', function () {
         window.sessionStorage = storageFake;
 
         // Init adal 
-        adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
+        global.window = window;
+        global.localStorage = storageFake;
+        global.sessionStorage = storageFake;
+        global.document = documentMock;
+        global.Math = mathMock;
+        global.angular = angularMock;
+
+        adal = new AdalModule.inject(conf);
         adal._user = null;
         adal._renewStates = [];
         adal._activeRenewals = {};

@@ -99,9 +99,17 @@ describe('Adal', function () {
         window.sessionStorage = storageFake;
 
         // Init adal 
-        adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
+        global.window = window;
+        global.localStorage = storageFake;
+        global.sessionStorage = storageFake;
+        global.document = documentMock;
+        global.Math = mathMock;
+        global.angular = angularMock;
+
+        adal = new AdalModule.inject(conf);
         adal._user = null;
         adal._renewStates = [];
+        adal._activeRenewals = {};
     });
      
     it('gets specific resource for defined endpoint mapping', function () {
@@ -241,6 +249,51 @@ describe('Adal', function () {
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
         });
+        
+    });
+    
+    //Necessary for integration with Angular when multiple http calls are queued.
+    it('allows multiple callers to be notified when the token is renewed', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+        adal.config.redirectUri = 'contoso_site';
+        adal.config.clientId = 'client';
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
+        var err = null;
+        var token = null;
+        var err2 = null;
+        var token2 = null;
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        var callback2 = function(valErr, valToken){
+            err2 = valErr;
+            token2 = valToken;
+        };
+        
+        adal._renewStates = [];
+        adal._user = { userName: 'test@testuser.com' };
+        adal.acquireToken(RESOURCE1, callback);
+        //Simulate second acquire i.e. second service call from Angular.
+        adal.acquireToken(RESOURCE1, callback2);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
+        expect(adal._renewStates.length).toBe(1);
+        // Wait for initial timeout load
+        console.log('Waiting for initial timeout');
+        waits(2000);
+ 
+        runs(function () {
+            console.log('Frame src:' + frameMock.src);
+            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+        });
+        
+        //Simulate callback from the frame.
+        //adal.callback(null, '33333333-3333-4333-b333-333333333333');
+        window.callBackMappedToRenewStates[adal.config.state](null, '33333333-3333-4333-b333-333333333333');
+        //Both callbacks should have been provided with the token.
+        expect(token).toBe('33333333-3333-4333-b333-333333333333', 'First callback should be called');
+        expect(token2).toBe('33333333-3333-4333-b333-333333333333', 'Second callback should be called');
         
     });
 

@@ -28,18 +28,22 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
         templateUrl: '/App/Views/todoList.html',
         requireADLogin: true
     }).
+    when('/todoList2', {
+       controller: 'todoListController',
+       templateUrl: '/App/Views/todoList.html',
+       requireADLogin: 'policy1'
+   }).
     otherwise({ redirectTo: '/home' });
 
     var endpoints = {
-        '/api/Todo/': 'resource1',
-	'/anotherApi/Item/': 'resource2'
+        '/api/Todo/': {scope: ['scope1', 'scope2'], policy: 'policy1'},
+	'/anotherApi/Item/': {scope: 'clientid123'}, 
     };
 
     adalAuthenticationServiceProvider.init(
         {
             tenant: 'tenantid123',
             clientId: 'clientid123',
-            loginResource: 'loginResource123',
             endpoints: endpoints  // optional
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
@@ -71,7 +75,6 @@ app.controller('WidgetCtl', function ($scope, WidgetFactory) {
 });
 
 app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', 'TaskFactory', 'ItemFactory', function ($scope, $location, adalAuthenticationService, TaskFactory, ItemFactory) {
-
     $scope.taskCall = function () {
         TaskFactory.getItem(5).success(function (data) {
             $scope.task = data;

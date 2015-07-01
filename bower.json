@@ -33,7 +33,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "*"
+    "angular": "~1.2.16"
   },
   "devDependencies": {
     "angular-resource": "~1.2.26",

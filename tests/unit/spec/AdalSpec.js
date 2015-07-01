@@ -54,14 +54,11 @@ describe('Adal', function () {
         }
     };
     var angularMock = {};
-    var conf = { loginResource: 'default resource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+    var conf = {tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e'};
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
-    var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
-    var STORAGE_EXPIRATION_KEY = STORAGE_PREFIX + '.expiration.key';
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + '.token.keys';
-    var RESOURCE1 = 'token.resource1';
-    var SCOPE = ['token.scope1'];
+    var SCOPE1 = ['token.scope1'];
     var SECONDS_TO_EXPIRE = 3600;
     var DEFAULT_INSTANCE = "https://login.microsoftonline.com/";
     var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
@@ -73,7 +70,7 @@ describe('Adal', function () {
             },
             setItem: function (key, value) {
                 if (typeof value != 'undefined') {
-                    store[key] = value + '';
+                    store[key] = value;
                 }
             },
             clear: function () {
@@ -86,50 +83,62 @@ describe('Adal', function () {
     }();
 
     beforeEach(function () {
-
         // one item in cache
         storageFake.clear();
-        storageFake.setItem(STORAGE_ACCESS_TOKEN_KEY + RESOURCE1, 'access_token_in_cache' + RESOURCE1);
+        var storageKey = { 'authority': DEFAULT_INSTANCE, 'client_id': conf.clientId, 'policy': 'testpolicy' };
+        var entryKey = JSON.stringify(storageKey);
         var secondsNow = mathMock.round(0);
-        storageFake.setItem(STORAGE_EXPIRATION_KEY + RESOURCE1, secondsNow + SECONDS_TO_EXPIRE); // seconds to expire
+        var entryValue = JSON.stringify({'token': 'access token in cache', 'expire': secondsNow + SECONDS_TO_EXPIRE, 'scope': ['testscope']});
+        storageFake.setItem(entryKey, entryValue);
 
         // add key
-        storageFake.setItem(STORAGE_TOKEN_KEYS, RESOURCE1 + '|');
-
-        window.localStorage = storageFake;
-        window.sessionStorage = storageFake;
+        storageFake.setItem(STORAGE_TOKEN_KEYS, JSON.stringify([entryKey]));
 
         // Init adal 
+        window.localStorage = storageFake;
+        window.sessionStorage = storageFake;
+        
+        // Init adal 
         adal = new AdalModule.inject(window, storageFake, documentMock, mathMock, angularMock, conf);
+
         adal._user = null;
         adal._renewStates = [];
+        adal.config.clientId = conf.clientId;
+        adal.config.tenant = conf.tenant;
+        adal.config.instance = DEFAULT_INSTANCE;
+       
+        adal.config.scope = [];
     });
      
-    it('gets specific resource for defined endpoint mapping', function () {
-        adal.config.endpoints = { 'a': 'resource for a' };
-        expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
-        expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
+    it ('gets specific scope and policy for defined enpoint mapping', function () { 
+        adal.config.endpoints = {'a' : {'scope' : ['scope1', 'scope2'], 'policy': 'policy1'}};
+
+        expect(adal.getScopesForEndpoint('a')).toEqual(['scope1', 'scope2']);
+        expect(adal.getPolicyForEndpoint('a')).toBe('policy1');
     });
 
-    it('gets default resource for empty endpoint mapping', function () {
+    it ('gets default scope and policy for empty endpoint mapping', function () { 
         adal.config.endpoints = null;
-        expect(adal.getResourceForEndpoint('a')).toBe('default resource');
-        expect(adal.getResourceForEndpoint('b')).toBe('default resource');
+        expect(adal.getScopesForEndpoint('a')).toEqual([adal.config.clientId]);
+        expect(adal.getPolicyForEndpoint('a')).toBe('');
+        
+        expect(adal.getScopesForEndpoint('b')).toEqual([adal.config.clientId]);
+        expect(adal.getPolicyForEndpoint('b')).toBe(''); 
     });
-
-    it('sets default resource', function () {
-        expect(adal.config.resource).toBe('default resource');
+    
+    it('sets default scope', function () { 
+        expect(adal.config.scope).toEqual([]); 
     });
 
     it('says token expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        expect(adal.getCachedToken(RESOURCE1)).toEqual('access_token_in_cache' + RESOURCE1);
+        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe('access token in cache');
 
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE;
-        expect(adal.getCachedToken(RESOURCE1)).toBe(null);
+        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe(null);
 
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 1;
-        expect(adal.getCachedToken(RESOURCE1)).toBe(null);
+        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe(null);
     });
 
     it('gets cache username', function () {
@@ -145,8 +154,8 @@ describe('Adal', function () {
         spyOn(adal, 'promptUser');
         console.log('instance:' + adal.instance);
         adal.login();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
-            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&scope=openid&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
+            + '&slice=testslice&msaproxy=true&api-version=1.0'+ '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
 
@@ -171,7 +180,8 @@ describe('Adal', function () {
         adal.config.displayCall = displayCallback;
         spyOn(adal.config, 'displayCall');
         adal.login();
-        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
+        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&scope=openid&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
+            + '&slice=testslice&msaproxy=true&api-version=1.0'
             + '&client-request-id=33333333-3333-4333-b333-333333333333'
             + adal._addClientId()
             + '&nonce=33333333-3333-4333-b333-333333333333' 
@@ -187,20 +197,8 @@ describe('Adal', function () {
             err = valErr;
             token = valToken;
         };
-        adal.acquireToken(RESOURCE1, callback);
-        expect(token).toBe('access_token_in_cache' + RESOURCE1);
-    });
-
-    it('returns error for acquireToken without resource', function () {
-        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
-            token = valToken;
-        };
-        adal.acquireToken(null, callback);
-        expect(err).toBe('resource is required');
+        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
+        expect(token).toBe('access token in cache');
     });
 
     it('returns err msg if token expired and renew failed before', function () {
@@ -212,7 +210,7 @@ describe('Adal', function () {
             err = valErr;
             token = valToken;
         };
-        adal.acquireToken(RESOURCE1, callback);
+        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
         expect(err).toBe('renew has failed');
     });
 
@@ -221,6 +219,7 @@ describe('Adal', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
+
         var err = '';
         var token = '';
         var callback = function (valErr, valToken) {
@@ -228,8 +227,9 @@ describe('Adal', function () {
             token = valToken;
         };
         adal._renewStates = [];
+        window.callBackMappedToRenewStates = {};
         adal._user = { userName: 'test@testuser.com' };
-        adal.acquireToken(RESOURCE1, callback);
+        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
         expect(adal.callback).toBe(callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
@@ -239,8 +239,8 @@ describe('Adal', function () {
 
         runs(function () {
             console.log('Frame src:' + frameMock.src);
-            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=token&client_id=client&scope=' + 'testscope' + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctestscope'
+                + '&slice=testslice&msaproxy=true&api-version=1.0' + '&client-request-id=33333333-3333-4333-b333-333333333333' + '&p=testpolicy' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
         });
         
     });
@@ -287,11 +287,15 @@ describe('Adal', function () {
 
     it('clears cache', function () {
         // Keys are stored for each resource to map tokens for resource
-        storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, 'key1|key2|' + RESOURCE1 + '|');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key1', 'value1');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key2', 'value2');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
-        storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
+        storageFake.clear();
+        var key1 = JSON.stringify({'authority': 'authoritytest1', 'client_id': 'client_id_test1'});
+        var value1 = JSON.stringify({'token': 'token1', 'expire': 'expiretime1'});
+        storageFake.setItem(key1, value1);
+        var key2 = JSON.stringify({'authority': 'authoritytest2', 'client_id': 'client_id_test2'});
+        var value2 = JSON.stringify({'token': 'token2', 'expire': 'expiretime2'});
+        storageFake.setItem(key2, value2);
+        var keys = [key1, key2];
+        storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, JSON.stringify(keys));
         storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'failed renew');
         storageFake.setItem(adal.CONSTANTS.STORAGE.SESSION_STATE, 'session_state');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, 'state login');
@@ -303,30 +307,60 @@ describe('Adal', function () {
         adal.clearCache();
         var store = storageFake.storeVerify();
         for (var prop in store) {
-            expect((store[prop] === '' || store[prop] == 0 || !store[prop])).toBe(true);
+            expect((store[prop] === JSON.stringify({}) || store[prop] === JSON.stringify([]) || store[prop] == 0 || !store[prop])).toBe(true);
         }
     });
 
-    it('clears cache for a resource', function () {
+    it('clears cache for specified policy and scope', function () {
         // Keys are stored for each resource to map tokens for resource
-        storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, 'key1|' + RESOURCE1 + '|');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key1', 'value1');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'key1', 3);
+        storageFake.clear();
+        adal.instance = 'authoritytest1';
+        adal.config.clientId = 'client_id_test1';
+        adal.config.scope = ['scope1'];
+        
+        var key1 = JSON.stringify({ 'client_id': 'client_id_test1', 'authority': 'authoritytest1', });
+        var value1 = JSON.stringify({ 'token': 'token1', 'expire': 'expiretime1', 'scope': ['scope1']});
+        storageFake.setItem(key1, value1);
+        
+        var key2 = JSON.stringify({ 'adal.access.token.key': 'client_id_test2', 'policy': 'policy1'});
+        var value2 = JSON.stringify({ 'token': 'token2', 'expire': 'expiretime2'});
+        storageFake.setItem(key2, value2);
+
+        var key3 = JSON.stringify({'client_id': 'client_id_test3', 'authority': 'authoritytest1', 'policy': 'policy3'});
+        var value3 = JSON.stringify({'token': 'token3', 'expire': 'expiretime3', 'scope': ['scope3']});
+        
+        var keys = [key1, key2];
+        storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, JSON.stringify(keys));
+
+        storageFake.setItem(JSON.stringify(key1), JSON.stringify(value1));
+        storageFake.setItem(JSON.stringify(key2), JSON.stringify(value2));
+
         storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'failed renew');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, 'state renew');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_IDTOKEN, 'state idtoken');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR, 'error');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION, 'error description');
-        adal.clearCacheForResource(RESOURCE1);
+        
+        adal.clearCacheForStoredEntry(['scope1']);
         var store = storageFake.storeVerify();
         for (var prop in store) {
-            if (prop == adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + RESOURCE1 ||
-               prop == adal.CONSTANTS.STORAGE.EXPIRATION_KEY + RESOURCE1) {
-                expect((store[prop] === '' || store[prop] == 0 || !store[prop])).toBe(true);
+            if (prop === key1) {
+                expect((store[prop] === '{}' || store[prop] == 0 || !store[prop])).toBe(true);
             }
         }
-        var item = adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key1';
-        expect((store[item] === '' || store[item] == 0 || !store[item])).toBe(false);
+        expect((store[key2] === '{}' || store[key2] == 0 || !store[key2])).toBe(false);
+        expect((store[key3] === '{}' || store[key2] == 0 || !store[key2])).toBe(false);
+
+        adal.config.clientId = 'client_id_test2';
+        adal.clearCacheForStoredEntry(adal.config.clientId, 'policy1');
+        store = storageFake.storeVerify();
+        expect(store[key2] === '{}').toBe(true);
+        expect((store[key3] === '{}' || store[key2] == 0 || !store[key2])).toBe(false);
+
+        adal.config.clientId = 'client_id_test3';
+        adal.clearCacheForStoredEntry(['scope3'], 'policy3');
+        store = storageFake.storeVerify();
+        expect(store[key3] === '{}').toBe(true);
     });
 
     it('clears cache before logout', function () {
@@ -364,7 +398,6 @@ describe('Adal', function () {
     it('gets user from cache', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
         adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
-        adal.config.loginResource = RESOURCE1;
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         var err = '';
         var user = {};
@@ -374,7 +407,7 @@ describe('Adal', function () {
         };
         spyOn(adal, 'getCachedToken').andCallThrough();
         adal.getUser(callback);
-        expect(adal.getCachedToken).not.toHaveBeenCalledWith(RESOURCE1);
+        expect(adal.getCachedToken).not.toHaveBeenCalledWith(SCOPE1);
         expect(user.userName).toBe('user@oauthimplicit.ccsctp.net');
     });
 
@@ -435,6 +468,8 @@ describe('Adal', function () {
     });
 
     it('saves token if state matches', function () {
+        storageFake.clear();
+        adal.instance = DEFAULT_INSTANCE;
         var requestInfo = {
             valid: true,
             parameters: { 'access_token': 'token123', 'state': '123' },
@@ -442,13 +477,16 @@ describe('Adal', function () {
             stateResponse: '123',
             requestType: adal.REQUEST_TYPE.LOGIN
         };
-        adal.config.loginResource = 'loginResource1';
+
         adal.saveTokenFromHash(requestInfo);
 
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'loginResource1')).toBe('token123');
+        var key = JSON.stringify({'client_id': adal.config.clientId, 'authority': DEFAULT_INSTANCE});
+        var value = JSON.stringify({'token': 'token123'});
+        expect(storageFake.getItem(key)).toBe(value);
     });
 
-    it('saves expiry if state matches', function () {
+    it('saves expiry and token if state matches', function () {
+        adal.instance = DEFAULT_INSTANCE;
         var requestInfo = {
             valid: true,
             parameters: { 'access_token': 'token123', 'state': '123', 'expires_in': 3589 },
@@ -456,9 +494,12 @@ describe('Adal', function () {
             stateResponse: '123',
             requestType: adal.REQUEST_TYPE.LOGIN
         };
-        adal.config.loginResource = 'loginResource1';
         adal.saveTokenFromHash(requestInfo);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589 + '');
+
+        var key = JSON.stringify({ 'client_id': adal.config.clientId, 'authority': DEFAULT_INSTANCE });
+        var value = JSON.stringify({ 'token': 'token123', 'expire': mathMock.round(1) + 3589});
+
+        expect(storageFake.getItem(key)).toBe(value);
     });
 
     it('saves username after extracting idtoken', function () {
@@ -499,7 +540,6 @@ describe('Adal', function () {
         expect(adal.getCachedUser()).toBe(null);
     });
 
-
     it('saves null for username if idtoken is invalid', function () {
         var requestInfo = {
             valid: true,
@@ -511,7 +551,6 @@ describe('Adal', function () {
             stateResponse: '123',
             requestType: adal.REQUEST_TYPE.ID_TOKEN
         };
-        adal.config.loginResource = 'loginResource1';
         adal.saveTokenFromHash(requestInfo);
 
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBeUndefined();
@@ -528,7 +567,6 @@ describe('Adal', function () {
             stateResponse: '123',
             requestType: adal.REQUEST_TYPE.ID_TOKEN
         };
-        adal.config.loginResource = 'loginResource1';
         adal.saveTokenFromHash(requestInfo);
 
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBeUndefined();

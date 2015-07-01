@@ -20,36 +20,46 @@
 /* global it */
 /* global describe */
 
-'use strict';
+'use strict'
  
 describe('TaskCtl', function () {
-    var scope, $httpBackend, adalServiceProvider, rootScope, controller;
+    var scope, $httpBackend, adalServiceProvider, rootScope, controller, $location, $route;
 
     //mock Application to allow us to inject our own dependencies
     beforeEach(angular.mock.module('TestApplication'));
 
     //mock the controller for the same reason and include $rootScope and $controller
-    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$httpBackend_) {
+    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$httpBackend_, _$location_, _$route_) {
         adalServiceProvider = _adalAuthenticationService_;
         rootScope = _$rootScope_;
         controller = _$controller_;
         $httpBackend = _$httpBackend_;
+        $location = _$location_;
+        $route = _$route_;
          
         //create an empty scope
         scope = rootScope.$new();
         adalServiceProvider.userInfo = { userName: 'UserVerify', isAuthenticated: true };
-       
 
-        adalServiceProvider.getCachedToken = function (resource) {
-            console.log('Requesting token for resource:' + resource);
-            if (resource === 'resource1') {
-                return 'Token3434';
+        adalServiceProvider.getCachedToken = function (scopes, policy) {
+            console.log('Requesting token for scope:' + scopes);
+            if (scopes === adalServiceProvider.config.clientId) {
+                if (policy === 'policy1') {
+                    return 'Token3434';
+                }
+                else { 
+                    return 'Token2323';
+                }
             }
 
-            if (resource === 'resource2') {
-                return 'Token123';
+            if (scopes.toString() === ['scope1', 'scope2'].toString()) {
+                if (policy === 'policy1') {
+                    return 'Token123';
+                }
+                else { 
+                    return 'Token345';
+                }
             }
-
 
             return '';
         };
@@ -64,7 +74,7 @@ describe('TaskCtl', function () {
 
     it('injects tokens for webapi call for given endpoint', function () {
         $httpBackend.expectGET('/api/Todo/5', function (headers) {
-            return headers.Authorization === 'Bearer Token3434';
+            return headers.Authorization === 'Bearer Token123';
         }).respond(200, { id: 5, name: 'TODOItem1' });
         scope.taskCall();
         $httpBackend.flush();
@@ -76,7 +86,7 @@ describe('TaskCtl', function () {
     it('does not sent tokens for other webapi calls', function () {
         $httpBackend.expectGET('/anotherApi/Item/13', function (headers) {
             console.log('headers test' + headers.Authorization);
-            return headers.Authorization === 'Bearer Token123';
+            return headers.Authorization === 'Bearer Token2323';
         }).respond(200, { id: 5, itemName: 'ItemWithoutAuth' });
         scope.itemCall();
         $httpBackend.flush();
@@ -84,5 +94,4 @@ describe('TaskCtl', function () {
         var task = scope.item;
         expect(task.itemName).toBe('ItemWithoutAuth');
     });
-
 });

@@ -207,6 +207,15 @@ describe('Adal', function () {
         expect(token).toBe('access token in cache');
     });
     
+    it('calls acquiretoken with invalid scopes', function () {
+        expect(function () { adal.acquireTokenSilent('scope', 'testpolicy'); }).toThrow(new Error('API does not accept non-array scopes'));
+        expect(function () { adal.acquireTokenSilent(1, 'testpolicy'); }).toThrow(new Error('API does not accept non-array scopes'));
+        
+        expect(function () { adal.acquireTokenSilent(['openid'], 'testpolicy'); }).toThrow(new Error('API does not accept openid as a user-provided scope'));
+        expect(function () { adal.acquireTokenSilent(['offline_access'], 'testpolicy'); }).toThrow(new Error('API does not accept offline_access as a user-provided scope'));
+        expect(function () { adal.acquireTokenSilent([adal.config.clientId, 'scope'], 'testpolicy'); }).toThrow(new Error('Client Id can only be provided as a single scope'));
+    });
+    
     it('returns err msg if token expired and renew failed before', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'renew has failed');
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;

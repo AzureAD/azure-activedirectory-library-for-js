@@ -58,11 +58,22 @@ Install grunt; call
 Below you can find a quick reference for the most common operations you need to perform to use adal js.
 
 1- Include references to angular.js libraries, adal.js, adal-angular.js in your main app page.
+
 2- include a reference to adal module
 ```js
 var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 ```
-3- Initialize adal with the AAD app coordinates at app config time
+3- ***When HTML5 mode is configured***, ensure the $locationProvider hashPrefix is set
+```js
+	// using '!' as the hashPrefix but can be a character of your choosing
+	app.config(['$locationProvider', function($locationProvider) {
+		$locationProvider.html5Mode(true).hashPrefix('!');
+	}]);
+```
+
+Without the hashPrefix set, the AAD login will loop indefinitely as the callback URL from AAD (in the form of, {yourBaseUrl}/#{AADTokenAndState}) will be rewritten to remove the '#' causing the token parsing to fail and login sequence to occur again.
+
+4- Initialize adal with the AAD app coordinates at app config time
 ```js
 // endpoint to resource mapping(optional)
     var endpoints = {
@@ -80,7 +91,7 @@ adalAuthenticationServiceProvider.init(
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );
 ```
-4- Define which routes you want to secure via adal - by adding `requireADLogin: true` to their definition
+5- Define which routes you want to secure via adal - by adding `requireADLogin: true` to their definition
 ```js
 $routeProvider.
     when("/todoList", {
@@ -90,10 +101,10 @@ $routeProvider.
     });
 
 ```
-5- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call. 
+6- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call. 
 
 ***Optional***
-6- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile):
+7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile):
 ```html
 <!DOCTYPE html>
 <html>

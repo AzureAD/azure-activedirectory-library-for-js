@@ -88,3 +88,6 @@ bower_components
 
 #copied adal
 samples/owin/OwinSample/Scripts/adal.js
+
+#webstorm
+.idea

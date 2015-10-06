@@ -61,7 +61,8 @@ describe('Adal', function () {
     var SCOPE1 = ['token.scope1'];
     var SECONDS_TO_EXPIRE = 3600;
     var DEFAULT_INSTANCE = "https://login.microsoftonline.com/";
-    var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
+    //var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
+    var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vMDI4N2Y5NjMtMmQ3Mi00MzYzLTllM2EtNTcwNWM1YjBmMDMxL3YyLjAvIiwiaWF0IjpudWxsLCJleHAiOm51bGwsImF1ZCI6ImU5YTVhOGI2LThhZjctNDcxOS05ODIxLTBkZWVmMjU1ZjY4ZSIsInN1YiI6InRSUXNQZmZOQVRFMEowbHN3bzNUVmVsUm1fS3RfREpTWjNHTHdqRWM0bTgiLCJ2ZXIiOiIyLjAiLCJ0aWQiOiIwMjg3Zjk2My0yZDcyLTQzNjMtOWUzYS01NzA1YzViMGYwMzEiLCJvaWQiOiIwNjI5YTFmNi0wOGE5LTQ0NWUtODFkZC0wNDY1ODU1ZDViNmIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsIm5hbWUiOiJVc2VyIEEiLCJub25jZSI6ImVkNTMwMTIyLTk1ZDYtNDk1Yy05NjA4LWM0Njk2NDgyNTBhYiJ9.hdi-0RR2v9g3GXrqbJa3p2c3F3z6nM04iISd664_k-Y';
     var storageFake = function () {
         var store = {};
         return {
@@ -69,7 +70,7 @@ describe('Adal', function () {
                 return store[key];
             },
             setItem: function (key, value) {
-                if (typeof value != 'undefined') {
+                if (typeof value !== 'undefined') {
                     store[key] = value;
                 }
             },
@@ -161,7 +162,7 @@ describe('Adal', function () {
         console.log('instance:' + adal.instance);
         adal.login();
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&scope=openid&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
-            + '&slice=testslice&msaproxy=true&api-version=1.0' + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
     
@@ -186,8 +187,7 @@ describe('Adal', function () {
         adal.config.displayCall = displayCallback;
         spyOn(adal.config, 'displayCall');
         adal.login();
-        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&scope=openid&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
-            + '&slice=testslice&msaproxy=true&api-version=1.0' 
+        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&scope=openid&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
             + '&client-request-id=33333333-3333-4333-b333-333333333333' 
             + adal._addClientId() 
             + '&nonce=33333333-3333-4333-b333-333333333333' 
@@ -243,7 +243,7 @@ describe('Adal', function () {
         };
         adal._renewStates = [];
         window.callBackMappedToRenewStates = {};
-        adal._user = { userName: 'test@testuser.com' };
+        adal._user = { userName: 'test@testuser.com', domainHint: 'organizations'};
         adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
         expect(adal.callback).toBe(callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
@@ -255,7 +255,7 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=token&client_id=client&scope=' + 'testscope' + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctestscope' 
-                + '&slice=testslice&msaproxy=true&api-version=1.0' + '&client-request-id=33333333-3333-4333-b333-333333333333' + '&p=testpolicy' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + '&p=testpolicy' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=organizations&nonce=33333333-3333-4333-b333-333333333333');
         });
         
     });
@@ -521,7 +521,7 @@ describe('Adal', function () {
         var requestInfo = {
             valid: true,
             parameters: {
-                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk2MDkwMiwibmJmIjoxNDExOTYwOTAyLCJleHAiOjE0MTE5NjQ4MDIsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiIxOWU2N2IyNC1jZDk5LTQ1YjYtYTU4OC04NDBlM2Y4ZjJhNzAiLCJwd2RfZXhwIjoiNTc3ODAwOCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.GzbTwMXhjs4uJFogd1B46C_gKX6uZ4BfgJIpzFS-n-HRXEWeKdZWboRC_-C4UnEy6G9kR6vNFq7zi3DY1P8uf1lUavdOFUE27xNY1McN1Vjm6HKxKNYOLU549-wIb6SSfGVycdyskdJfplf5VRasMGclwHlY0l9bBCTaPunjhfcg-mQmGKND-aO0B54EGhdGs740NiLMCh6kNXbp1WAv7V6Yn408qZEIsOQoPO0dW-wO54DTqpbLtqiwae0pk0hDxXWczaUPxR_wcz0f3TgF42iTp-j5bXTf2GOP1VPZtN9PtdjcjDIfZ6ihAVZCEDB_Y9czHv7et0IvB1bzRWP6bQ',
+                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vMDI4N2Y5NjMtMmQ3Mi00MzYzLTllM2EtNTcwNWM1YjBmMDMxL3YyLjAvIiwiaWF0IjpudWxsLCJleHAiOm51bGwsImF1ZCI6ImU5YTVhOGI2LThhZjctNDcxOS05ODIxLTBkZWVmMjU1ZjY4ZSIsInN1YiI6InRSUXNQZmZOQVRFMEowbHN3bzNUVmVsUm1fS3RfREpTWjNHTHdqRWM0bTgiLCJ2ZXIiOiIyLjAiLCJ0aWQiOiIwMjg3Zjk2My0yZDcyLTQzNjMtOWUzYS01NzA1YzViMGYwMzEiLCJvaWQiOiIwNjI5YTFmNi0wOGE5LTQ0NWUtODFkZC0wNDY1ODU1ZDViNmIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsIm5hbWUiOiJVc2VyIEEiLCJub25jZSI6IjE5ZTY3YjI0LWNkOTktNDViNi1hNTg4LTg0MGUzZjhmMmE3MCJ9.Akh8gpoSl5LEW1VXIe_zmhAehnesPogMDcMKdVUORtA',
                 'state': '123'
             },
             stateMatch: true,
@@ -533,8 +533,8 @@ describe('Adal', function () {
         adal._user = null;
         adal.saveTokenFromHash(requestInfo);
         var cachedUser = adal.getCachedUser();
+        // don't need to compare for upn, upn will not be returned for converged endpoint
         expect(cachedUser.userName).toBe('user@oauthimplicit.ccsctp.net');
-        expect(cachedUser.profile.upn).toBe('user@oauthimplicit.ccsctp.net');
         console.log('test extract idtoken done');
     });
     

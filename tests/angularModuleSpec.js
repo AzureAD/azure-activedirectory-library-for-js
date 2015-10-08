@@ -41,24 +41,14 @@ describe('TaskCtl', function () {
         scope = rootScope.$new();
         adalServiceProvider.userInfo = { userName: 'UserVerify', isAuthenticated: true };
         
-        adalServiceProvider.getCachedToken = function (scopes, policy) {
+        adalServiceProvider.getCachedToken = function (scopes) {
             console.log('Requesting token for scope:' + scopes);
             if (scopes === adalServiceProvider.config.clientId) {
-                if (policy === 'policy1') {
-                    return 'Token3434';
-                }
-                else {
-                    return 'Token2323';
-                }
+                return 'Token2323';
             }
             
             if (scopes.toString() === ['scope1', 'scope2'].toString()) {
-                if (policy === 'policy1') {
-                    return 'Token123';
-                }
-                else {
-                    return 'Token345';
-                }
+                return 'Token123';
             }
             
             return '';

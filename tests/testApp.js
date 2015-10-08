@@ -31,12 +31,12 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
     when('/todoList2', {
        controller: 'todoListController',
        templateUrl: '/App/Views/todoList.html',
-       requireADLogin: 'policy1'
+       requireADLogin: true
    }).
     otherwise({ redirectTo: '/home' });
 
     var endpoints = {
-        '/api/Todo/': {scope: ['scope1', 'scope2'], policy: 'policy1'},
+        '/api/Todo/': {scope: ['scope1', 'scope2']},
 	'/anotherApi/Item/': {scope: 'clientid123'}, 
     };
 

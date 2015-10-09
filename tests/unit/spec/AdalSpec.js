@@ -586,6 +586,26 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.USERNAME)).toBeUndefined();
     });
 
+    it ('test decode with no padding', function () {
+        expect(adal._decode('YW55IGNhcm5hbCBwbGVhc3Vy')).toBe('any carnal pleasur');
+    });
+
+    it ('test decode with one = padding', function () {
+        expect(adal._decode('YW55IGNhcm5hbCBwbGVhc3U=')).toBe('any carnal pleasu');        
+    });
+
+    it ('test decode with two == padding', function () {
+        expect(adal._decode('YW55IGNhcm5hbCBwbGVhcw==')).toBe('any carnal pleas');        
+    })
+
+    it ('test decode throw error', function () {
+        try{
+           adal._decode('YW55I');
+        } catch(e) {
+            expect(e.message).toBe('The token to be decoded is not correctly encoded.');
+        }
+    });
+
     // TODO angular intercepptor
    
     // TODO angular authenticaitonService

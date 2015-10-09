@@ -32,7 +32,8 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 
     var endpoints = {
         '/api/Todo/': 'resource1',
-	'/anotherApi/Item/': 'resource2'
+	    '/anotherApi/Item/': 'resource2', 
+        'https://testapi.com/' : 'resource1'
     };
 
     adalAuthenticationServiceProvider.init(
@@ -40,6 +41,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
             tenant: 'tenantid123',
             clientId: 'clientid123',
             loginResource: 'loginResource123',
+            redirectUri: 'https://myapp.com/',
             endpoints: endpoints  // optional
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
@@ -51,6 +53,7 @@ app.factory('ItemFactory', ['$http', function ($http) {
     var _getItem = function (id) {
         return $http.get('/anotherApi/Item/' + id);
     };
+
     serviceFactory.getItem = _getItem;
     return serviceFactory;
 }]);
@@ -60,6 +63,21 @@ app.factory('TaskFactory', ['$http', function ($http) {
     var _getItem = function (id) {
         return $http.get('/api/Todo/' + id);
     };
+
+    var _getItem2 = function (url) {
+        return $http.get(url);
+    };
+    serviceFactory.getItem = _getItem;
+    serviceFactory.getItem2 = _getItem2;
+    return serviceFactory;
+}]);
+
+app.factory('TaskFactory2', ['$http', function ($http) {
+    var serviceFactory = {};
+    var _getItem = function () {
+        return $http.get('https://test.com');
+    };
+
     serviceFactory.getItem = _getItem;
     return serviceFactory;
 }]);
@@ -90,5 +108,49 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
         });
     }
 
+    $scope.taskCall2 = function () {
+        TaskFactory.getItem2('https://test.com/').success(function (data) {
+            $scope.task = data;
+        }).error(function (err) {
+            $scope.error = err;
+            $scope.loaingMsg = "";
+        });    
+    }
+    
+    $scope.taskCall3 = function () {
+        TaskFactory.getItem2('https://testapi.com/').success(function (data) {
+            $scope.task = data;
+         }).error(function (err) {
+            $scope.error = err;
+            $scope.loaingMsg = "";
+         });
+    }
+
+    $scope.taskCall4 = function () {
+        TaskFactory.getItem2('/someapi/item').success(function (data) {
+            $scope.task = data;
+        }).error(function (err) {
+            $scope.error = err;
+            $scope.loaingMsg = "";
+        });
+    }
+
+    $scope.taskCall5 = function () {
+        TaskFactory.getItem2('https://myapp.com/someapi/item').success(function (data) {
+            $scope.task = data;
+        }).error(function (err) {
+            $scope.error = err;
+            $scope.loaingMsg = "";
+        });
+    }
+
+    $scope.taskCall6 = function () {
+        TaskFactory.getItem2('http://testwebapi.com/').success(function (data) {
+            $scope.task = data;
+        }).error(function (err) {
+            $scope.error = err;
+            $scope.loaingMsg = "";
+        });
+    }
     $scope.user = adalAuthenticationService.userInfo;
 }]);

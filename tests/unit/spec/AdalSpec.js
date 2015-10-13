@@ -86,7 +86,7 @@ describe('Adal', function () {
     beforeEach(function () {
         // one item in cache
         storageFake.clear();
-        var storageKey = { 'authority': DEFAULT_INSTANCE, 'client_id': conf.clientId, 'policy': 'testpolicy' };
+        var storageKey = { 'authority': DEFAULT_INSTANCE, 'client_id': conf.clientId};
         var entryKey = JSON.stringify(storageKey);
         var secondsNow = mathMock.round(0);
         var entryValue = JSON.stringify({ 'token': 'access token in cache', 'expire': secondsNow + SECONDS_TO_EXPIRE, 'scope': ['testscope'] });
@@ -117,20 +117,17 @@ describe('Adal', function () {
         adal.config.scope = [];
     });
     
-    it('gets specific scope and policy for defined enpoint mapping', function () {
-        adal.config.endpoints = { 'a' : { 'scope' : ['scope1', 'scope2'], 'policy': 'policy1' } };
+    it('gets specific scope for defined enpoint mapping', function () {
+        adal.config.endpoints = { 'a' : { 'scope' : ['scope1', 'scope2']} };
         
         expect(adal.getScopesForEndpoint('a')).toEqual(['scope1', 'scope2']);
-        expect(adal.getPolicyForEndpoint('a')).toBe('policy1');
     });
     
-    it('gets default scope and policy for empty endpoint mapping', function () {
+    it('gets default scope for empty endpoint mapping', function () {
         adal.config.endpoints = null;
         expect(adal.getScopesForEndpoint('a')).toEqual([adal.config.clientId]);
-        expect(adal.getPolicyForEndpoint('a')).toBe('');
         
         expect(adal.getScopesForEndpoint('b')).toEqual([adal.config.clientId]);
-        expect(adal.getPolicyForEndpoint('b')).toBe('');
     });
     
     it('sets default scope', function () {
@@ -139,13 +136,13 @@ describe('Adal', function () {
     
     it('says token expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe('access token in cache');
+        expect(adal.getCachedToken(['testscope'])).toBe('access token in cache');
         
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE;
-        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe(null);
+        expect(adal.getCachedToken(['testscope'])).toBe(null);
         
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 1;
-        expect(adal.getCachedToken(['testscope'], 'testpolicy')).toBe(null);
+        expect(adal.getCachedToken(['testscope'])).toBe(null);
     });
     
     it('gets cache username', function () {
@@ -203,17 +200,17 @@ describe('Adal', function () {
             err = valErr;
             token = valToken;
         };
-        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
+        adal.acquireTokenSilent(['testscope'], callback);
         expect(token).toBe('access token in cache');
     });
     
     it('calls acquiretoken with invalid scopes', function () {
-        expect(function () { adal.acquireTokenSilent('scope', 'testpolicy'); }).toThrow(new Error('API does not accept non-array scopes'));
-        expect(function () { adal.acquireTokenSilent(1, 'testpolicy'); }).toThrow(new Error('API does not accept non-array scopes'));
+        expect(function () { adal.acquireTokenSilent('scope'); }).toThrow(new Error('API does not accept non-array scopes'));
+        expect(function () { adal.acquireTokenSilent(1); }).toThrow(new Error('API does not accept non-array scopes'));
         
-        expect(function () { adal.acquireTokenSilent(['openid'], 'testpolicy'); }).toThrow(new Error('API does not accept openid as a user-provided scope'));
-        expect(function () { adal.acquireTokenSilent(['offline_access'], 'testpolicy'); }).toThrow(new Error('API does not accept offline_access as a user-provided scope'));
-        expect(function () { adal.acquireTokenSilent([adal.config.clientId, 'scope'], 'testpolicy'); }).toThrow(new Error('Client Id can only be provided as a single scope'));
+        expect(function () { adal.acquireTokenSilent(['openid']); }).toThrow(new Error('API does not accept openid as a user-provided scope'));
+        expect(function () { adal.acquireTokenSilent(['offline_access']); }).toThrow(new Error('API does not accept offline_access as a user-provided scope'));
+        expect(function () { adal.acquireTokenSilent([adal.config.clientId, 'scope']); }).toThrow(new Error('Client Id can only be provided as a single scope'));
     });
     
     it('returns err msg if token expired and renew failed before', function () {
@@ -225,7 +222,7 @@ describe('Adal', function () {
             err = valErr;
             token = valToken;
         };
-        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
+        adal.acquireTokenSilent(['testscope'], callback);
         expect(err).toBe('renew has failed');
     });
     
@@ -244,7 +241,7 @@ describe('Adal', function () {
         adal._renewStates = [];
         window.callBackMappedToRenewStates = {};
         adal._user = { userName: 'test@testuser.com', domainHint: 'organizations'};
-        adal.acquireTokenSilent(['testscope'], 'testpolicy', callback);
+        adal.acquireTokenSilent(['testscope'], callback);
         expect(adal.callback).toBe(callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
@@ -255,7 +252,7 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=token&client_id=client&scope=' + 'testscope' + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctestscope' 
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + '&p=testpolicy' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=organizations&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=organizations&nonce=33333333-3333-4333-b333-333333333333');
         });
         
     });
@@ -326,7 +323,7 @@ describe('Adal', function () {
         }
     });
     
-    it('clears cache for specified policy and scope', function () {
+    it('clears cache for specified scope', function () {
         // Keys are stored for each resource to map tokens for resource
         storageFake.clear();
         adal.instance = 'authoritytest1';
@@ -337,14 +334,15 @@ describe('Adal', function () {
         var value1 = JSON.stringify({ 'token': 'token1', 'expire': 'expiretime1', 'scope': ['scope1'] });
         storageFake.setItem(key1, value1);
         
-        var key2 = JSON.stringify({ 'adal.access.token.key': 'client_id_test2', 'policy': 'policy1' });
+        var key2 = JSON.stringify({ 'adal.access.token.key': 'client_id_test2'});
         var value2 = JSON.stringify({ 'token': 'token2', 'expire': 'expiretime2' });
         storageFake.setItem(key2, value2);
         
-        var key3 = JSON.stringify({ 'client_id': 'client_id_test3', 'authority': 'authoritytest1', 'policy': 'policy3' });
+        var key3 = JSON.stringify({ 'client_id': 'client_id_test3', 'authority': 'authoritytest1'});
         var value3 = JSON.stringify({ 'token': 'token3', 'expire': 'expiretime3', 'scope': ['scope3'] });
+        storageFake.setItem(key3, value3)
         
-        var keys = [key1, key2];
+        var keys = [key1, key2, key3];
         storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, JSON.stringify(keys));
         
         storageFake.setItem(JSON.stringify(key1), JSON.stringify(value1));
@@ -367,13 +365,13 @@ describe('Adal', function () {
         expect((store[key3] === '{}' || store[key2] == 0 || !store[key2])).toBe(false);
         
         adal.config.clientId = 'client_id_test2';
-        adal.clearCacheForStoredEntry(adal.config.clientId, 'policy1');
+        adal.clearCacheForStoredEntry(adal.config.clientId);
         store = storageFake.storeVerify();
         expect(store[key2] === '{}').toBe(true);
         expect((store[key3] === '{}' || store[key2] == 0 || !store[key2])).toBe(false);
         
         adal.config.clientId = 'client_id_test3';
-        adal.clearCacheForStoredEntry(['scope3'], 'policy3');
+        adal.clearCacheForStoredEntry(['scope3']);
         store = storageFake.storeVerify();
         expect(store[key3] === '{}').toBe(true);
     });

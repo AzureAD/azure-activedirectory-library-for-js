@@ -587,15 +587,15 @@ describe('Adal', function () {
     });
 
     it ('test decode with no padding', function () {
-        expect(adal._decode('YW55IGNhcm5hbCBwbGVhc3Vy')).toBe('any carnal pleasur');
+        expect(adal._decode('ZGVjb2RlIHRlc3Rz')).toBe('decode tests');
     });
 
     it ('test decode with one = padding', function () {
-        expect(adal._decode('YW55IGNhcm5hbCBwbGVhc3U=')).toBe('any carnal pleasu');        
+        expect(adal._decode('ZGVjb2RlIHRlc3Rz=')).toBe('decode tests');        
     });
 
     it ('test decode with two == padding', function () {
-        expect(adal._decode('YW55IGNhcm5hbCBwbGVhcw==')).toBe('any carnal pleas');        
+        expect(adal._decode('ZGVjb2RlIHRlc3Rz==')).toBe('decode tests');        
     })
 
     it ('test decode throw error', function () {

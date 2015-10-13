@@ -50,6 +50,9 @@ describe('TaskCtl', function () {
                 return 'Token123';
             }
 
+            if (resource === adalServiceProvider.config.loginResource) {
+                return 'Token456'; 
+            }
 
             return '';
         };
@@ -85,4 +88,43 @@ describe('TaskCtl', function () {
         expect(task.itemName).toBe('ItemWithoutAuth');
     });
 
+    it('does not send tokens for webapi(https) call not in endpoints list', function () {
+       $httpBackend.expectGET('https://test.com/', function (headers) {
+          return headers.hasOwnProperty('Authorization') === false;
+       }).respond(200);
+       scope.taskCall2();
+       $httpBackend.flush();
+    });
+
+    it('does not send tokens for webapi(http) call not in endpoint list', function () {
+        $httpBackend.expectGET('http://testwebapi.com/', function (headers) {
+            return headers.hasOwnProperty('Authorization') === false;
+        }).respond(200);
+        scope.taskCall6();
+        $httpBackend.flush();    
+    });
+
+    it('send tokens for webapi call in endpoints list', function () {
+        $httpBackend.expectGET('https://testapi.com/', function (headers) {
+            return headers.Authorization === 'Bearer Token3434';
+        }).respond(200);
+        scope.taskCall3();
+        $httpBackend.flush();
+    });
+
+    it ('send tokens for app backend call not in endpoints list', function () {
+        $httpBackend.expectGET('/someapi/item', function (headers) {
+            return headers.Authorization === 'Bearer Token456'
+        }).respond(200);
+        scope.taskCall4();
+        $httpBackend.flush();
+    });
+
+    it('send tokens for app backend call', function () {
+        $httpBackend.expectGET('https://myapp.com/someapi/item', function (headers) {
+            return headers.Authorization === 'Bearer Token456'
+        }).respond(200);
+        scope.taskCall5();
+        $httpBackend.flush();
+    });
 });

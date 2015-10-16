@@ -15,7 +15,7 @@
     "type": "git",
     "url": ""
   },
-  "version": "2.0-alpha",
+  "version": "2.0.0-alpha",
   "description": "Windows Azure Active Directory Client Library for js",
   "keywords": [
     "implicit",

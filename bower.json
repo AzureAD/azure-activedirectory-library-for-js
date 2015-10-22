@@ -1,6 +1,6 @@
 {
   "name": "adal-angular-experimental",
-  "version": "2.0.0-alpha",
+  "version": "2.0.0-experimental",
   "homepage": "https://github.com/AzureAD/azure-activedirectory-library-for-js#dev_convergence",
   "authors": [
     "MSOpentech"

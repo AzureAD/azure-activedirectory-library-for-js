@@ -41,7 +41,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
             tenant: 'tenantid123',
             clientId: 'clientid123',
             loginResource: 'loginResource123',
-            redirectUri: 'https://myapp.com/',
+            redirectUri: 'https://myapp.com/page',
             endpoints: endpoints  // optional
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens

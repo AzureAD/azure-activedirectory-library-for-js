@@ -606,6 +606,23 @@ describe('Adal', function () {
         }
     });
 
+    it ('test get resource for endpoint from app backend', function () {
+        adal.config.redirectUri = 'https://host.com/page';
+        expect(adal.getResourceForEndpoint('https://host.com')).toBe(adal.config.loginResource);
+        expect(adal.getResourceForEndpoint('https://host.com/a/b')).toBe(adal.config.loginResource);
+        expect(adal.getResourceForEndpoint('https://host.com/page/')).toBe(adal.config.loginResource);
+        expect(adal.getResourceForEndpoint('https://notapp.com/page/')).toBe(null);
+        expect(adal.getResourceForEndpoint('/api/todo')).toBe(adal.config.loginResource);
+    });
+
+    it ('test host extraction', function () {
+        expect(adal._getHostFromUri('https://a.com/b/c')).toBe('a.com');
+        expect(adal._getHostFromUri('http://a.com')).toBe('a.com');
+        expect(adal._getHostFromUri('a.com/b/c')).toBe('a.com');
+        expect(adal._getHostFromUri('http://a.com/')).toBe('a.com');
+        expect(adal._getHostFromUri('http://localhost:8080')).toBe('localhost:8080');
+    });
+
     // TODO angular intercepptor
    
     // TODO angular authenticaitonService

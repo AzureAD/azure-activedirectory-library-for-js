@@ -34,12 +34,11 @@ describe('TaskCtl', function () {
         rootScope = _$rootScope_;
         controller = _$controller_;
         $httpBackend = _$httpBackend_;
-         
+
         //create an empty scope
         scope = rootScope.$new();
         adalServiceProvider.userInfo = { userName: 'UserVerify', isAuthenticated: true };
        
-
         adalServiceProvider.getCachedToken = function (resource) {
             console.log('Requesting token for resource:' + resource);
             if (resource === 'resource1') {

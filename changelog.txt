@@ -1,3 +1,7 @@
+Version 1.0.7
+==========================
+Fix for checking if interceptor call comes from app backend
+
 Version 1.0.6
 ==========================
 Fix issue#159, support base64 decoding in ie9

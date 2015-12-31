@@ -1,3 +1,14 @@
+Version 1.0.7
+==========================
+Fix for checking if interceptor call comes from app backend
+
+Version 1.0.6
+==========================
+Fix issue#159, support base64 decoding in ie9
+Remove UTF-8 BOM headers from files
+Ignore inceptor call if the url is not app backend or not listed in the endpoints list
+Fix issue #153, proivde logging level, and user needs to specify logging way
+
 Version 1.0.5
 ==========================
 check domain_hint query param existence before adding

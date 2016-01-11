@@ -207,7 +207,7 @@ describe('Adal', function () {
             token = valToken;
         };
         adal.acquireToken(null, callback);
-        expect(err).toBe('resource is required');
+        expect(err).toBe('acquireToken: resource is required');
     });
 
     it('returns err msg if token expired and renew failed before', function () {

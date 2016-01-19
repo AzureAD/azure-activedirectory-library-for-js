@@ -128,6 +128,14 @@ describe('Adal', function () {
         expect(adal.config.resource).toBe('default resource');
     });
 
+    it('sets default isIframeAllowed', function () {
+        expect(adal.config.isIframeAllowed).toBe(true);
+    });
+
+    it('sets default isRedirectAllowed', function () {
+        expect(adal.config.isRedirectAllowed).toBe(true);
+    });
+
     it('says token expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         expect(adal.getCachedToken(RESOURCE1)).toEqual('access_token_in_cache' + RESOURCE1);
@@ -297,6 +305,91 @@ describe('Adal', function () {
         
     });
 
+    it('attempts to renew if token expired, renew is allowed and iframe is not allowed', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+        adal.config.redirectUri = 'contoso_site';
+        adal.config.clientId = 'client';
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
+        var err = '';
+        var token = '';
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        adal.config.isIframeAllowed = false;
+        var urlToGo = '';
+        var displayCallback = function (url) {
+            urlToGo = url;
+        };
+        adal._renewStates = [];
+        adal._user = { userName: 'test@testuser.com' };
+
+        spyOn(adal.config, 'displayCall');
+
+        adal.acquireToken(RESOURCE1, callback);
+
+        expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333|' + RESOURCE1);
+        expect(adal.callback).toBe(callback);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
+        expect(adal._renewStates.length).toBe(1);
+        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource='
+            + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId()
+            + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333'
+        );
+
+        window.callBackMappedToRenewStates[adal.config.state](null, '33333333-3333-4333-b333-333333333333');
+
+        expect(token).toBe('33333333-3333-4333-b333-333333333333', 'First callback should be called');
+    });
+
+     it('allows multiple callers to be notified when the token is renewed and iframe is not allowed', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
+        adal.config.redirectUri = 'contoso_site';
+        adal.config.clientId = 'client';
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
+
+        var err = null;
+        var token = null;
+        var err2 = null;
+        var token2 = null;
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        var callback2 = function(valErr, valToken){
+            err2 = valErr;
+            token2 = valToken;
+        };
+
+        adal.config.isIframeAllowed = false;
+        var urlToGo = '';
+        var displayCallback = function (url) {
+            urlToGo = url;
+        };
+        adal._renewStates = [];
+        adal._user = { userName: 'test@testuser.com' };
+
+        spyOn(adal.config, 'displayCall');
+
+        adal.acquireToken(RESOURCE1, callback);
+        //Simulate second acquire i.e. second service call from Angular.
+        adal.acquireToken(RESOURCE1, callback2);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
+        expect(adal._renewStates.length).toBe(1);
+        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource='
+            + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId()
+            + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333'
+        );
+
+        window.callBackMappedToRenewStates[adal.config.state](null, '33333333-3333-4333-b333-333333333333');
+
+        expect(token).toBe('33333333-3333-4333-b333-333333333333', 'First callback should be called');
+        expect(token2).toBe('33333333-3333-4333-b333-333333333333', 'Second callback should be called');
+    });
+
     it('check guid masking', function () {
         // masking is required for ver4 guid at begining hex  after version block
         // 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
@@ -413,6 +506,22 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
 
+    it('attempts to logout with logOutCall provided and when redirecting is not allowed', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.isRedirectAllowed = false;
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.tenant = 'testtenant'
+        adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
+        var logOutUrl = '';
+        var logOutCall = function(url){
+            logOutUrl = url;
+        }
+        adal.config.logOutCall = logOutCall;
+        adal.logOut();
+        expect(logOutUrl).toBe(DEFAULT_INSTANCE + adal.config.tenant + '/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
+    });
+
     it('gets user from cache', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
         adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
@@ -428,6 +537,13 @@ describe('Adal', function () {
         adal.getUser(callback);
         expect(adal.getCachedToken).not.toHaveBeenCalledWith(RESOURCE1);
         expect(user.userName).toBe('user@oauthimplicit.ccsctp.net');
+    });
+
+    it('calls isCallback function with a token passed to the handleWindowCallback function', function () {
+        window.location.hash = '';
+        spyOn(adal, 'isCallback');
+        adal.handleWindowCallback(IDTOKEN_MOCK);
+        expect(adal.isCallback).toHaveBeenCalledWith(IDTOKEN_MOCK);
     });
 
     it('is callback if has error or access token or idtoken', function () {

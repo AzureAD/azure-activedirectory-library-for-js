@@ -1,3 +1,7 @@
+Version 1.0.8
+==========================
+Fix for persisting route parameters of protected state
+
 Version 1.0.7
 ==========================
 Fix for checking if interceptor call comes from app backend

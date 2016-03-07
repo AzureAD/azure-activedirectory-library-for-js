@@ -106,7 +106,7 @@ describe('Adal', function () {
         global.Math = mathMock;
         global.angular = angularMock;
 
-        adal = new AdalModule.inject(conf);
+        adal = new AdalModule(conf);
         adal._user = null;
         adal._renewStates = [];
         adal._activeRenewals = {};

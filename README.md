@@ -45,7 +45,24 @@ You need to install the karma command line.
     npm install -g karma
     npm install -g karma-cli
 
+**Logging**
 
+Log levels are mapped as:
+
+    0: Error
+    1: Warning
+    2: Info
+    3: Verbose
+
+You can add the code below to app.js to turn on logging. Implement the `log` method depending on how you want to redirect logs.
+
+    Logging = {
+        level: 3,
+        log: function (message) {
+            console.log(message);
+        }
+    };
+    
 **documentation generation**
 Install grunt; call
 

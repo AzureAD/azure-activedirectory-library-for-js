@@ -156,7 +156,22 @@ describe('Adal', function () {
             + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
-
+    
+    it('injects version into authorize URL', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.redirectUri = 'contoso_site';
+        adal.config.version = 'v2.0';
+        spyOn(adal, 'promptUser');
+        console.log('instance:' + adal.instance);
+        adal.login();
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/v2.0/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
+        expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
+        adal.config.version = null;
+    });
+    
     it('sets loginprogress to true for login', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;

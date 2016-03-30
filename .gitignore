@@ -91,3 +91,6 @@ samples/owin/OwinSample/Scripts/adal.js
 
 #webstorm
 .idea
+
+#codecoverage
+coverage

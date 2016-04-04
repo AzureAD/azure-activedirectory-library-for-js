@@ -11,6 +11,10 @@ This is a GA released version. The current version is **1.0.9**.
 
 You have multiple ways of getting ADAL JS:
 
+Via NPM:
+
+    npm install adal-angular
+
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->

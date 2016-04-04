@@ -1,9 +1,9 @@
 {
   "name": "adal-angular",
   "author": {
-    "name": "Microsoft Open Technologies Inc",
-    "email": "msopentech@microsoft.com",
-    "url": "https://github.com/AzureAD/azure-activedirectory-library-for-js"
+    "name": "Microsoft",
+    "email": "nugetaad@microsoft.com",
+    "url": "https://www.microsoft.com"
   },
   "license": "Apache-2.0",
   "repository": {

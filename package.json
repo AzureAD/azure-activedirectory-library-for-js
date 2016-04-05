@@ -1,21 +1,16 @@
 {
   "name": "adal-angular",
   "author": {
-    "name": "Microsoft Open Technologies Inc",
-    "email": "msopentech@microsoft.com",
-    "url": "https://github.com/AzureAD/azure-activedirectory-library-for-js"
+    "name": "Microsoft",
+    "email": "nugetaad@microsoft.com",
+    "url": "https://www.microsoft.com"
   },
-  "licenses": [
-    {
-      "type": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }
-  ],
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/AzureAD/azure-activedirectory-library-for-js.git"
   },
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Windows Azure Active Directory Client Library for js",
   "keywords": [
     "implicit",

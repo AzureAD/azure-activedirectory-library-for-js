@@ -124,10 +124,6 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('b')).toBe('default resource');
     });
 
-    it('sets default resource', function () {
-        expect(adal.config.resource).toBe('default resource');
-    });
-
     it('says token expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         expect(adal.getCachedToken(RESOURCE1)).toEqual('access_token_in_cache' + RESOURCE1);
@@ -153,7 +149,7 @@ describe('Adal', function () {
         console.log('instance:' + adal.instance);
         adal.login();
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
-            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&nonce=33333333-3333-4333-b333-333333333333');
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&nonce=33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
 
@@ -180,7 +176,7 @@ describe('Adal', function () {
         adal.login();
         expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
             + '&client-request-id=33333333-3333-4333-b333-333333333333'
-            + adal._addClientId()
+            + adal._addLibMetadata()
             + '&nonce=33333333-3333-4333-b333-333333333333' 
             );
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
@@ -210,21 +206,7 @@ describe('Adal', function () {
         expect(err).toBe('resource is required');
     });
 
-    it('returns err msg if token expired and renew failed before', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'renew has failed');
-        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
-            token = valToken;
-        };
-        adal.acquireToken(RESOURCE1, callback);
-        expect(err).toBe('renew has failed');
-    });
-
     it('attempts to renew if token expired and renew is allowed', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
@@ -247,14 +229,13 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
         });
         
     });
     
     //Necessary for integration with Angular when multiple http calls are queued.
     it('allows multiple callers to be notified when the token is renewed', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, '');
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
@@ -285,7 +266,7 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addClientId() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
         });
         
         //Simulate callback from the frame.
@@ -344,10 +325,8 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key2', 'value2');
         storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
         storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
-        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'failed renew');
         storageFake.setItem(adal.CONSTANTS.STORAGE.SESSION_STATE, 'session_state');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, 'state login');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_IDTOKEN, 'state idtoken');
         storageFake.setItem(adal.CONSTANTS.STORAGE.START_PAGE, 'start page');
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'username');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR, 'error');
@@ -364,9 +343,7 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.TOKEN_KEYS, 'key1|' + RESOURCE1 + '|');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'key1', 'value1');
         storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'key1', 3);
-        storageFake.setItem(adal.CONSTANTS.STORAGE.FAILED_RENEW, 'failed renew');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, 'state renew');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_IDTOKEN, 'state idtoken');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR, 'error');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION, 'error description');
         adal.clearCacheForResource(RESOURCE1);
@@ -458,7 +435,6 @@ describe('Adal', function () {
         expect(requestInfo.stateMatch).toBe(false);
 
         checkStateType(adal.CONSTANTS.STORAGE.STATE_LOGIN, '1234', adal.REQUEST_TYPE.LOGIN);
-        checkStateType(adal.CONSTANTS.STORAGE.STATE_IDTOKEN, '1236', adal.REQUEST_TYPE.ID_TOKEN);
     });
 
     var checkStateType = function (state, stateExpected, requestType) {
@@ -491,10 +467,9 @@ describe('Adal', function () {
             valid: true,
             parameters: { 'access_token': 'token123', 'state': '123' },
             stateMatch: true,
-            stateResponse: '123',
-            requestType: adal.REQUEST_TYPE.LOGIN
+            stateResponse: '123|loginResource1',
+            requestType: adal.REQUEST_TYPE.RENEW_TOKEN
         };
-        adal.config.loginResource = 'loginResource1';
         adal.saveTokenFromHash(requestInfo);
 
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + 'loginResource1')).toBe('token123');
@@ -505,10 +480,9 @@ describe('Adal', function () {
             valid: true,
             parameters: { 'access_token': 'token123', 'state': '123', 'expires_in': 3589 },
             stateMatch: true,
-            stateResponse: '123',
-            requestType: adal.REQUEST_TYPE.LOGIN
+            stateResponse: '123|loginResource1',
+            requestType: adal.REQUEST_TYPE.RENEW_TOKEN
         };
-        adal.config.loginResource = 'loginResource1';
         adal.saveTokenFromHash(requestInfo);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589 + '');
     });
@@ -621,6 +595,25 @@ describe('Adal', function () {
         expect(adal._getHostFromUri('a.com/b/c')).toBe('a.com');
         expect(adal._getHostFromUri('http://a.com/')).toBe('a.com');
         expect(adal._getHostFromUri('http://localhost:8080')).toBe('localhost:8080');
+    });
+
+    it('test decode jwt', function () {
+        expect(adal._decodeJwt('')).toBe(null);
+        expect(adal._decodeJwt(null)).toBe(null);
+    })
+
+    it('saves error if state mismatch', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: { 'access_token': 'token123', 'state': '123' },
+            stateMatch: false,
+            stateResponse: '64532',
+            requestType: adal.REQUEST_TYPE.UNKNOWN
+        };
+        adal.config.loginResource = 'loginResource1';
+        adal.saveTokenFromHash(requestInfo);
+
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('Invalid_state. state: ' + requestInfo.stateResponse);
     });
 
     // TODO angular intercepptor

@@ -124,6 +124,14 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('b')).toBe('default resource');
     });
 
+    it('gets null resource for annonymous endpoints', function () {
+        adal.config.anonymousEndpoints = ['app/views'];
+        expect(adal.getResourceForEndpoint('app/views')).toBe(null);
+        expect(adal.getResourceForEndpoint('app/views/abc')).toBe(null);
+        expect(adal.getResourceForEndpoint('default/app/views/abc')).toBe(null);
+        expect(adal.getResourceForEndpoint('app/home')).toBe('default resource');
+    });
+
     it('says token expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
         expect(adal.getCachedToken(RESOURCE1)).toEqual('access_token_in_cache' + RESOURCE1);

@@ -1,4 +1,4 @@
-﻿Active Directory Authentication Library (ADAL) for JavaScript 
+Active Directory Authentication Library (ADAL) for JavaScript
 ====================================
 [![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=master)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)
 
@@ -7,27 +7,31 @@ This library is optimized for working together with AngularJS.
 
 ## The Library
 
-This is a GA released version. The current version is **1.0.0**.
- 
+This is a GA released version. The current version is **1.0.9**.
+
 You have multiple ways of getting ADAL JS:
+
+Via NPM:
+
+    npm install adal-angular
 
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/adal.min.js"></script>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/adal-angular.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.9/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.9/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 1.0.0.
+CDN will be updated to latest version 1.0.9.
 
-Via Bower: 
+Via Bower:
 
     $ bower install adal-angular
 
 The adal.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal.js).
 The adal-angular.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal-angular.js).
-## Samples, tests and documentation 
+## Samples, tests and documentation
 
-For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet). 
+For a sample demonstrating basic usage of ADAL JS please refer to [this repo](https://github.com/AzureADSamples/SinglePageApp-DotNet).
 
 CORS API [sample ](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet).
 
@@ -44,8 +48,25 @@ You need to install the karma command line.
 
     npm install -g karma
     npm install -g karma-cli
-    
 
+**Logging**
+
+Log levels are mapped as:
+
+    0: Error
+    1: Warning
+    2: Info
+    3: Verbose
+
+You can add the code below to app.js to turn on logging. Implement the `log` method depending on how you want to redirect logs.
+
+    Logging = {
+        level: 3,
+        log: function (message) {
+            console.log(message);
+        }
+    };
+    
 **documentation generation**
 Install grunt; call
 
@@ -101,7 +122,7 @@ $routeProvider.
     });
 
 ```
-6- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call. 
+6- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call.
 
 ***Optional***
 7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile):
@@ -181,7 +202,7 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
     $scope.$on("adal:notAuthorized", function (event, rejection, forResource) {
         $scope.testMessage = "It is not Authorized for resource:" + forResource;
     });
-  
+
 }]);
 
 

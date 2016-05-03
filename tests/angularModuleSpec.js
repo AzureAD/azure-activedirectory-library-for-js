@@ -23,17 +23,19 @@
 'use strict';
  
 describe('TaskCtl', function () {
-    var scope, $httpBackend, adalServiceProvider, rootScope, controller;
+    var scope, $httpBackend, adalServiceProvider, rootScope, controller, q, window;
 
     //mock Application to allow us to inject our own dependencies
     beforeEach(angular.mock.module('TestApplication'));
 
     //mock the controller for the same reason and include $rootScope and $controller
-    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$httpBackend_) {
+    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$httpBackend_, _$q_, _$window_) {
         adalServiceProvider = _adalAuthenticationService_;
         rootScope = _$rootScope_;
         controller = _$controller_;
         $httpBackend = _$httpBackend_;
+        q = _$q_;
+        window = _$window_;
 
         //create an empty scope
         scope = rootScope.$new();
@@ -56,6 +58,23 @@ describe('TaskCtl', function () {
             return '';
         };
 
+        adalServiceProvider.acquireToken = function (resource) {
+            console.log('acquire token for resource:' + resource);
+            var token = '';
+            if (resource === 'resource1') {
+                token = 'RenewToken3434';
+            }
+
+            if (resource === 'resource2') {
+                token = 'RenewToken123';
+            }
+
+            if (resource === adalServiceProvider.config.loginResource) {
+                token = 'RenewToken456';
+            }
+            return q.when(token);
+        };
+
         controller('TaskCtl', { $scope: scope, adalAuthenticationService: adalServiceProvider });
     }));
 
@@ -64,7 +83,7 @@ describe('TaskCtl', function () {
         expect(scope.user.isAuthenticated).toBe(true);
     });
 
-    it('injects tokens for webapi call for given endpoint', function () {
+    it('send tokens for webapi call in endpoints list', function () {
         $httpBackend.expectGET('/api/Todo/5', function (headers) {
             return headers.Authorization === 'Bearer Token3434';
         }).respond(200, { id: 5, name: 'TODOItem1' });
@@ -75,7 +94,7 @@ describe('TaskCtl', function () {
         expect(task.name).toBe('TODOItem1');
     });
 
-    it('does not sent tokens for other webapi calls', function () {
+    it('send tokens for webapi call in endpoints list', function () {
         $httpBackend.expectGET('/anotherApi/Item/13', function (headers) {
             console.log('headers test' + headers.Authorization);
             return headers.Authorization === 'Bearer Token123';
@@ -85,6 +104,14 @@ describe('TaskCtl', function () {
 
         var task = scope.item;
         expect(task.itemName).toBe('ItemWithoutAuth');
+    });
+
+    it('send tokens for webapi call in endpoints list', function () {
+        $httpBackend.expectGET('https://testapi.com/', function (headers) {
+            return headers.Authorization === 'Bearer Token3434';
+        }).respond(200);
+        scope.taskCall3();
+        $httpBackend.flush();
     });
 
     it('does not send tokens for webapi(https) call not in endpoints list', function () {
@@ -103,14 +130,6 @@ describe('TaskCtl', function () {
         $httpBackend.flush();    
     });
 
-    it('send tokens for webapi call in endpoints list', function () {
-        $httpBackend.expectGET('https://testapi.com/', function (headers) {
-            return headers.Authorization === 'Bearer Token3434';
-        }).respond(200);
-        scope.taskCall3();
-        $httpBackend.flush();
-    });
-
     it ('send tokens for app backend call not in endpoints list', function () {
         $httpBackend.expectGET('/someapi/item', function (headers) {
             return headers.Authorization === 'Bearer Token456'
@@ -125,5 +144,84 @@ describe('TaskCtl', function () {
         }).respond(200);
         scope.taskCall5();
         $httpBackend.flush();
+    });
+
+    it('renews tokens for app backend', function () {
+        // This makes adal to try renewing the token since no token is returned from cache
+        adalServiceProvider.getCachedToken = function () {
+            return '';
+        };
+        $httpBackend.expectGET('https://myapp.com/someapi/item', function (headers) {
+            return headers.Authorization === 'Bearer RenewToken456';
+        }).respond(200, { id: 5, name: 'TODOItem2' });
+        scope.taskCall5();
+        $httpBackend.flush();
+
+        var task = scope.task;
+        expect(task.name).toBe('TODOItem2');
+    });
+
+    it('renews tokens for webapi in endpoint list', function () {
+        adalServiceProvider.getCachedToken = function () {
+            return '';
+        };
+        $httpBackend.expectGET('/anotherApi/Item/13', function (headers) {
+            console.log('headers test' + headers.Authorization);
+            return headers.Authorization === 'Bearer RenewToken123';
+        }).respond(200, { id: 5, itemName: 'ItemWithoutAuth' });
+        scope.itemCall();
+        $httpBackend.flush();
+
+        var task = scope.item;
+        expect(task.itemName).toBe('ItemWithoutAuth');
+    });
+
+    it('renews tokens for webapi in endpoint list', function () {
+        adalServiceProvider.getCachedToken = function () {
+            return '';
+        };
+        $httpBackend.expectGET('https://testapi.com/', function (headers) {
+            return headers.Authorization === 'Bearer RenewToken3434';
+        }).respond(200);
+        scope.taskCall3();
+        $httpBackend.flush();
+    });
+
+    it('tests errorResponse broadcast when login is in progress', function () {
+        adalServiceProvider.getCachedToken = function () {
+            return '';
+        };
+        adalServiceProvider.loginInProgress = function () {
+            return true;
+        };
+        spyOn(rootScope, '$broadcast').andCallThrough();
+        $httpBackend.expectGET('https://myapp.com/someapi/item', function (headers) {
+            return headers.Authorization === 'Bearer Token456'
+        }).respond(200);
+
+        rootScope.$on('adal:errorResponse', function (event, message) {
+            expect(event.name).toBe('adal:errorResponse');
+            expect(message).toBe('login in progress, cancelling the request');
+        });
+        scope.taskCall5();
+        rootScope.$apply();
+        expect(rootScope.$broadcast).toHaveBeenCalledWith('adal:errorResponse', 'login in progress, cancelling the request');
+    });
+
+    it('tests stateMismatch broadcast when state does not match', function () {
+        window.parent.AuthenticationContext = function () {
+            return {
+                callback: function () { },
+                _renewStates: { }
+            };
+        };
+        window.location.hash = 'id_token=sample&state=4343';
+        spyOn(rootScope, '$broadcast').andCallThrough();
+        rootScope.$on('adal:stateMismatch', function (event, message) {
+            expect(event.name).toBe('adal:stateMismatch');
+            expect(message).toBe('Invalid_state. state: 4343');
+        });
+        rootScope.$apply();
+        expect(rootScope.$broadcast).toHaveBeenCalled();
     });
 });

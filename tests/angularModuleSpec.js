@@ -224,4 +224,19 @@ describe('TaskCtl', function () {
         rootScope.$apply();
         expect(rootScope.$broadcast).toHaveBeenCalled();
     });
+
+    it('tests callback is called when response contains error', function () {
+        window.parent.AuthenticationContext = function () {
+            return {
+                callback: function () { },
+                _renewStates: [ '4343' ]
+            };
+        };
+        window.parent.callBackMappedToRenewStates = {};
+        window.parent.callBackMappedToRenewStates['4343'] = function (error, token) {
+            expect(error).toBe('renewfailed');
+        };
+        window.location.hash = 'error=sample&error_description=renewfailed&state=4343';
+        rootScope.$apply();
+    });
 });

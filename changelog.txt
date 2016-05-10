@@ -1,3 +1,7 @@
+Version 1.0.10
+==========================
+Fixing infinite loop when refreshing tokens, adding extensibility for specifying anonymous endpoints
+
 Version 1.0.9
 ==========================
 Adding events for state mismatch and error responses. Fix for token renewal for app's backend. Making library available on NPM

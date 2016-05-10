@@ -7,7 +7,7 @@ This library is optimized for working together with AngularJS.
 
 ## The Library
 
-This is a GA released version. The current version is **1.0.9**.
+This is a GA released version. The current version is **1.0.10**.
 
 You have multiple ways of getting ADAL JS:
 
@@ -18,10 +18,10 @@ Via NPM:
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.9/js/adal.min.js"></script>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.9/js/adal-angular.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.10/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.10/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 1.0.9.
+CDN will be updated to latest version 1.0.10.
 
 Via Bower:
 

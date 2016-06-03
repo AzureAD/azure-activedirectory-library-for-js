@@ -215,7 +215,7 @@ describe('Adal', function () {
     });
 
     it('attempts to renew if token expired and renew is allowed', function () {
-        adal.config.redirectUri = 'contoso_site';
+        adal.config.frameRedirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var err = '';
@@ -244,7 +244,7 @@ describe('Adal', function () {
     
     //Necessary for integration with Angular when multiple http calls are queued.
     it('allows multiple callers to be notified when the token is renewed', function () {
-        adal.config.redirectUri = 'contoso_site';
+        adal.config.frameRedirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var err = null;

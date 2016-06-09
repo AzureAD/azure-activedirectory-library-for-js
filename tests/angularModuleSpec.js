@@ -201,11 +201,11 @@ describe('TaskCtl', function () {
 
         rootScope.$on('adal:errorResponse', function (event, message) {
             expect(event.name).toBe('adal:errorResponse');
-            expect(message).toBe('login in progress, cancelling the request');
+            expect(message.data).toBe('login in progress, cancelling the request');
         });
         scope.taskCall5();
         rootScope.$apply();
-        expect(rootScope.$broadcast).toHaveBeenCalledWith('adal:errorResponse', 'login in progress, cancelling the request');
+        expect(rootScope.$broadcast).toHaveBeenCalled();
     });
 
     it('tests stateMismatch broadcast when state does not match', function () {

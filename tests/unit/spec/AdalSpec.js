@@ -624,6 +624,15 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('Invalid_state. state: ' + requestInfo.stateResponse);
     });
 
+    it('checks if Logging is defined', function () {
+        AdalModule.Logging.level = 2;
+        AdalModule.Logging.log = function (message) {
+            window.logMessage = message;
+        }
+        adal.promptUser();
+        expect(window.logMessage).toContain("Navigate url is empty");
+        expect(AdalModule.Logging.level).toEqual(2);
+    });
     // TODO angular intercepptor
    
     // TODO angular authenticaitonService

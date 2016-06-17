@@ -54,7 +54,7 @@ describe('Adal', function () {
         }
     };
     var angularMock = {};
-    var conf = { loginResource: 'default resource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
@@ -120,8 +120,8 @@ describe('Adal', function () {
 
     it('gets default resource for empty endpoint mapping', function () {
         adal.config.endpoints = null;
-        expect(adal.getResourceForEndpoint('a')).toBe('default resource');
-        expect(adal.getResourceForEndpoint('b')).toBe('default resource');
+        expect(adal.getResourceForEndpoint('a')).toBe('defaultResource');
+        expect(adal.getResourceForEndpoint('b')).toBe('defaultResource');
     });
 
     it('gets null resource for annonymous endpoints', function () {
@@ -129,7 +129,7 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('app/views')).toBe(null);
         expect(adal.getResourceForEndpoint('app/views/abc')).toBe(null);
         expect(adal.getResourceForEndpoint('default/app/views/abc')).toBe(null);
-        expect(adal.getResourceForEndpoint('app/home')).toBe('default resource');
+        expect(adal.getResourceForEndpoint('app/home')).toBe('defaultResource');
     });
 
     it('says token expired', function () {
@@ -182,7 +182,7 @@ describe('Adal', function () {
         adal.config.displayCall = displayCallback;
         spyOn(adal.config, 'displayCall');
         adal.login();
-        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333' 
+        expect(adal.config.displayCall).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
             + '&client-request-id=33333333-3333-4333-b333-333333333333'
             + adal._addLibMetadata()
             + '&nonce=33333333-3333-4333-b333-333333333333' 
@@ -237,7 +237,7 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
         
     });
@@ -274,7 +274,7 @@ describe('Adal', function () {
         runs(function () {
             console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
         
         //Simulate callback from the frame.

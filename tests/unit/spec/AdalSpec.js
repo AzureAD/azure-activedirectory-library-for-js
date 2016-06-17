@@ -155,7 +155,6 @@ describe('Adal', function () {
         adal.config.clientId = 'client';
         adal.config.redirectUri = 'contoso_site';
         spyOn(adal, 'promptUser');
-        console.log('instance:' + adal.instance);
         adal.login();
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
             + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&nonce=33333333-3333-4333-b333-333333333333');
@@ -236,7 +235,6 @@ describe('Adal', function () {
         waits(2000);
 
         runs(function () {
-            console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
@@ -273,7 +271,6 @@ describe('Adal', function () {
         waits(2000);
 
         runs(function () {
-            console.log('Frame src:' + frameMock.src);
             expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
@@ -513,7 +510,6 @@ describe('Adal', function () {
         var cachedUser = adal.getCachedUser();
         expect(cachedUser.userName).toBe('user@oauthimplicit.ccsctp.net');
         expect(cachedUser.profile.upn).toBe('user@oauthimplicit.ccsctp.net');
-        console.log('test extract idtoken done');
     });
 
     it('does not save user for invalid nonce in idtoken', function () {

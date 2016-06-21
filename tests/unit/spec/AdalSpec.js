@@ -394,7 +394,7 @@ describe('Adal', function () {
         adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + adal.config.tenant + '/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + adal.config.tenant + '/oauth2/v2.0/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
     
     it('uses common for tenant if not given at logout redirect', function () {
@@ -405,7 +405,7 @@ describe('Adal', function () {
         adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/v2.0/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
     
     it('gets user from cache', function () {

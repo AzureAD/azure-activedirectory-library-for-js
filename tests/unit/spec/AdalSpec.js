@@ -335,7 +335,6 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
         storageFake.setItem(adal.CONSTANTS.STORAGE.SESSION_STATE, 'session_state');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, 'state login');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.START_PAGE, 'start page');
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'username');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR, 'error');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION, 'error description');

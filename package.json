@@ -49,6 +49,6 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "istanbul cover --include-all-sources jasmine-node tests/unit/spec"
+    "test": "jasmine-node tests/unit/spec"
   }
 }

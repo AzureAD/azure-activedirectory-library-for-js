@@ -728,6 +728,5 @@ describe('Adal', function () {
 
     });
     // TODO angular intercepptor
-
-    // TODO angular authenticaitonService
+    // TODO angular authenticationService
 });

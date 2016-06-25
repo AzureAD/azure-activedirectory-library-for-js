@@ -64,7 +64,6 @@ describe('Adal', function () {
     var SECONDS_TO_EXPIRE = 3600;
     var DEFAULT_INSTANCE = "https://login.microsoftonline.com/";
     var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
-    var INVALIDIDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
     var storageFake = function () {
         var store = {};
         return {
@@ -73,7 +72,7 @@ describe('Adal', function () {
             },
             setItem: function (key, value) {
                 if (typeof value != 'undefined') {
-                    store[key] = value + '';
+                    store[key] = value;
                 }
             },
             clear: function () {
@@ -493,7 +492,7 @@ describe('Adal', function () {
             requestType: adal.REQUEST_TYPE.RENEW_TOKEN
         };
         adal.saveTokenFromHash(requestInfo);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589 + '');
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589);
     });
 
     it('saves username after extracting idtoken', function () {
@@ -675,10 +674,6 @@ describe('Adal', function () {
                 requestType: adal.REQUEST_TYPE.RENEW_TOKEN
             };
         };
-        AdalModule.Logging.level = 3;
-        AdalModule.Logging.log = function (message) {
-            window.logMessage = message;
-        }
         var err = '';
         var token = '';
         var callback = function (valErr, valToken) {
@@ -688,11 +683,7 @@ describe('Adal', function () {
         window.parent = {};
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates[adal.getRequestInfo().stateResponse] = callback;
-        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, {});
         adal.handleWindowCallback();
-        expect(window.logMessage).toContain("Window is in iframe");
-        expect(AdalModule.Logging.level).toEqual(3);
-        expect(window.location).toBe('[object Object]');
         expect(err).toBe('error description');
         expect(token).toBe(IDTOKEN_MOCK);
 
@@ -710,21 +701,10 @@ describe('Adal', function () {
                 requestType: adal.REQUEST_TYPE.LOGIN_REQUEST
             };
         };
-        AdalModule.Logging.level = 3;
-        AdalModule.Logging.log = function (message) {
-            window.logMessage = message;
-        }
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
-            token = valToken;
-        };
-
-        window.oauth2Callback = callback;
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, "www.test.com");
+        window.oauth2Callback = {};
         adal.handleWindowCallback();
-        expect(window.logMessage).toContain('Window is redirecting');
-        expect(AdalModule.Logging.level).toEqual(3);
+        expect(window.location).toBe('www.test.com');
 
     });
     // TODO angular intercepptor

@@ -201,7 +201,7 @@ describe('TaskCtl', function () {
 
         rootScope.$on('adal:errorResponse', function (event, message) {
             expect(event.name).toBe('adal:errorResponse');
-            expect(message.data).toBe('login in progress, cancelling the request');
+            expect(message.data).toBe('login in progress, cancelling the request for https://myapp.com/someapi/item');
         });
         scope.taskCall5();
         rootScope.$apply();

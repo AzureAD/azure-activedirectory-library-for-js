@@ -23,9 +23,17 @@ var app = angular.module('TestApplication', ['ngResource', 'ngRoute', 'AdalAngul
 app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvider', function ($httpProvider, $routeProvider, adalAuthenticationServiceProvider) {
 
     $routeProvider.
+    when('/home', {
+    	controller: 'homeController',
+    	template: '<div>home</div>'
+    }).
+    when('/about', {
+    	controller: 'aboutController',
+    	templateUrl: 'about.html'
+    }).
     when('/todoList', {
         controller: 'todoListController',
-        templateUrl: '/App/Views/todoList.html',
+        template: '<div>todoList</div>',
         requireADLogin: true
     }).
     otherwise({ redirectTo: '/home' });

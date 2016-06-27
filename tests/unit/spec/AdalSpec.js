@@ -44,15 +44,18 @@ describe('Adal', function () {
             return 1000;
         }
     };
-    var frameMock = {
-        src: 'start'
-    };
+
+    var mockFrames = {};
 
     var documentMock = {
-        getElementById: function () {
-            return frameMock;
+        getElementById: function (frameId) {
+            if (!mockFrames[frameId]) {
+                mockFrames[frameId] = { src: 'start' };
+            }
+            return mockFrames[frameId];
         }
     };
+
     var angularMock = {};
     var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
     var testPage = 'this is a song';
@@ -111,6 +114,7 @@ describe('Adal', function () {
         adal._user = null;
         adal._renewStates = [];
         adal._activeRenewals = {};
+        adal.CONSTANTS.LOADFRAME_TIMEOUT = 800;
     });
 
     it('gets specific resource for defined endpoint mapping', function () {
@@ -155,7 +159,6 @@ describe('Adal', function () {
         adal.config.clientId = 'client';
         adal.config.redirectUri = 'contoso_site';
         spyOn(adal, 'promptUser');
-        console.log('instance:' + adal.instance);
         adal.login();
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333'
             + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&nonce=33333333-3333-4333-b333-333333333333');
@@ -233,11 +236,12 @@ describe('Adal', function () {
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
-        waits(2000);
+        waitsFor(function () {
+            return mockFrames['adalRenewFrame' + RESOURCE1].src !== 'about:blank';
+        }, 'iframe src not updated', 2000);
 
         runs(function () {
-            console.log('Frame src:' + frameMock.src);
-            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
+            expect(mockFrames['adalRenewFrame' + RESOURCE1].src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
 
@@ -270,11 +274,12 @@ describe('Adal', function () {
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
-        waits(2000);
+        waitsFor(function () {
+            return mockFrames['adalRenewFrame' + RESOURCE1].src !== 'about:blank';
+        }, 'iframe src not updated', 2000);
 
         runs(function () {
-            console.log('Frame src:' + frameMock.src);
-            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
+            expect(mockFrames['adalRenewFrame' + RESOURCE1].src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
 
@@ -513,7 +518,6 @@ describe('Adal', function () {
         var cachedUser = adal.getCachedUser();
         expect(cachedUser.userName).toBe('user@oauthimplicit.ccsctp.net');
         expect(cachedUser.profile.upn).toBe('user@oauthimplicit.ccsctp.net');
-        console.log('test extract idtoken done');
     });
 
     it('does not save user for invalid nonce in idtoken', function () {
@@ -634,6 +638,54 @@ describe('Adal', function () {
         expect(AdalModule.Logging.level).toEqual(2);
     });
 
+    it('tests the load frame timeout method', function () {
+        adal._loadFrameTimeout('urlnavigation', 'frameName', RESOURCE1);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_IN_PROGRESS);
+
+        // timeout interval passed
+        waitsFor(function () {
+            return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
+        }, 'token renew status not updated', 1000);
+
+        runs(function () {
+            expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
+
+            adal._loadFrameTimeout('urlnavigation', 'frameName', RESOURCE1);
+            expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_IN_PROGRESS);
+            var requestInfo = {
+                valid: true,
+                parameters: { 'access_token': 'token123', 'state': '123', 'expires_in': '23' },
+                stateMatch: true,
+                stateResponse: '64532|' + RESOURCE1,
+                requestType: adal.REQUEST_TYPE.RENEW_TOKEN
+            };
+            adal.saveTokenFromHash(requestInfo);
+            expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_COMPLETED);
+        });
+    });
+
+    it('tests that callbacks are called when renewal token request was canceled', function () {
+        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
+        var err = '';
+        var token = '';
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        adal._renewStates = [];
+        adal._user = { userName: 'test@testuser.com' };
+        adal.acquireToken(RESOURCE1, callback);
+        waitsFor(function () {
+            return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
+        }, 'token renew status not updated', 1000);
+        runs(function () {
+            expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
+            expect(err).toBe('Token renewal operation failed due to timeout');
+            expect(token).toBe(null);
+
+        });
+    });
+
     it('attempts to renewidToken if token expired and renew is allowed', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
@@ -654,11 +706,12 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
-        waits(2000);
+        waitsFor(function () {
+            return mockFrames['adalIdTokenFrame'].src !== 'about:blank';
+        }, 'iframe src not updated', 2000);
 
         runs(function () {
-            console.log('Frame src:' + frameMock.src);
-            expect(frameMock.src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=' + adal.config.clientId + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Cclient'
+            expect(mockFrames['adalIdTokenFrame'].src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=' + adal.config.clientId + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Cclient'
 			+ '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com' + '&nonce=33333333-3333-4333-b333-333333333333');
         });
     });

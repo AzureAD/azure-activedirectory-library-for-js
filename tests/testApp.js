@@ -24,12 +24,12 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
 
     $routeProvider.
     when('/home', {
-    	controller: 'homeController',
-    	template: '<div>home</div>'
+        controller: 'homeController',
+        template: '<div>home</div>'
     }).
     when('/about', {
-    	controller: 'aboutController',
-    	templateUrl: 'about.html'
+        controller: 'aboutController',
+        templateUrl: 'about.html'
     }).
     when('/todoList', {
         controller: 'todoListController',

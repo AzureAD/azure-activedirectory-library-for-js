@@ -41,7 +41,6 @@ describe('TaskCtl', function () {
 
         //create an empty scope
         scope = rootScope.$new();
-        //adalServiceProvider.userInfo = { userName: 'UserVerify', isAuthenticated: true };
        
         adalServiceProvider.getCachedToken = function (resource) {
             console.log('Requesting token for resource:' + resource);

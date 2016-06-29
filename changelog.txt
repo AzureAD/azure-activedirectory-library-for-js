@@ -1,3 +1,10 @@
+Version 1.0.11
+==========================
+* Adding support for using a special html for iFrames. This prevents app reloading in the iframe.
+* Fixing multiple root causes for infinte loops at the time of login or token renewal
+* Fixing url paramters getting dropped after login
+* Adding timeout to token renewal requests.
+
 Version 1.0.10
 ==========================
 Fixing infinite loop when refreshing tokens, adding extensibility for specifying anonymous endpoints

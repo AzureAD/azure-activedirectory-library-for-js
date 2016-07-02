@@ -624,6 +624,34 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('Invalid_state. state: ' + requestInfo.stateResponse);
     });
 
+    it('navigates to LOGIN_REQUEST url after handling callback', function() {
+        var loginRequestUrl = 'https://localhost:3000/login';
+        var createFakeLocation = function () {
+            return {
+                hash: '#id_token=idtoken234',
+                href: 'href',
+                replace: function (val) {
+                }
+            };
+        };
+
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, loginRequestUrl);
+
+        window.location = createFakeLocation();
+        adal.handleWindowCallback();
+        expect(window.location).toBe(loginRequestUrl);
+
+        window.location = createFakeLocation();
+        adal.config.navigateToLoginRequestUrl = true;
+        adal.handleWindowCallback();
+        expect(window.location).toBe(loginRequestUrl);
+
+        window.location = createFakeLocation();
+        adal.config.navigateToLoginRequestUrl = false;
+        adal.handleWindowCallback();
+        expect(window.location).not.toBe(loginRequestUrl);
+    });
+
     // TODO angular intercepptor
    
     // TODO angular authenticaitonService

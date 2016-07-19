@@ -21,21 +21,26 @@
 /* global describe */
 var atobHelper = require('atob');
 var confighash = { hash: '#' };
+global.window = {};
 var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
     var adal;
-    var window = {
-        location: {
-            hash: '#hash',
-            href: 'href',
-            replace: function (val) {
-            }
-        },
-        localStorage: {},
-        sessionStorage: {},
-        atob: atobHelper,
+    var window;
+    if (global.window)
+        window = global.window;
+    else
+        window = {};
+    window.location = {
+        hash: '#hash',
+        href: 'href',
+        replace: function (val) {
+        }
     };
+    window.localStorage = {};
+    window.sessionStorage = {};
+    window.atob = atobHelper;
+    global.Logging = window.Logging;
     var mathMock = {
         random: function () {
             return 0.2;
@@ -632,14 +637,14 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('Invalid_state. state: ' + requestInfo.stateResponse);
     });
 
-    it('checks if Logging is defined', function () {
-        AdalModule.Logging.level = 2;
-        AdalModule.Logging.log = function (message) {
+    it('checks if Logging is defined on window', function () {
+        Logging.level = 2;
+        Logging.log = function (message) {
             window.logMessage = message;
         }
         adal.promptUser();
         expect(window.logMessage).toContain("Navigate url is empty");
-        expect(AdalModule.Logging.level).toEqual(2);
+        expect(Logging.level).toEqual(2);
     });
 
     it('tests the load frame timeout method', function () {

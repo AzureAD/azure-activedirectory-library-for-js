@@ -26,21 +26,18 @@ var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
     var adal;
-    var window;
-    if (global.window)
-        window = global.window;
-    else
-        window = {};
-    window.location = {
-        hash: '#hash',
-        href: 'href',
-        replace: function (val) {
-        }
+    global.Logging = global.window.Logging;
+    var window = {
+        location: {
+            hash: '#hash',
+            href: 'href',
+            replace: function (val) {
+            }
+        },
+        localStorage: {},
+        sessionStorage: {},
+        atob: atobHelper
     };
-    window.localStorage = {};
-    window.sessionStorage = {};
-    window.atob = atobHelper;
-    global.Logging = window.Logging;
     var mathMock = {
         random: function () {
             return 0.2;

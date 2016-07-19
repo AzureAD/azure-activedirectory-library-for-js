@@ -386,4 +386,14 @@ describe('TaskCtl', function () {
         expect(adalServiceProvider.config.anonymousEndpoints).toContain(aboutRoute.templateUrl);
         $httpBackend.flush();
     });
+
+    it('checks if Logging is defined', function () {
+        Logging.level = 2;
+        Logging.log = function (message) {
+            window.logMessage = message;
+        }
+        adalServiceProvider.info("test message");
+        expect(window.logMessage).toContain("test message");
+        expect(Logging.level).toEqual(2);
+    });
 });

@@ -21,10 +21,12 @@
 /* global describe */
 var atobHelper = require('atob');
 var confighash = { hash: '#' };
+global.window = {};
 var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
     var adal;
+    global.Logging = global.window.Logging;
     var window = {
         location: {
             hash: '#hash',
@@ -34,7 +36,7 @@ describe('Adal', function () {
         },
         localStorage: {},
         sessionStorage: {},
-        atob: atobHelper,
+        atob: atobHelper
     };
     var mathMock = {
         random: function () {
@@ -632,14 +634,14 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION)).toBe('Invalid_state. state: ' + requestInfo.stateResponse);
     });
 
-    it('checks if Logging is defined', function () {
-        AdalModule.Logging.level = 2;
-        AdalModule.Logging.log = function (message) {
+    it('checks if Logging is defined on window', function () {
+        Logging.level = 2;
+        Logging.log = function (message) {
             window.logMessage = message;
         }
         adal.promptUser();
         expect(window.logMessage).toContain("Navigate url is empty");
-        expect(AdalModule.Logging.level).toEqual(2);
+        expect(Logging.level).toEqual(2);
     });
 
     it('tests the load frame timeout method', function () {

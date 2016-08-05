@@ -36,7 +36,9 @@ describe('Adal', function () {
         },
         localStorage: {},
         sessionStorage: {},
-        atob: atobHelper
+        atob: atobHelper,
+        innerWidth: 100,
+        innerHeight: 100
     };
     var mathMock = {
         random: function () {
@@ -69,7 +71,7 @@ describe('Adal', function () {
     var SECONDS_TO_EXPIRE = 3600;
     var DEFAULT_INSTANCE = "https://login.microsoftonline.com/";
     var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
-    var STATE = '585bd348-4d52-4689-b9c7-d8480564f368';
+    var STATE = '33333333-3333-4333-b333-333333333333';
     var SESSION_STATE = '451c6916-27cf-4eae-81cd-accf96126398';
     var VALID_URLFRAGMENT = 'id_token=' + IDTOKEN_MOCK + '' + '&state=' + STATE + '&session_state=' + SESSION_STATE;
     var INVALID_URLFRAGMENT = 'id_token' + IDTOKEN_MOCK + '' + '&state=' + STATE + '&session_state=' + SESSION_STATE;
@@ -106,7 +108,6 @@ describe('Adal', function () {
 
         window.localStorage = storageFake;
         window.sessionStorage = storageFake;
-
         // Init adal 
 
         global.window = window;
@@ -182,7 +183,7 @@ describe('Adal', function () {
 
     it('calls displaycall if given for login', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
-
+        adal._loginInProgress = false;
         adal.config.clientId = 'client';
         adal.config.redirectUri = 'contoso_site';
         var urlToGo = '';
@@ -235,7 +236,7 @@ describe('Adal', function () {
             token = valToken;
         };
         adal._renewStates = [];
-        adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com'};
+        adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal.callback).toBe(callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
@@ -718,12 +719,13 @@ describe('Adal', function () {
 
         runs(function () {
             expect(mockFrames['adalIdTokenFrame'].src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=' + adal.config.clientId + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Cclient'
-			+ '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com' + '&nonce=33333333-3333-4333-b333-333333333333');
+    		+ '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com' + '&nonce=33333333-3333-4333-b333-333333333333');
         });
     });
 
     it('tests handleWindowCallback function for RENEW_TOKEN', function () {
         window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        var _getRequestInfo = adal.getRequestInfo;
         adal.getRequestInfo = function (hash) {
             return {
                 valid: true,
@@ -745,12 +747,14 @@ describe('Adal', function () {
         adal.handleWindowCallback();
         expect(err).toBe('error description');
         expect(token).toBe(IDTOKEN_MOCK);
+        adal.getRequestInfo = _getRequestInfo;
 
     });
 
     it('tests handleWindowCallback function for LOGIN_REQUEST', function () {
         window.location = {};
         window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        var _getRequestInfo = adal.getRequestInfo;
         adal.getRequestInfo = function () {
             return {
                 valid: true,
@@ -764,6 +768,7 @@ describe('Adal', function () {
         window.oauth2Callback = {};
         adal.handleWindowCallback();
         expect(window.location).toBe('www.test.com');
+        adal.getRequestInfo = _getRequestInfo;
 
     });
 
@@ -830,20 +835,20 @@ describe('Adal', function () {
         var deserialize = adal._deserialize;//save initial state of function
 
         adal._deserialize = function (query) {
-           var match,
-           pl = /\+/g,  // Regex for replacing addition symbol with a space
-           search = /([^&=]+)=?([^&]*)/g,
-           decode = function (s) {
-               return decodeURIComponent(s.replace(pl, ' '));
-           },
-           obj = {};
-           match = search.exec(query);
-           while (match) {
+            var match,
+            pl = /\+/g,  // Regex for replacing addition symbol with a space
+            search = /([^&=]+)=?([^&]*)/g,
+            decode = function (s) {
+                return decodeURIComponent(s.replace(pl, ' '));
+            },
+            obj = {};
+            match = search.exec(query);
+            while (match) {
                 obj[decode(match[1])] = decode(match[2]);
                 match = search.exec(query);
-           }
+            }
 
-           return obj;
+            return obj;
         }
         obj = adal._deserialize(INVALID_URLFRAGMENT);
         expect(obj['id_token' + IDTOKEN_MOCK]).toBe('');//This additional property is parsed because of ? operator in regex
@@ -851,6 +856,75 @@ describe('Adal', function () {
         expect(obj.state).toBe(STATE);
         expect(obj.session_state).toBe(SESSION_STATE);
         adal._deserialize = deserialize;//reassign state to original function
+    });
+
+    it('tests if callback is called after login, if popup window is null', function () {
+        adal.popUp = true;
+        adal.config.clientId = 'client';
+        adal.config.redirectUri = 'contoso_site';
+        var err;
+        var token;
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        window.open = function () {
+            return null;
+        }
+        adal.callback = callback;
+        adal.login();
+        expect(err).toBe('Popup Window is null. This can happen if you are using IE');
+        expect(token).toBe(null);
+        expect(adal.loginInProgress()).toBe(false);
+    });
+
+    it('tests login functionality in case of popup window', function () {
+        var timercallback;
+        window.clearInterval = function () {
+        };
+        window.setInterval = function (method, timer) {
+            timercallback = method;
+        };
+        adal.popUp = true;
+        adal.config.clientId = 'client';
+        adal.config.redirectUri = 'contoso_site';
+        var popupWindow;
+        window.open = function () {
+            popupWindow = {
+                location: {
+                    hash: VALID_URLFRAGMENT,
+                    href: 'hrefcontoso_site'
+                },
+                closed: false,
+                close: function () {
+                    this.closed = true;
+                }
+            };
+            return popupWindow;
+        };
+        var err;
+        var token;
+        var callback = function (valErr, valToken) {
+            err = valErr;
+            token = valToken;
+        };
+        adal.callback = callback;
+        mathMock.random = function () {
+            return 0.2;
+        };
+        adal.login();
+        waitsFor(function () {
+            timercallback();
+            storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, 'home page');
+            return popupWindow.closed == true;
+        }, 'error closing popup window', 2000);
+
+        runs(function () {
+            expect(adal.loginInProgress()).toBe(false);
+            expect(token).toBe(IDTOKEN_MOCK);
+            expect(window.location.href).not.toBe('home page');
+        });
+
     });
     // TODO angular intercepptor
     // TODO angular authenticationService

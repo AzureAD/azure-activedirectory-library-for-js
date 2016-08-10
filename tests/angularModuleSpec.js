@@ -333,7 +333,7 @@ describe('TaskCtl', function () {
         spyOn(rootScope, '$broadcast').andCallThrough();
         scope.$on('adal:loginFailure', function (event, message) {
             expect(event.name).toBe('adal:loginFailure');
-            expect(message).toBe('auto renew failure');
+            expect(message).toBe('resource is required');
         });
         scope.$apply();
         adalServiceProvider.config.loginResource = loginResourceOldValue;

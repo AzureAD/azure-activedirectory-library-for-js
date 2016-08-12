@@ -396,4 +396,18 @@ describe('TaskCtl', function () {
         expect(window.logMessage).toContain("test message");
         expect(Logging.level).toEqual(2);
     });
+
+    it('checks if anonymous endpoints are populated when states/routes are registered', function () {
+        route.routes['/togoList'] = {
+            controller: 'togoListController',
+            templateUrl: 'togoList.html',
+        };
+        expect(adalServiceProvider.config.anonymousEndpoints.indexOf('togoList.html')).toEqual(-1);
+        location.path('/todoList');
+        scope.$apply();
+        expect(route.current.controller).toBe(route.routes['/todoList'].controller);
+        expect(route.current.templateUrl).toBe(route.routes['/todoList'].templateUrl);
+        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/about'].templateUrl);
+        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/togoList'].templateUrl);
+    });
 });

@@ -238,7 +238,7 @@ describe('Adal', function () {
         adal._renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
-        expect(adal.callback).toBe(callback);
+        expect(adal.callback).toBe(null);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
@@ -925,6 +925,22 @@ describe('Adal', function () {
             expect(window.location.href).not.toBe('home page');
         });
 
+    });
+
+    it('ensures that adal.callback is not overridden in calls to getUser', function () {
+        var _callback = adal.callback;
+        adal.callback = null;
+        var err = '';
+        var user = {};
+        var callback = function (valErr, valResult) {
+            err = valErr;
+            user = valResult;
+        };
+        adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
+        adal.getUser(callback);
+        expect(user).toBe(adal._user);
+        expect(adal.callback).toBe(null);
+        adal.callback = _callback;
     });
     // TODO angular intercepptor
     // TODO angular authenticationService

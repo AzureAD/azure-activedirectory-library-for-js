@@ -397,17 +397,16 @@ describe('TaskCtl', function () {
         expect(Logging.level).toEqual(2);
     });
 
-    it('checks if anonymous endpoints are populated when states/routes are registered', function () {
-        route.routes['/togoList'] = {
-            controller: 'togoListController',
-            templateUrl: 'togoList.html',
-        };
-        expect(adalServiceProvider.config.anonymousEndpoints.indexOf('togoList.html')).toEqual(-1);
-        location.path('/todoList');
+    it('checks if template is resolved when templateUrl is a function', function () {
+        route.routes['/about'].templateUrl = function () {
+            return 'about.html';
+        }
+        $httpBackend.expectGET('about.html').respond(200);
+        location.url('/about');
         scope.$apply();
-        expect(route.current.controller).toBe(route.routes['/todoList'].controller);
-        expect(route.current.templateUrl).toBe(route.routes['/todoList'].templateUrl);
-        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/about'].templateUrl);
-        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/togoList'].templateUrl);
+        expect(typeof route.routes['/about'].templateUrl).toEqual('function');
+        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/about'].templateUrl());
+        route.routes['/about'].templateUrl = 'about.html';
+        expect(typeof route.routes['/about'].templateUrl).toEqual('string');
     });
 });

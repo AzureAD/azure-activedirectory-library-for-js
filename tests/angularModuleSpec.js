@@ -396,4 +396,17 @@ describe('TaskCtl', function () {
         expect(window.logMessage).toContain("test message");
         expect(Logging.level).toEqual(2);
     });
+
+    it('checks if template is resolved when templateUrl is a function', function () {
+        route.routes['/about'].templateUrl = function () {
+            return 'about.html';
+        }
+        $httpBackend.expectGET('about.html').respond(200);
+        location.url('/about');
+        scope.$apply();
+        expect(typeof route.routes['/about'].templateUrl).toEqual('function');
+        expect(adalServiceProvider.config.anonymousEndpoints).toContain(route.routes['/about'].templateUrl());
+        route.routes['/about'].templateUrl = 'about.html';
+        expect(typeof route.routes['/about'].templateUrl).toEqual('string');
+    });
 });

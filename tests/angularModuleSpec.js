@@ -397,3 +397,61 @@ describe('TaskCtl', function () {
         expect(Logging.level).toEqual(2);
     });
 });
+
+describe('StateCtrl', function () {
+    var $httpBackend, adalServiceProvider, rootScope, state, location, $templateCache, $stateParams;
+
+    //mock Application to allow us to inject our own dependencies
+    beforeEach(angular.mock.module('StateApplication'));
+
+    //mock the controller for the same reason and include $scope and $controller
+    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$httpBackend_, _$state_, _$location_, _$templateCache_, _$stateParams_) {
+        adalServiceProvider = _adalAuthenticationService_;
+        rootScope = _$rootScope_;
+        $httpBackend = _$httpBackend_;
+        state = _$state_;
+        location = _$location_;
+        $templateCache = _$templateCache_;
+        $stateParams = _$stateParams_;
+        //create an empty scope
+        $httpBackend.expectGET('settings.html').respond(200);
+        $httpBackend.expectGET('profile.html').respond(200);
+        $httpBackend.expectGET('name.html').respond(200);
+        $httpBackend.expectGET('account.html').respond(200);
+        $templateCache.put('profile.html', '');
+        $templateCache.put('settings.html', '');
+        $templateCache.put('account.html', '');
+        $templateCache.put('name.html', '');
+        adalServiceProvider.config.anonymousEndpoints = [];
+    }));
+
+    it('checks if anonymous endpoints are populated on statechange event if states are nested and separated by .', function () {
+        rootScope.$on('$stateChangeSuccess', function (event, toState) {
+            state = toState;
+        });
+        var urlNavigate = 'settings/profile/name';
+        location.url(urlNavigate);
+        rootScope.$digest();
+        expect(state.name).toEqual('settings.profile.name');
+        var states = urlNavigate.split('/');
+        for (var i = 0; i < states.length; i++) {
+            expect(adalServiceProvider.config.anonymousEndpoints[i]).toEqual(states[i] + '.html');
+        }
+    });
+
+    it('checks if state is resolved when templateUrl is a function which depends on stateParams and states have parent property', function () {
+        rootScope.$on('$stateChangeSuccess', function (event, toState) {
+            state = toState;
+        });
+        var urlNavigate = 'settings/account/Id/testId/name/Name/testName';
+        location.url(urlNavigate);
+        rootScope.$digest();
+        expect($stateParams.accountId).toEqual('testId');
+        expect($stateParams.accountName).toEqual('testName');
+        expect(state.name).toEqual('settings.account.name');
+        var states = state.name.split('.');
+        for (var i = 0; i < states.length ; i++) {
+            expect(adalServiceProvider.config.anonymousEndpoints[i]).toEqual(states[i] + '.html');
+        }
+    });
+});

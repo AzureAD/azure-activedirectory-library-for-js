@@ -413,7 +413,6 @@ describe('StateCtrl', function () {
         location = _$location_;
         $templateCache = _$templateCache_;
         $stateParams = _$stateParams_;
-        //create an empty scope
         $httpBackend.expectGET('settings.html').respond(200);
         $httpBackend.expectGET('profile.html').respond(200);
         $httpBackend.expectGET('name.html').respond(200);

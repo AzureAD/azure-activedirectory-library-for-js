@@ -74,7 +74,3 @@ var stateApp = angular.module("StateApplication", ['ui.router', 'AdalAngular'])
 }]);
 
 app.controller('StateCtrl', ['$scope', '$location', 'adalAuthenticationService', function ($scope, $location, adalAuthenticationService) { }]);
-
-
-
-

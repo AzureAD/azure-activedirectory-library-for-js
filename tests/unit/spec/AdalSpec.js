@@ -944,7 +944,7 @@ describe('Adal', function () {
     });
 
     it('tests _guid function if window.crypto is defined in the browser', function () {
-        var buffer = [10, 11, 12, 13, 14, 15, 16, 17];
+        var buffer = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
         window.msCrypto = null;
         window.crypto = {
             getRandomValues: function (_buffer) {
@@ -953,7 +953,7 @@ describe('Adal', function () {
                 }
             }
         };
-        expect(adal._guid()).toBe('000a000b-000c-000d-000e-000f00100011');
+        expect(adal._guid()).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
         window.crypto = null;
     });
     // TODO angular intercepptor

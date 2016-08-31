@@ -942,6 +942,20 @@ describe('Adal', function () {
         expect(adal.callback).toBe(null);
         adal.callback = _callback;
     });
+
+    it('tests _guid function if window.crypto is defined in the browser', function () {
+        var buffer = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+        window.msCrypto = null;
+        window.crypto = {
+            getRandomValues: function (_buffer) {
+                for (var i = 0; i < _buffer.length; i++) {
+                    _buffer[i] = buffer[i];
+                }
+            }
+        };
+        expect(adal._guid()).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
+        window.crypto = null;
+    });
     // TODO angular intercepptor
     // TODO angular authenticationService
 });

@@ -1,3 +1,12 @@
+Version 1.0.12
+==========================
+* Adding support for Login using a pop-up instead of a full redirect. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/60
+* Updating anonymousEndpoints feature to handle nested states in ui-router. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/345
+* Fix bug in anonymousEndpoints allowing templateUrl property of the route/state to be declared as a function. Thanks @dhodgin for the Pull Request. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/368 
+* Using window.crypto.getRandomValues API to generate version 4 UUID as per RFC 4122. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/88
+* Fix bug in handleWindowCallback to call the callback defined on config after Login operation is completed. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/324
+* Other bug fixes and updates.
+
 Version 1.0.11
 ==========================
 * Adding support for using a special html for iFrames. This prevents app reloading in the iframe. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/FAQs#q1-my-app-is-re-loading-every-time-adal-renews-a-token

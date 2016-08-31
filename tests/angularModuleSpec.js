@@ -399,7 +399,7 @@ describe('TaskCtl', function () {
 });
 
 describe('StateCtrl', function () {
-    var $httpBackend, adalServiceProvider, rootScope, state, location, $templateCache, $stateParams;
+    var $httpBackend, adalServiceProvider, rootScope, $state, location, $templateCache, $stateParams;
 
     //mock Application to allow us to inject our own dependencies
     beforeEach(angular.mock.module('StateApplication'));
@@ -409,7 +409,7 @@ describe('StateCtrl', function () {
         adalServiceProvider = _adalAuthenticationService_;
         rootScope = _$rootScope_;
         $httpBackend = _$httpBackend_;
-        state = _$state_;
+        $state = _$state_;
         location = _$location_;
         $templateCache = _$templateCache_;
         $stateParams = _$stateParams_;
@@ -425,6 +425,7 @@ describe('StateCtrl', function () {
     }));
 
     it('checks if anonymous endpoints are populated on statechange event if states are nested and separated by .', function () {
+        var state;
         rootScope.$on('$stateChangeSuccess', function (event, toState) {
             state = toState;
         });
@@ -439,6 +440,7 @@ describe('StateCtrl', function () {
     });
 
     it('checks if state is resolved when templateUrl is a function which depends on stateParams and states have parent property', function () {
+        var state;
         rootScope.$on('$stateChangeSuccess', function (event, toState) {
             state = toState;
         });

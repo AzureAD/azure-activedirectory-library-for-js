@@ -5,6 +5,11 @@ Active Directory Authentication Library (ADAL) for JavaScript
 Active Directory Authentication Library for JavaScript (ADAL JS) helps you to use Azure AD for handling authentication in your single page applications.
 This library is optimized for working together with AngularJS.
 
+## Versions
+Current version - 1.0.12  
+Minimum recommended version - 1.0.11  
+You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
+
 ## Samples and Documentation
 
 [We provide a full suite of sample applications and documentation on GitHub](https://github.com/azure-samples?query=active-directory) to help you get started with learning the Azure Identity system. This includes tutorials for native clients such as Windows, Windows Phone, iOS, OSX, Android, and Linux. We also provide full walkthroughs for authentication flows such as OAuth2, OpenID Connect, Graph API, and other awesome features. 

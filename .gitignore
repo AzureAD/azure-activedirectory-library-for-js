@@ -12,6 +12,7 @@
 .externalToolBuilders
 *.swp
 node_modules
+typings
 *~
 /.c9revisions/
 doc/

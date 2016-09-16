@@ -82,6 +82,14 @@ describe('TaskCtl', function () {
         // to prevent full page reload error in karma
         window.onbeforeunload = function () { return };
         controller('TaskCtl', { $scope: scope, adalAuthenticationService: adalServiceProvider });
+
+        location.$$html5 = true;
+        window.event = {
+            preventDefault: function () {
+                return;
+            }
+        };
+
     }));
 
     it('assigns user', function () {
@@ -226,7 +234,7 @@ describe('TaskCtl', function () {
                 }
             },
         };
-        window.location.hash = 'id_token=sample&state=4343';
+        location.hash('#id_token=sample&state=4343');
         spyOn(rootScope, '$broadcast').andCallThrough();
 
         var eventName = '', msg = '';
@@ -255,7 +263,7 @@ describe('TaskCtl', function () {
             },
             callBackMappedToRenewStates: { "4343": callback }
         };
-        window.location.hash = 'error=sample&error_description=renewfailed&state=4343';
+        location.hash('#error=sample&error_description=renewfailed&state=4343');
         scope.$apply();
         expect(error).toBe('sample');
         expect(errorDesc).toBe('renewfailed');
@@ -276,7 +284,7 @@ describe('TaskCtl', function () {
             },
             callBackMappedToRenewStates: { "4343": callback }
         };
-        window.location.hash = 'access_token=newAccessToken123&state=4343';
+        location.hash('#access_token=newAccessToken123&state=4343');
         scope.$apply();
         expect(error).toBe('');
         expect(errorDesc).toBe('');
@@ -298,7 +306,8 @@ describe('TaskCtl', function () {
             },
             callBackMappedToRenewStates: { "4343": callback }
         };
-        window.location.hash = 'id_token=newIdToken123&state=4343';
+        location.hash('#id_token=newIdToken123&state=4343');
+        
         scope.$apply();
         expect(errorDesc).toBe('Invalid id_token. id_token: newIdToken123');
         expect(error).toBe('invalid id_token');
@@ -308,7 +317,7 @@ describe('TaskCtl', function () {
 
     it('tests login failure after users logs in', function () {
         var mockInvalidClientIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJ1cG4iOiJqb2huQGVtYWlsLmNvbSJ9.zNX4vfLzlbFeKHZ9BMN3sYLtEEE-0o1RoL4NUhXz-l8';
-        window.location.hash = 'id_token=' + mockInvalidClientIdToken + '&state=1234';
+        location.hash('#'+ 'id_token=' + mockInvalidClientIdToken + '&state=1234');
         window.sessionStorage.setItem('adal.state.login', '1234');
         spyOn(rootScope, '$broadcast').andCallThrough();
         var eventName = '', error = '', errorDesc = '', token = '';
@@ -327,7 +336,7 @@ describe('TaskCtl', function () {
 
     it('tests login success after users logs in', function () {
         var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOm51bGx9.DLCO6yIWhnNBYfHH8qFPswcH4M2Alpjn6AZy7K6HENY';
-        window.location.hash = 'id_token=' + mockIdToken + '&state=1234';
+        location.hash('#' + 'id_token=' + mockIdToken + '&state=1234');
         window.sessionStorage.setItem('adal.state.login', '1234');
         spyOn(rootScope, '$broadcast').andCallThrough();
         var eventName = '', token = '';

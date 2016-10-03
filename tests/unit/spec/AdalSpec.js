@@ -410,6 +410,16 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
 
+    it('uses adfs specific logout url if tenant is adfs', function (){
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.tenant = 'adfs'
+        spyOn(adal, 'promptUser');
+        adal.logOut();
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + '/adfs/ls/?wa=wsignout1.0');
+    })
+
     it('gets user from cache', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
         adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';

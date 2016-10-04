@@ -255,7 +255,7 @@ describe('Adal', function () {
     });
 
     //Necessary for integration with Angular when multiple http calls are queued.
-    it('allows multiple callers to be notified when the token is renewed', function () {
+    it('allows multiple callers to be notified when the token is renewed. Also checks if all registered acquireToken callbacks are called in the case when one of the callbacks throws an error', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
@@ -266,6 +266,7 @@ describe('Adal', function () {
         var callback = function (valErr, valToken) {
             err = valErr;
             token = valToken;
+            throw new Error("Error occurred in callback function");
         };
         var callback2 = function (valErr, valToken) {
             err2 = valErr;
@@ -956,6 +957,7 @@ describe('Adal', function () {
         expect(adal._guid()).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
         window.crypto = null;
     });
+
     // TODO angular intercepptor
     // TODO angular authenticationService
 });

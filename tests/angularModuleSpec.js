@@ -76,6 +76,8 @@ describe('TaskCtl', function () {
             return q.when(token);
         };
 
+        window.parent.AuthenticationContext = window.AuthenticationContext;
+
         controller('TaskCtl', { $scope: scope, adalAuthenticationService: adalServiceProvider });
     }));
 
@@ -210,12 +212,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests stateMismatch broadcast when state does not match', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: function () { },
-                _renewStates: {}
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = {};
         window.location.hash = 'id_token=sample&state=4343';
         spyOn(rootScope, '$broadcast').andCallThrough();
         scope.$on('adal:stateMismatch', function (event, message) {
@@ -227,12 +225,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests callback is called when response contains error', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: function () { },
-                _renewStates: ['4343']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['4343'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['4343'] = function (error, token) {
             expect(error).toBe('renewfailed');
@@ -242,12 +236,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests callback is called when response contains access token', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: function () { },
-                _renewStates: ['4343']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['4343'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['4343'] = function (error, token) {
             expect(error).toBe('');
@@ -259,12 +249,8 @@ describe('TaskCtl', function () {
 
 
     it('tests callback is called when response contains id token', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: function () { },
-                _renewStates: ['4343']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['4343'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['4343'] = function (error, token) {
             expect(error).toBe('Invalid id_token. id_token: newIdToken123');
@@ -276,12 +262,8 @@ describe('TaskCtl', function () {
 
 
     it('tests login failure after users logs in', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: 'callback',
-                _renewStates: ['1234']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['1234'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['1234'] = 'callback';
         var mockInvalidClientIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJ1cG4iOiJqb2huQGVtYWlsLmNvbSJ9.zNX4vfLzlbFeKHZ9BMN3sYLtEEE-0o1RoL4NUhXz-l8';
@@ -297,12 +279,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests login success after users logs in', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: 'callback',
-                _renewStates: ['1234']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['1234'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['1234'] = 'callback';
         var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOm51bGx9.DLCO6yIWhnNBYfHH8qFPswcH4M2Alpjn6AZy7K6HENY';
@@ -319,12 +297,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests auto id token renew when id token expires', function () {
-        window.parent.AuthenticationContext = function () {
-            return {
-                callback: 'callback',
-                _renewStates: ['1234']
-            };
-        };
+        window.parent.AuthenticationContext.callback = function () { };
+        window.parent.AuthenticationContext._renewStates = ['1234'];
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates['1234'] = 'callback';
         var loginResourceOldValue = adalServiceProvider.config.loginResource;
@@ -333,45 +307,16 @@ describe('TaskCtl', function () {
         spyOn(rootScope, '$broadcast').andCallThrough();
         scope.$on('adal:loginFailure', function (event, message) {
             expect(event.name).toBe('adal:loginFailure');
-            expect(message).toBe('auto renew failure');
+            expect(message).toBe('resource is required');
         });
         scope.$apply();
         adalServiceProvider.config.loginResource = loginResourceOldValue;
         expect(rootScope.$broadcast).toHaveBeenCalled();
     });
 
-    it('tests login handler', function () {
-        spyOn(rootScope, '$broadcast').andCallThrough();
-
-        adalServiceProvider.config.localLoginUrl = 'localLoginUrl';
-        adalServiceProvider.login();
-        scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
-            expect(newUrl).toContain('localLoginUrl');
-            console.log('location event called');
-            event.preventDefault();
-        })
-        expect(adalServiceProvider.loginInProgress()).toBe(false);
-        scope.$apply();
-        expect(rootScope.$broadcast).toHaveBeenCalled();
-
-        adalServiceProvider.config.localLoginUrl = null
-        adalServiceProvider.login();
-        scope.$on('adal:loginRedirect', function (event, message) {
-            expect(event.name).toBe('adal:loginRedirect');
-        });
-        expect(adalServiceProvider.loginInProgress()).toBe(true);
-        expect(rootScope.$broadcast).toHaveBeenCalled();
-    });
-
     it('tests route change handler', function () {
-        var todoRoute = route.routes['/todoList'];
         var homeRoute = route.routes['/home'];
         var aboutRoute = route.routes['/about'];
-
-        location.url('/todoList');
-        scope.$apply();
-        expect(route.current.controller).toBe(todoRoute.controller);
-        expect(route.current.template).toBe(todoRoute.template);
 
         location.url('/home');
         scope.$apply();
@@ -395,6 +340,27 @@ describe('TaskCtl', function () {
         adalServiceProvider.info("test message");
         expect(window.logMessage).toContain("test message");
         expect(Logging.level).toEqual(2);
+    });
+
+    it('checks if user is redirected to the custom Login Page when localLoginUrl is specified', function () {
+        spyOn(rootScope, '$broadcast').andCallThrough();
+
+        adalServiceProvider.config.localLoginUrl = '/login';
+        $httpBackend.expectGET('login.html').respond(200);
+        var loginRoute = route.routes['/login'];
+        location.url('/todoList');
+        scope.$apply();
+        expect(route.current.controller).toBe(loginRoute.controller);
+        expect(route.current.templateUrl).toBe(loginRoute.templateUrl);
+
+        adalServiceProvider.config.localLoginUrl = null;
+        location.url('/todoList');
+        scope.$apply();
+        scope.$on('adal:loginRedirect', function (event, message) {
+            expect(event.name).toBe('adal:loginRedirect');
+        });
+        expect(adalServiceProvider.loginInProgress()).toBe(true);
+        expect(rootScope.$broadcast).toHaveBeenCalled();
     });
 });
 

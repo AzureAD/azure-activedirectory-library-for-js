@@ -239,7 +239,6 @@ describe('Adal', function () {
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal.callback).toBe(null);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
@@ -278,7 +277,6 @@ describe('Adal', function () {
         adal.acquireToken(RESOURCE1, callback);
         //Simulate second acquire i.e. second service call from Angular.
         adal.acquireToken(RESOURCE1, callback2);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
@@ -711,7 +709,6 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN)).toBe('33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333' + '|' + 'client');
         expect(adal._renewStates.length).toBe(1);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
         waitsFor(function () {

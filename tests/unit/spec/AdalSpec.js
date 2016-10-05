@@ -255,7 +255,7 @@ describe('Adal', function () {
     });
 
     //Necessary for integration with Angular when multiple http calls are queued.
-    it('allows multiple callers to be notified when the token is renewed', function () {
+    it('allows multiple callers to be notified when the token is renewed. Also checks if all registered acquireToken callbacks are called in the case when one of the callbacks throws an error', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
@@ -266,6 +266,7 @@ describe('Adal', function () {
         var callback = function (valErr, valToken) {
             err = valErr;
             token = valToken;
+            throw new Error("Error occurred in callback function");
         };
         var callback2 = function (valErr, valToken) {
             err2 = valErr;
@@ -1428,12 +1429,12 @@ describe('Adal', function () {
         expect(adal.isCallback(undefined, search)).toBe(true);
     });
 
-    it('verifies that isCallback returns true if the fragment portion of the URL contains a token and the search portion is blank', function() {
+    it('verifies that isCallback returns true if the fragment portion of the URL contains a access_token and the search portion is blank', function() {
         var hash = '#/access_token=4dce1d4c-3828-3873-bdda-9b2ba2726ac4&state=1120063b-8c7b-4fac-a121-a0e7e4ccb270&token_type=Bearer&expires_in=197&session_state=a41ac575b3d4c1b50acee40499a7efc1d46485913bd8520b13eebec6a657da3e.Vxrih14RiYpyTIs-X21-Pg';
          expect(adal.isCallback(hash, undefined)).toBe(true);
    });
 
-    it('verifies that isCallback returns true if the fragment portion of the URL contains both a token and an id_token (after embedded question mark) and the search portion is blank', function() {
+    it('verifies that isCallback returns true if the fragment portion of the URL contains both a access_token and an id_token (after embedded question mark) and the search portion is blank', function() {
         var hash = '#/access_token=eda1a60f-4dbd-3b8c-bfce-60d3980040a5&id_token=eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiQUI4Si1WaHlvbWxseTJBbktvN2dVUSIsInN1YiI6ImFkbWluIiwiYXVkIjpbImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiXSwiYXpwIjoiaFA3cGtyV2FCUGtjT0xEWlZibHpfSWdlbVZrYSIsImF1dGhfdGltZSI6MTQ3NTUyMjUyMCwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5NDQzXC9vYXV0aDJcL3Rva2VuIiwic24iOiJXb29kd2FyZCIsImdpdmVuX25hbWUiOiJEYXZpZCIsImV4cCI6MTQ3NTUyMjgyMCwibm9uY2UiOiI1NTRkMjE5Ny0yYTQzLTQzMGUtOGJmNy1kMjk5MTIxNjE5MDEiLCJpYXQiOjE0NzU1MjI1MjB9.WrTgmLsBuP6BG1v1aBs4dp3ONYEtuzlUySsG4ImpAVIBg9BJv_nc9NPDSK_IMxiKi7sHwJWzCzNLHUbOkmmZxTqIQt7KEs_Kx2ZBlf_Yvb_YPyAcUasBlX4BzHLq0nOAqax43fgholLLXPA4WZmBkDVw6piquPQ45uCJ8_Myezs&state=e60a53f8-fadc-477a-b51d-64e7c31b06e9&token_type=Bearer&expires_in=300&session_state=8cbc061a22547adff4c5f88a80de8999129997b8ff7c7c66c870a43d6d2a2d6a.enxHcp7nDHTPhFPWaY-l4g';
          expect(adal.isCallback(hash, undefined)).toBe(true);
    });
@@ -1448,18 +1449,18 @@ describe('Adal', function () {
         expect(adal._getParameters(undefined, search).id_token).toBe(TOKEN);
     });
 
-    it('verifies that _getParameters returns an object containing the token when the fragment porion of the URL contains the access_token and the search portion of the URL is blank', function() {
+    it('verifies that _getParameters returns an object containing the id_token when the fragment porion of the URL contains the access_token and the search portion of the URL is blank', function() {
         var TOKEN = '4dce1d4c-3828-3873-bdda-9b2ba2726ac4';
         var hash = '#/access_token=' + TOKEN + '&state=1120063b-8c7b-4fac-a121-a0e7e4ccb270&token_type=Bearer&expires_in=197&session_state=a41ac575b3d4c1b50acee40499a7efc1d46485913bd8520b13eebec6a657da3e.Vxrih14RiYpyTIs-X21-Pg';
         expect(adal._getParameters(hash, undefined).access_token).toBe(TOKEN);
     });
 
-    it('verifies that _getParameters returns an object containing the token when the fragment portion of the URL contains the id_token and the search portion of the URL is blank.', function() {
+    it('verifies that _getParameters returns an object containing the id_token when the fragment portion of the URL contains the id_token and the search portion of the URL is blank.', function() {
         var hash = '#/' + VALID_URLFRAGMENT;
         expect(adal._getParameters(hash, undefined).id_token).toBe(IDTOKEN_MOCK);
     });
 
-    it('', function() {
+    it('verifies that _getParameters returns an object containing both the access_token and the id_token when the fragment poriton of the URL contains both the id_token and the access_token and the search portion of the URL is blank.', function() {
         var ID_TOKEN = 'eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiQUI4Si1WaHlvbWxseTJBbktvN2dVUSIsInN1YiI6ImFkbWluIiwiYXVkIjpbImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiXSwiYXpwIjoiaFA3cGtyV2FCUGtjT0xEWlZibHpfSWdlbVZrYSIsImF1dGhfdGltZSI6MTQ3NTUyMjUyMCwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5NDQzXC9vYXV0aDJcL3Rva2VuIiwic24iOiJXb29kd2FyZCIsImdpdmVuX25hbWUiOiJEYXZpZCIsImV4cCI6MTQ3NTUyMjgyMCwibm9uY2UiOiI1NTRkMjE5Ny0yYTQzLTQzMGUtOGJmNy1kMjk5MTIxNjE5MDEiLCJpYXQiOjE0NzU1MjI1MjB9.WrTgmLsBuP6BG1v1aBs4dp3ONYEtuzlUySsG4ImpAVIBg9BJv_nc9NPDSK_IMxiKi7sHwJWzCzNLHUbOkmmZxTqIQt7KEs_Kx2ZBlf_Yvb_YPyAcUasBlX4BzHLq0nOAqax43fgholLLXPA4WZmBkDVw6piquPQ45uCJ8_Myezs';
         var ACCESS_TOKEN = 'eda1a60f-4dbd-3b8c-bfce-60d3980040a5';
         var hash = '#/access_token=' + ACCESS_TOKEN + '&id_token=' + ID_TOKEN + '&state=e60a53f8-fadc-477a-b51d-64e7c31b06e9&token_type=Bearer&expires_in=300&session_state=8cbc061a22547adff4c5f88a80de8999129997b8ff7c7c66c870a43d6d2a2d6a.enxHcp7nDHTPhFPWaY-l4g';

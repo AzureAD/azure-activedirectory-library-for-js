@@ -36,6 +36,10 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
         template: '<div>todoList</div>',
         requireADLogin: true
     }).
+    when('/login', {
+    controller: 'loginController',
+    templateUrl: 'login.html',
+    }).
     otherwise({ redirectTo: '/home' });
 
     var endpoints = {
@@ -50,7 +54,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
             clientId: 'clientid123',
             loginResource: 'loginResource123',
             redirectUri: 'https://myapp.com/page',
-            endpoints: endpoints  // optional
+            endpoints: endpoints,  // optional
         },
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );

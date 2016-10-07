@@ -891,7 +891,8 @@ describe('Adal', function () {
             popupWindow = {
                 location: {
                     hash: VALID_URLFRAGMENT,
-                    href: 'hrefcontoso_site'
+                    href: 'hrefcontoso_site',
+                    search: ''
                 },
                 closed: false,
                 close: function () {
@@ -910,6 +911,7 @@ describe('Adal', function () {
         mathMock.random = function () {
             return 0.2;
         };
+        
         adal.login();
         waitsFor(function () {
             timercallback();
@@ -953,6 +955,515 @@ describe('Adal', function () {
         };
         expect(adal._guid()).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
         window.crypto = null;
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, and scope and responseType are not truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, and scope and responseType are truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, and scope and responseType are not truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });    
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });     
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, and scope and responseType are truthy', function() {
+        adal.config.tenant = undefined;
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/common\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });        
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, and scope and responseType are not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, and scope and responseType are truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, and scope and responseType are not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });     
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });  
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });        
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, and scope and responseType are truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });  
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, and scope and responseType are not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });      
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = undefined;
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });    
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/oauth2\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, and scope and responseType are truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = undefined;
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/oauth2\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, and scope and responseType are not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = '';
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });    
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });       
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, and scope and responseType are truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = '';
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });       
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, and scope and responseType are not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/another_context\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });     
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/another_context\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/another_context\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, and scope and responseType are truthy', function() {
+        adal.config.tenant = 'contoso';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/contoso\/another_context\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    }); 
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, and scope and responseType are not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = '';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/another_context\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });     
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, scope is not truthy, and responseType is truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = '';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/another_context\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*/);
+    });    
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, scope is truthy, and responseType is not truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = 'openid';
+        adal.config.responseType = '';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/another_context\/authorize\?response_type=id_token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });  
+
+    it('verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, and scope and responseType are truthy', function() {
+        adal.config.tenant = '';
+        adal.config.rootContext = 'another_context';
+        adal.config.scope = 'openid';
+        adal.config.responseType = 'id_token token';
+        adal._initResponseType();
+        adal.config.clientId = 'the_client_id';
+        adal.config.redirectUri = 'the_redirect_uri';
+        adal.config.state = 'the_state';
+        adal.config.correlationId = 'the_correlation_id';
+        expect(adal._getNavigateUrl(adal.config.responseType, '')).toMatch(/https:\/\/login\.microsoftonline\.com\/another_context\/authorize\?response_type=id_token%20token&client_id=the_client_id&redirect_uri=the_redirect_uri&state=the_state&client-request-id=the_correlation_id.*&scope=openid/);
+    });  
+
+    it('verifies _createUser() returns null when an aud claim is not contained within the id_token', function() {
+        var TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.eyJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ==";
+        expect(adal._createUser(TOKEN)).toBe(null);
+    });
+
+    it('verifies _createUser() returns user object with userName matching the upn contained within the id_token when a single aud claim matching the clientId is present', function() {
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
+        expect(adal._createUser(IDTOKEN_MOCK).userName).toBe('user@oauthimplicit.ccsctp.net');
+    });
+
+    it('verifies _createUser() returns null when an unmatching single aud claim is contained within the id_token', function() {
+        adal.config.clientId = 'not-a-match';
+        expect(adal._createUser(IDTOKEN_MOCK)).toBe(null);
+    });
+
+    it('verifies _createUser returns user object with userName matching the upn contained within the id_token when an aud claim array is present and a matching azp claim is present', function() {
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
+        var TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOlsiZTlhNWE4YjYtOGFmNy00NzE5LTk4MjEtMGRlZWYyNTVmNjhlIl0sImF6cCI6ImU5YTVhOGI2LThhZjctNDcxOS05ODIxLTBkZWVmMjU1ZjY4ZSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MtcHBlLm5ldC81MmQ0YjA3Mi05NDcwLTQ5ZmItODcyMS1iYzNhMWM5OTEyYTEvIiwiaWF0IjoxNDExOTU5MDAwLCJuYmYiOjE0MTE5NTkwMDAsImV4cCI6MTQxMTk2MjkwMCwidmVyIjoiMS4wIiwidGlkIjoiNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExIiwiYW1yIjpbInB3ZCJdLCJvaWQiOiJmYTNjNWZhNy03ZDk4LTRmOTctYmZjNC1kYmQzYTRhMDI0MzEiLCJ1cG4iOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsInVuaXF1ZV9uYW1lIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJzdWIiOiJZN1RteEVjT0hTMjQ0YUdrdGNtamJyc2t2Tm1TUjhYejlfNmZtVzY1eWhnIiwiZmFtaWx5X25hbWUiOiJhIiwiZ2l2ZW5fbmFtZSI6InVzZXIiLCJub25jZSI6IjgwZmZhOTBhLWNiNzQtNGQwZi1hNGFjLWFlMWY5M2UzMmZlMCIsInB3ZF9leHAiOiI1Nzc5OTEwIiwicHdkX3VybCI6Imh0dHBzOi8vcG9ydGFsLm1pY3Jvc29mdG9ubGluZS5jb20vQ2hhbmdlUGFzc3dvcmQuYXNweCJ9.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
+        expect(adal._createUser(TOKEN).userName).toBe('user@oauthimplicit.ccsctp.net');
+    });
+
+    it('verifies _createUser returns null when the id_token contains an matching aud claim within an aud claim array but without a matching azp claim', function() {
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
+        var TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOlsiZTlhNWE4YjYtOGFmNy00NzE5LTk4MjEtMGRlZWYyNTVmNjhlIl0sImF6cCI6Im5vdC1hLW1hdGNoIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy1wcGUubmV0LzUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMS8iLCJpYXQiOjE0MTE5NTkwMDAsIm5iZiI6MTQxMTk1OTAwMCwiZXhwIjoxNDExOTYyOTAwLCJ2ZXIiOiIxLjAiLCJ0aWQiOiI1MmQ0YjA3Mi05NDcwLTQ5ZmItODcyMS1iYzNhMWM5OTEyYTEiLCJhbXIiOlsicHdkIl0sIm9pZCI6ImZhM2M1ZmE3LTdkOTgtNGY5Ny1iZmM0LWRiZDNhNGEwMjQzMSIsInVwbiI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0IiwidW5pcXVlX25hbWUiOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsInN1YiI6Ilk3VG14RWNPSFMyNDRhR2t0Y21qYnJza3ZObVNSOFh6OV82Zm1XNjV5aGciLCJmYW1pbHlfbmFtZSI6ImEiLCJnaXZlbl9uYW1lIjoidXNlciIsIm5vbmNlIjoiODBmZmE5MGEtY2I3NC00ZDBmLWE0YWMtYWUxZjkzZTMyZmUwIiwicHdkX2V4cCI6IjU3Nzk5MTAiLCJwd2RfdXJsIjoiaHR0cHM6Ly9wb3J0YWwubWljcm9zb2Z0b25saW5lLmNvbS9DaGFuZ2VQYXNzd29yZC5hc3B4In0=.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
+        expect(adal._createUser(TOKEN)).toBe(null);
+    });
+
+    it('verifies _createUser returns user object with userName matching the email claim contained within the id_token when no upn claim is present and a single aud claim matchint the clientId is present', function() {
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
+        var TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwiZW1haWwiOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsInVuaXF1ZV9uYW1lIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJzdWIiOiJZN1RteEVjT0hTMjQ0YUdrdGNtamJyc2t2Tm1TUjhYejlfNmZtVzY1eWhnIiwiZmFtaWx5X25hbWUiOiJhIiwiZ2l2ZW5fbmFtZSI6InVzZXIiLCJub25jZSI6IjgwZmZhOTBhLWNiNzQtNGQwZi1hNGFjLWFlMWY5M2UzMmZlMCIsInB3ZF9leHAiOiI1Nzc5OTEwIiwicHdkX3VybCI6Imh0dHBzOi8vcG9ydGFsLm1pY3Jvc29mdG9ubGluZS5jb20vQ2hhbmdlUGFzc3dvcmQuYXNweCJ9.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA'; 
+        expect(adal._createUser(TOKEN).userName).toBe('user@oauthimplicit.ccsctp.net');
+    });
+
+    it('verifies _createUser returns user object with userName matching the sub claim contained within the id_token when no upn and no email claim are present and a single aud claim matchint the clientId is present', function() {
+        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
+        var TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidW5pcXVlX25hbWUiOiJ1c2VyQG9hdXRoaW1wbGljaXQuY2NzY3RwLm5ldCIsInN1YiI6Ilk3VG14RWNPSFMyNDRhR2t0Y21qYnJza3ZObVNSOFh6OV82Zm1XNjV5aGciLCJmYW1pbHlfbmFtZSI6ImEiLCJnaXZlbl9uYW1lIjoidXNlciIsIm5vbmNlIjoiODBmZmE5MGEtY2I3NC00ZDBmLWE0YWMtYWUxZjkzZTMyZmUwIiwicHdkX2V4cCI6IjU3Nzk5MTAiLCJwd2RfdXJsIjoiaHR0cHM6Ly9wb3J0YWwubWljcm9zb2Z0b25saW5lLmNvbS9DaGFuZ2VQYXNzd29yZC5hc3B4In0=.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA'; 
+        expect(adal._createUser(TOKEN).userName).toBe('Y7TmxEcOHS244aGktcmjbrskvNmSR8Xz9_6fmW65yhg');
+    });
+
+    it('verifies that isCallback returns false if both the fragment and search portions of the URL are blank', function() {
+        expect(adal.isCallback(undefined, undefined)).toBe(false);
+    });
+    
+    it('verifies that isCallback returns true if the fragment portion of the URL contains an id_token and the search portion is blank', function() {
+        var hash = '#/' + VALID_URLFRAGMENT;
+        expect(adal.isCallback(hash, undefined)).toBe(true);
+    });
+
+    it('verifies that isCallback returns true if the fragment portion of the URL is blank and the search portion contains an id_token', function() {
+        var search = '?id_token=eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6WyJoUDdwa3JXYUJQa2NPTERaVmJsel9JZ2VtVmthIl0sImF6cCI6ImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiLCJhdXRoX3RpbWUiOjE0NzU1MjI4MDksImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsInNuIjoiV29vZHdhcmQiLCJnaXZlbl9uYW1lIjoiRGF2aWQiLCJleHAiOjE0NzU1MjMxMDksIm5vbmNlIjoiNWE3MWM5ZmYtYjI1YS00YzE1LWEzNjgtNzdmODgwZWRkOWI2IiwiaWF0IjoxNDc1NTIyODA5fQ.B5KAglX92PPppP66yMkyzD1LA7qdWhrQWqYEOzJ0uFB_ZN8_u7G7Pp0qBy0Uilbh6AS0go64pzX5sxU72psHr6z2xVMJYm8-zjTb1GDVP3thUlZ1nEK-esUjSBLDnN1qKmMINtX82S3KIpAlehB1nZ94kbOHCoZ9v_k1rnTiWRA&state=6777d1e8-6014-403d-ac0c-297dec5cc514';
+        expect(adal.isCallback(undefined, search)).toBe(true);
+    });
+
+    it('verifies that isCallback returns true if the fragment portion of the URL contains a access_token and the search portion is blank', function() {
+        var hash = '#/access_token=4dce1d4c-3828-3873-bdda-9b2ba2726ac4&state=1120063b-8c7b-4fac-a121-a0e7e4ccb270&token_type=Bearer&expires_in=197&session_state=a41ac575b3d4c1b50acee40499a7efc1d46485913bd8520b13eebec6a657da3e.Vxrih14RiYpyTIs-X21-Pg';
+         expect(adal.isCallback(hash, undefined)).toBe(true);
+   });
+
+    it('verifies that isCallback returns true if the fragment portion of the URL contains both a access_token and an id_token (after embedded question mark) and the search portion is blank', function() {
+        var hash = '#/access_token=eda1a60f-4dbd-3b8c-bfce-60d3980040a5&id_token=eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiQUI4Si1WaHlvbWxseTJBbktvN2dVUSIsInN1YiI6ImFkbWluIiwiYXVkIjpbImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiXSwiYXpwIjoiaFA3cGtyV2FCUGtjT0xEWlZibHpfSWdlbVZrYSIsImF1dGhfdGltZSI6MTQ3NTUyMjUyMCwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5NDQzXC9vYXV0aDJcL3Rva2VuIiwic24iOiJXb29kd2FyZCIsImdpdmVuX25hbWUiOiJEYXZpZCIsImV4cCI6MTQ3NTUyMjgyMCwibm9uY2UiOiI1NTRkMjE5Ny0yYTQzLTQzMGUtOGJmNy1kMjk5MTIxNjE5MDEiLCJpYXQiOjE0NzU1MjI1MjB9.WrTgmLsBuP6BG1v1aBs4dp3ONYEtuzlUySsG4ImpAVIBg9BJv_nc9NPDSK_IMxiKi7sHwJWzCzNLHUbOkmmZxTqIQt7KEs_Kx2ZBlf_Yvb_YPyAcUasBlX4BzHLq0nOAqax43fgholLLXPA4WZmBkDVw6piquPQ45uCJ8_Myezs&state=e60a53f8-fadc-477a-b51d-64e7c31b06e9&token_type=Bearer&expires_in=300&session_state=8cbc061a22547adff4c5f88a80de8999129997b8ff7c7c66c870a43d6d2a2d6a.enxHcp7nDHTPhFPWaY-l4g';
+         expect(adal.isCallback(hash, undefined)).toBe(true);
+   });
+
+    it('verifies that _getParameters returns an empty object if both the fragment and search portions of the URL are blank', function() {
+        expect(Object.getOwnPropertyNames(adal._getParameters(undefined, undefined)).length).toBe(0);
+    });
+
+    it('verifies that _getParameters returns an object containing the id_token when the fragment portion of the URL is blank and the search portion of the URL contains the id_token', function() {
+        var TOKEN = 'eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1ZCI6WyJoUDdwa3JXYUJQa2NPTERaVmJsel9JZ2VtVmthIl0sImF6cCI6ImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiLCJhdXRoX3RpbWUiOjE0NzU1MjI4MDksImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsInNuIjoiV29vZHdhcmQiLCJnaXZlbl9uYW1lIjoiRGF2aWQiLCJleHAiOjE0NzU1MjMxMDksIm5vbmNlIjoiNWE3MWM5ZmYtYjI1YS00YzE1LWEzNjgtNzdmODgwZWRkOWI2IiwiaWF0IjoxNDc1NTIyODA5fQ.B5KAglX92PPppP66yMkyzD1LA7qdWhrQWqYEOzJ0uFB_ZN8_u7G7Pp0qBy0Uilbh6AS0go64pzX5sxU72psHr6z2xVMJYm8-zjTb1GDVP3thUlZ1nEK-esUjSBLDnN1qKmMINtX82S3KIpAlehB1nZ94kbOHCoZ9v_k1rnTiWRA';
+        var search = '?id_token=' + TOKEN + '&state=6777d1e8-6014-403d-ac0c-297dec5cc514';
+        expect(adal._getParameters(undefined, search).id_token).toBe(TOKEN);
+    });
+
+    it('verifies that _getParameters returns an object containing the id_token when the fragment porion of the URL contains the access_token and the search portion of the URL is blank', function() {
+        var TOKEN = '4dce1d4c-3828-3873-bdda-9b2ba2726ac4';
+        var hash = '#/access_token=' + TOKEN + '&state=1120063b-8c7b-4fac-a121-a0e7e4ccb270&token_type=Bearer&expires_in=197&session_state=a41ac575b3d4c1b50acee40499a7efc1d46485913bd8520b13eebec6a657da3e.Vxrih14RiYpyTIs-X21-Pg';
+        expect(adal._getParameters(hash, undefined).access_token).toBe(TOKEN);
+    });
+
+    it('verifies that _getParameters returns an object containing the id_token when the fragment portion of the URL contains the id_token and the search portion of the URL is blank.', function() {
+        var hash = '#/' + VALID_URLFRAGMENT;
+        expect(adal._getParameters(hash, undefined).id_token).toBe(IDTOKEN_MOCK);
+    });
+
+    it('verifies that _getParameters returns an object containing both the access_token and the id_token when the fragment poriton of the URL contains both the id_token and the access_token and the search portion of the URL is blank.', function() {
+        var ID_TOKEN = 'eyJ4NXQiOiJObUptT0dVeE16WmxZak0yWkRSaE5UWmxZVEExWXpkaFpUUmlPV0UwTldJMk0ySm1PVGMxWkEiLCJhbGciOiJSUzI1NiJ9.eyJhdF9oYXNoIjoiQUI4Si1WaHlvbWxseTJBbktvN2dVUSIsInN1YiI6ImFkbWluIiwiYXVkIjpbImhQN3BrcldhQlBrY09MRFpWYmx6X0lnZW1Wa2EiXSwiYXpwIjoiaFA3cGtyV2FCUGtjT0xEWlZibHpfSWdlbVZrYSIsImF1dGhfdGltZSI6MTQ3NTUyMjUyMCwiaXNzIjoiaHR0cHM6XC9cL2xvY2FsaG9zdDo5NDQzXC9vYXV0aDJcL3Rva2VuIiwic24iOiJXb29kd2FyZCIsImdpdmVuX25hbWUiOiJEYXZpZCIsImV4cCI6MTQ3NTUyMjgyMCwibm9uY2UiOiI1NTRkMjE5Ny0yYTQzLTQzMGUtOGJmNy1kMjk5MTIxNjE5MDEiLCJpYXQiOjE0NzU1MjI1MjB9.WrTgmLsBuP6BG1v1aBs4dp3ONYEtuzlUySsG4ImpAVIBg9BJv_nc9NPDSK_IMxiKi7sHwJWzCzNLHUbOkmmZxTqIQt7KEs_Kx2ZBlf_Yvb_YPyAcUasBlX4BzHLq0nOAqax43fgholLLXPA4WZmBkDVw6piquPQ45uCJ8_Myezs';
+        var ACCESS_TOKEN = 'eda1a60f-4dbd-3b8c-bfce-60d3980040a5';
+        var hash = '#/access_token=' + ACCESS_TOKEN + '&id_token=' + ID_TOKEN + '&state=e60a53f8-fadc-477a-b51d-64e7c31b06e9&token_type=Bearer&expires_in=300&session_state=8cbc061a22547adff4c5f88a80de8999129997b8ff7c7c66c870a43d6d2a2d6a.enxHcp7nDHTPhFPWaY-l4g';
+        var parameters = adal._getParameters(hash, undefined);
+        expect(parameters.id_token).toBe(ID_TOKEN);
+        expect(parameters.access_token).toBe(ACCESS_TOKEN);
     });
 
     // TODO angular intercepptor

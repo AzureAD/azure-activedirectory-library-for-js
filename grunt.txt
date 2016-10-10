@@ -1,0 +1,719 @@
+[4mRunning "jshint:src" (jshint) task[24m
+[32m>> [39m2 files lint free.
+
+[4mRunning "jasmine_node:projectRoot" (jasmine_node) task[24m
+*******************************************************************************
+["tests/unit/spec"]
+*******************************************************************************
+{"specFolders":["tests/unit/spec"],"showColors":true,"teamcity":false,"useRequireJs":false,"regExpSpec":{},"junitreport":{"report":true,"savePath":"build/reports/jasmine","useDotNotation":true,"consolidate":true},"coffee":false,"growl":false}
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0mWaiting for initial timeout
+[32m.[0mWaiting for initial timeout
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0mWaiting for initial timeout
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+
+Finished in 2.41 seconds
+[32m100 tests, 190 assertions, 0 failures, 0 skipped
+[0m
+
+
+
+[4mRunning "jasmine_node:junitreport" (jasmine_node) task[24m
+*******************************************************************************
+["tests/unit/spec"]
+*******************************************************************************
+{"specFolders":["tests/unit/spec"],"showColors":true,"teamcity":false,"useRequireJs":false,"regExpSpec":{},"junitreport":{"report":true,"savePath":"build/reports/jasmine","useDotNotation":true,"consolidate":true},"coffee":false,"growl":false}
+[32m.[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[32m.[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[31mF[0m[32m.[0m[31mF[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+
+Failures:
+
+  1) Adal gets default resource for empty endpoint mapping
+   Message:
+     [31mExpected 'loginResource1' to be 'defaultResource'.[0m
+   Stacktrace:
+     Error: Expected 'loginResource1' to be 'defaultResource'.
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:135:50)
+
+  2) Adal gets default resource for empty endpoint mapping
+   Message:
+     [31mExpected 'loginResource1' to be 'defaultResource'.[0m
+   Stacktrace:
+     Error: Expected 'loginResource1' to be 'defaultResource'.
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:136:50)
+
+  3) Adal gets null resource for annonymous endpoints
+   Message:
+     [31mExpected 'loginResource1' to be 'defaultResource'.[0m
+   Stacktrace:
+     Error: Expected 'loginResource1' to be 'defaultResource'.
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:144:57)
+
+  4) Adal navigates user to login by default
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.login (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:201:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:169:14)
+
+  5) Adal sets loginprogress to true for login
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.login (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:201:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:180:14)
+
+  6) Adal calls displaycall if given for login
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.login (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:201:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:195:14)
+
+  7) Adal returns from cache for auto renewable if not expired
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:477:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:212:14)
+
+  8) Adal returns error for acquireToken without resource
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.warn (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1383:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:470:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:224:14)
+
+  9) Adal attempts to renew if token expired and renew is allowed
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._renewToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:377:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:501:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:240:14)
+
+  10) Adal allows multiple callers to be notified when the token is renewed. Also checks if all registered acquireToken callbacks are called in the case when one of the callbacks throws an error
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._renewToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:377:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:501:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:278:14)
+
+  11) Adal prompts user if url is given
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.promptUser (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:515:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:337:14)
+
+  12) Adal clears cache before logout
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.logOut (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:571:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:387:14)
+
+  13) Adal has logout redirect if given
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.logOut (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:571:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:399:14)
+
+  14) Adal uses common for tenant if not given at logout redirect
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.logOut (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:571:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:410:14)
+
+  15) Adal gets user from cache
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.getUser (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:605:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:426:14)
+
+  16) Adal gets request info from hash
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.warn (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1383:14)
+    at AuthenticationContext.getRequestInfo (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:769:26)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:449:28)
+
+  17) Adal saves errors token from callback
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:480:14)
+
+  18) Adal saves token if state matches
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:494:14)
+
+  19) Adal saves expiry if state matches
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:507:14)
+
+  20) Adal saves username after extracting idtoken
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:525:14)
+
+  21) Adal does not save user for invalid nonce in idtoken
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:544:14)
+
+  22) Adal saves null for username if idtoken is invalid
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:561:14)
+
+  23) Adal saves null for username if idtoken is invalid
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:578:14)
+
+  24) Adal saves error if state mismatch
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.saveTokenFromHash (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:817:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:634:14)
+
+  25) Adal checks if Logging is defined on window
+   Message:
+     [31mTypeError: Cannot set property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot set property 'level' of undefined
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:640:23)
+
+  26) Adal tests the load frame timeout method
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext._loadFrameTimeout (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:430:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:650:14)
+
+  27) Adal tests that callbacks are called when renewal token request was canceled
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._renewToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:377:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:501:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:685:14)
+
+  28) Adal attempts to renewidToken if token expired and renew is allowed
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:498:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:710:14)
+
+  29) Adal tests handleWindowCallback function for RENEW_TOKEN
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.handleWindowCallback (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:957:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:748:14)
+
+  30) Adal tests handleWindowCallback function for LOGIN_REQUEST
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext.handleWindowCallback (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:957:18)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:770:14)
+
+  31) Adal use the same correlationId for each request sent to AAD if set by user
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._renewToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:377:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:501:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:786:14)
+
+  32) Adal generates new correlationId for each request sent to AAD if not set by user
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._renewToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:377:14)
+    at AuthenticationContext.acquireToken (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:501:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:810:14)
+
+  33) Adal tests if callback is called after login, if popup window is null
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.login (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:201:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:876:14)
+
+  34) Adal tests login functionality in case of popup window
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.verbose (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1391:14)
+    at AuthenticationContext.login (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:201:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:919:14)
+
+  35) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:974:21)
+
+  36) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:987:21)
+
+  37) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1000:21)
+
+  38) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are undefined, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1013:21)
+
+  39) Adal verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1026:21)
+
+  40) Adal verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1039:21)
+
+  41) Adal verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1052:21)
+
+  42) Adal verifies _getNavigateUrl() returns the correct value when tenant is undefined, rootContext is blank, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1065:21)
+
+  43) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1078:21)
+
+  44) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1091:21)
+
+  45) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1104:21)
+
+  46) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is undefined, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1117:21)
+
+  47) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1130:21)
+
+  48) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1143:21)
+
+  49) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1156:21)
+
+  50) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are blank, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1169:21)
+
+  51) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1182:21)
+
+  52) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1195:21)
+
+  53) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1208:21)
+
+  54) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is undefined, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1221:21)
+
+  55) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1234:21)
+
+  56) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1247:21)
+
+  57) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1260:21)
+
+  58) Adal verifies _getNavigateUrl() returns the correct value when tenant is non-blank, rootContext is blank, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1273:21)
+
+  59) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1286:21)
+
+  60) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1299:21)
+
+  61) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1312:21)
+
+  62) Adal verifies _getNavigateUrl() returns the correct value when tenant and rootContext are non-blank, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1325:21)
+
+  63) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, and scope and responseType are not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1338:21)
+
+  64) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, scope is not truthy, and responseType is truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1351:21)
+
+  65) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, scope is truthy, and responseType is not truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1364:21)
+
+  66) Adal verifies _getNavigateUrl() returns the correct value when tenant is blank, rootContext is non-blank, and scope and responseType are truthy
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.info (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1387:14)
+    at AuthenticationContext._getNavigateUrl (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:986:14)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1377:21)
+
+  67) Adal verifies _createUser() returns null when an aud claim is not contained within the id_token
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.warn (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1383:14)
+    at AuthenticationContext._createUser (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:667:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1382:21)
+
+  68) Adal verifies _createUser() returns null when an unmatching single aud claim is contained within the id_token
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.warn (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1383:14)
+    at AuthenticationContext._createUser (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:667:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1392:21)
+
+  69) Adal verifies _createUser returns null when the id_token contains an matching aud claim within an aud claim array but without a matching azp claim
+   Message:
+     [31mTypeError: Cannot read property 'level' of undefined[0m
+   Stacktrace:
+     TypeError: Cannot read property 'level' of undefined
+    at AuthenticationContext.log (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1359:29)
+    at AuthenticationContext.warn (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:1383:14)
+    at AuthenticationContext._createUser (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\lib\adal.js:667:22)
+    at .<anonymous> (H:\Projects\OpenIdConnectExample\public\azure-activedirectory-library-for-js\tests\unit\spec\AdalSpec.js:1404:21)
+
+Finished in 0.054 seconds
+[31m100 tests, 151 assertions, 69 failures, 0 skipped
+[0m
+
+
+[33mWarning: Task "jasmine_node:junitreport" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

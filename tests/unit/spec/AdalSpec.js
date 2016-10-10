@@ -881,6 +881,7 @@ describe('Adal', function () {
 
     it('tests login functionality in case of popup window', function () {
         var timercallback;
+        window.location = { search: undefined };
         window.clearInterval = function () {
         };
         window.setInterval = function (method, timer) {
@@ -895,7 +896,7 @@ describe('Adal', function () {
                 location: {
                     hash: VALID_URLFRAGMENT,
                     href: 'hrefcontoso_site',
-                    search: ''
+                    search: undefined
                 },
                 closed: false,
                 close: function () {

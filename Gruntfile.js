@@ -22,19 +22,14 @@ module.exports = function (grunt) {
         },
         jasmine_node: {
             options: {
-                forceExit: true,
-                match: '.',
-                matchall: false,
-                extensions: 'js',
-                specNameMatcher: 'spec',
-                jUnit: {
+                projectRoot: 'tests/unit/spec',
+                junitreport: {
                     report: true,
-                    savePath: "./build/reports/jasmine/",
+                    savePath: 'build/reports/jasmine',
                     useDotNotation: true,
                     consolidate: true
                 }
-            },
-            all: ['tests/unit/spec/']
+            }
         },
         uglify: {
             options: {

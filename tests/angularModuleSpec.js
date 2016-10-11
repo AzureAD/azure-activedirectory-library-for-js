@@ -422,3 +422,64 @@ describe('StateCtrl', function () {
         }
     });
 });
+
+describe('AcquireTokenCtl', function () {
+    var scope,adalServiceProvider, rootScope, controller,window;
+    var store = {};
+    //mock Application to allow us to inject our own dependencies
+    beforeEach(angular.mock.module('TestApplication'));
+
+    //mock the controller for the same reason and include $scope and $controller
+    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$window_) {
+        adalServiceProvider = _adalAuthenticationService_;
+        rootScope = _$rootScope_;
+        controller = _$controller_;
+        window = _$window_;
+        //create an empty scope
+        scope = rootScope.$new();
+
+        spyOn(sessionStorage, 'getItem').andCallFake(function (key) {
+            return store[key];
+        });
+        spyOn(sessionStorage, 'setItem').andCallFake(function (key, value) {
+            store[key] = value;
+        });
+        spyOn(window, 'Date').andCallFake(function () {
+            return {
+                getTime: function () {
+                    return 1000;
+                },
+                toUTCString: function () {
+                    return "";
+                }
+            };
+        });
+    }));
+
+    afterEach(function () {
+        store = {};
+    });
+
+    it('checks if acquireTokenSuccess/acquireTokenFailure events are broadcasted in case of acquireToken', function () {
+        var error = '';
+        var tokenOut = '';
+        var resource = adalServiceProvider.config.loginResource;
+        var token = 'token123';
+        spyOn(rootScope, '$broadcast').andCallThrough();
+        scope.$on('adal:acquireTokenFailure', function (event, message) {
+            error = message;
+        });
+        adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(error).toBe('User login is required');
+        store = {
+            'adal.token.keys': resource + '|',
+            'adal.access.token.keyloginResource123': token,
+            'adal.expiration.keyloginResource123': 122
+        };
+        scope.$on('adal:acquireTokenSuccess', function (event, message) {
+            tokenOut = message;
+        });
+        adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(tokenOut).toBe(token);
+    });
+});

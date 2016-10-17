@@ -438,10 +438,10 @@ describe('TaskCtl', function () {
         //create an empty scope
         scope = rootScope.$new();
 
-        spyOn(localStorage, 'getItem').andCallFake(function (key) {
+        spyOn(sessionStorage, 'getItem').andCallFake(function (key) {
             return store[key];
         });
-        spyOn(localStorage, 'setItem').andCallFake(function (key, value) {
+        spyOn(sessionStorage, 'setItem').andCallFake(function (key, value) {
             store[key] = value;
         });
         spyOn(window, 'Date').andCallFake(function () {
@@ -461,7 +461,6 @@ describe('TaskCtl', function () {
     });
 
     it('checks if acquireTokenSuccess/acquireTokenFailure events are broadcasted in case of acquireToken', function () {
-        adalServiceProvider.config.cacheLocation = 'localStorage';
         var resource = adalServiceProvider.config.loginResource;
         var token = 'token123';
         spyOn(rootScope, '$broadcast').andCallThrough();
@@ -478,6 +477,5 @@ describe('TaskCtl', function () {
             expect(message).toBe(resource + token);
         });
         adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
-        adalServiceProvider.config.cacheLocation = null;
     });
 });

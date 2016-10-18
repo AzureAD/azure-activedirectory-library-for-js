@@ -423,7 +423,7 @@ describe('StateCtrl', function () {
     });
 });
 
-describe('TaskCtl', function () {
+describe('AcquireTokenCtl', function () {
     var scope,adalServiceProvider, rootScope, controller,window;
     var store = {};
     //mock Application to allow us to inject our own dependencies
@@ -461,21 +461,27 @@ describe('TaskCtl', function () {
     });
 
     it('checks if acquireTokenSuccess/acquireTokenFailure events are broadcasted in case of acquireToken', function () {
+        var error = '';
+        var tokenOut = '';
         var resource = adalServiceProvider.config.loginResource;
         var token = 'token123';
         spyOn(rootScope, '$broadcast').andCallThrough();
         scope.$on('adal:acquireTokenFailure', function (event, message) {
             expect(message).toBe('User login is required');
+            error = message;
         });
         adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(error).toBe('User login is required');
         store = {
             'adal.token.keys': resource + '|',
-            'adal.access.token.keyloginResource123': resource + 'token123',
+            'adal.access.token.keyloginResource123': token,
             'adal.expiration.keyloginResource123': 122
         };
         scope.$on('adal:acquireTokenSuccess', function (event, message) {
-            expect(message).toBe(resource + token);
+            expect(message).toBe(token);
+            tokenOut = message;
         });
         adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(tokenOut).toBe(token);
     });
 });

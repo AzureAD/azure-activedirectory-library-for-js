@@ -197,7 +197,7 @@ describe('TaskCtl', function () {
         adalServiceProvider.loginInProgress = function () {
             return true;
         };
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
         $httpBackend.expectGET('https://myapp.com/someapi/item', function (headers) {
             return headers.Authorization === 'Bearer Token456'
         }).respond(200);
@@ -215,7 +215,7 @@ describe('TaskCtl', function () {
         window.parent.AuthenticationContext.callback = function () { };
         window.parent.AuthenticationContext._renewStates = {};
         window.location.hash = 'id_token=sample&state=4343';
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
         scope.$on('adal:stateMismatch', function (event, message) {
             expect(event.name).toBe('adal:stateMismatch');
             expect(message).toBe('Invalid_state. state: 4343');
@@ -268,7 +268,7 @@ describe('TaskCtl', function () {
         window.parent.callBackMappedToRenewStates['1234'] = 'callback';
         var mockInvalidClientIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnQxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJ1cG4iOiJqb2huQGVtYWlsLmNvbSJ9.zNX4vfLzlbFeKHZ9BMN3sYLtEEE-0o1RoL4NUhXz-l8';
         window.location.hash = 'id_token=' + mockInvalidClientIdToken + '&state=1234';
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
         scope.$on('adal:loginFailure', function (event, message) {
             expect(event.name).toBe('adal:loginFailure');
             expect(message).toBe('Invalid id_token. id_token: ' + mockInvalidClientIdToken);
@@ -285,7 +285,7 @@ describe('TaskCtl', function () {
         window.parent.callBackMappedToRenewStates['1234'] = 'callback';
         var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOm51bGx9.DLCO6yIWhnNBYfHH8qFPswcH4M2Alpjn6AZy7K6HENY';
         window.location.hash = 'id_token=' + mockIdToken + '&state=1234';
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
         scope.$on('adal:loginSuccess', function (event, message) {
             expect(event.name).toBe('adal:loginSuccess');
             expect(adalServiceProvider.userInfo.userName).toBe('john@email.com');
@@ -304,7 +304,7 @@ describe('TaskCtl', function () {
         var loginResourceOldValue = adalServiceProvider.config.loginResource;
         adalServiceProvider.config.loginResource = null;
         window.location.hash = 'hash';
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
         scope.$on('adal:loginFailure', function (event, message) {
             expect(event.name).toBe('adal:loginFailure');
             expect(message).toBe('resource is required');
@@ -343,7 +343,7 @@ describe('TaskCtl', function () {
     });
 
     it('checks if user is redirected to the custom Login Page when localLoginUrl is specified', function () {
-        spyOn(rootScope, '$broadcast').andCallThrough();
+        spyOn(rootScope, '$broadcast').and.callThrough();
 
         adalServiceProvider.config.localLoginUrl = '/login';
         $httpBackend.expectGET('login.html').respond(200);
@@ -420,5 +420,66 @@ describe('StateCtrl', function () {
         for (var i = 0; i < states.length ; i++) {
             expect(adalServiceProvider.config.anonymousEndpoints[i]).toEqual(states[i] + '.html');
         }
+    });
+});
+
+describe('AcquireTokenCtl', function () {
+    var scope,adalServiceProvider, rootScope, controller,window;
+    var store = {};
+    //mock Application to allow us to inject our own dependencies
+    beforeEach(angular.mock.module('TestApplication'));
+
+    //mock the controller for the same reason and include $scope and $controller
+    beforeEach(angular.mock.inject(function (_adalAuthenticationService_, _$rootScope_, _$controller_, _$window_) {
+        adalServiceProvider = _adalAuthenticationService_;
+        rootScope = _$rootScope_;
+        controller = _$controller_;
+        window = _$window_;
+        //create an empty scope
+        scope = rootScope.$new();
+
+        spyOn(sessionStorage, 'getItem').and.callFake(function (key) {
+            return store[key];
+        });
+        spyOn(sessionStorage, 'setItem').and.callFake(function (key, value) {
+            store[key] = value;
+        });
+        spyOn(window, 'Date').and.callFake(function () {
+            return {
+                getTime: function () {
+                    return 1000;
+                },
+                toUTCString: function () {
+                    return "";
+                }
+            };
+        });
+    }));
+
+    afterEach(function () {
+        store = {};
+    });
+
+    it('checks if acquireTokenSuccess/acquireTokenFailure events are broadcasted in case of acquireToken', function () {
+        var error = '';
+        var tokenOut = '';
+        var resource = adalServiceProvider.config.loginResource;
+        var token = 'token123';
+        spyOn(rootScope, '$broadcast').and.callThrough();
+        scope.$on('adal:acquireTokenFailure', function (event, message) {
+            error = message;
+        });
+        adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(error).toBe('User login is required');
+        store = {
+            'adal.token.keys': resource + '|',
+            'adal.access.token.keyloginResource123': token,
+            'adal.expiration.keyloginResource123': 122
+        };
+        scope.$on('adal:acquireTokenSuccess', function (event, message) {
+            tokenOut = message;
+        });
+        adalServiceProvider.acquireToken(adalServiceProvider.config.loginResource);
+        expect(tokenOut).toBe(token);
     });
 });

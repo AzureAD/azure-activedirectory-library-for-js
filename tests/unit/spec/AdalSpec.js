@@ -410,14 +410,14 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
 
-    it('uses adfs specific logout url if tenant is adfs', function (){
+    it('uses logout uri if given', function (){
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
-        adal.config.tenant = 'adfs'
+        adal.config.logOutUri = 'adfs/ls/?wa=wsignout1.0'
         spyOn(adal, 'promptUser');
         adal.logOut();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + '/adfs/ls/?wa=wsignout1.0');
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'adfs/ls/?wa=wsignout1.0');
     })
 
     it('gets user from cache', function () {

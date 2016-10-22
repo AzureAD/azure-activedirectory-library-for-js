@@ -414,10 +414,10 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
-        adal.config.logOutUri = 'adfs/ls/?wa=wsignout1.0'
+        adal.config.logOutUri = 'https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0'
         spyOn(adal, 'promptUser');
         adal.logOut();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'adfs/ls/?wa=wsignout1.0');
+        expect(adal.promptUser).toHaveBeenCalledWith('https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0');
     })
 
     it('gets user from cache', function () {

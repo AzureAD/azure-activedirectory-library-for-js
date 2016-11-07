@@ -86,6 +86,11 @@ describe('Adal', function () {
                     store[key] = value;
                 }
             },
+            removeItem: function (key) {
+                if (typeof store[key] != 'undefined') {
+                    delete store[key];
+                }
+            },
             clear: function () {
                 store = {};
             },

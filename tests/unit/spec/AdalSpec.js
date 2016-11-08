@@ -86,6 +86,11 @@ describe('Adal', function () {
                     store[key] = value;
                 }
             },
+            removeItem: function (key) {
+                if (typeof store[key] != 'undefined') {
+                    delete store[key];
+                }
+            },
             clear: function () {
                 store = {};
             },
@@ -203,25 +208,29 @@ describe('Adal', function () {
 
     it('returns from cache for auto renewable if not expired', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal.acquireToken(RESOURCE1, callback);
         expect(token).toBe('access_token_in_cache' + RESOURCE1);
+        expect(errDesc).toBe(null);
+        expect(err).toBe(null);
     });
 
     it('returns error for acquireToken without resource', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal.acquireToken(null, callback);
+        expect(errDesc).toBe('resource is required');
+        expect(token).toBe(null);
         expect(err).toBe('resource is required');
     });
 
@@ -229,17 +238,16 @@ describe('Adal', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal._renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal.callback).toBe(null);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
@@ -255,29 +263,27 @@ describe('Adal', function () {
     });
 
     //Necessary for integration with Angular when multiple http calls are queued.
-    it('allows multiple callers to be notified when the token is renewed', function () {
+    it('allows multiple callers to be notified when the token is renewed. Also checks if all registered acquireToken callbacks are called in the case when one of the callbacks throws an error', function () {
         adal.config.redirectUri = 'contoso_site';
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
-        var err = null;
-        var token = null;
-        var err2 = null;
-        var token2 = null;
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var errDesc2 = '', token2 = '', err2 = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
-        var callback2 = function (valErr, valToken) {
-            err2 = valErr;
+        var callback2 = function (valErrDesc, valToken, valErr) {
+            errDesc2 = valErrDesc;
             token2 = valToken;
+            err2 = valErr;
         };
-
         adal._renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         //Simulate second acquire i.e. second service call from Angular.
         adal.acquireToken(RESOURCE1, callback2);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         expect(adal._renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
@@ -292,11 +298,14 @@ describe('Adal', function () {
 
         //Simulate callback from the frame.
         //adal.callback(null, '33333333-3333-4333-b333-333333333333');
-        window.callBackMappedToRenewStates[adal.config.state](null, '33333333-3333-4333-b333-333333333333');
+        window.callBackMappedToRenewStates[adal.config.state](null, '33333333-3333-4333-b333-333333333333', null);
         //Both callbacks should have been provided with the token.
         expect(token).toBe('33333333-3333-4333-b333-333333333333', 'First callback should be called');
+        expect(errDesc).toBe(null);
+        expect(err).toBe(null);
         expect(token2).toBe('33333333-3333-4333-b333-333333333333', 'Second callback should be called');
-
+        expect(errDesc2).toBe(null);
+        expect(err2).toBe(null);
     });
 
     it('check guid masking', function () {
@@ -410,13 +419,22 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + 'common/oauth2/logout?post_logout_redirect_uri=https%3A%2F%2Fcontoso.com%2Flogout');
     });
 
+    it('uses logout uri if given', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.logOutUri = 'https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0'
+        spyOn(adal, 'promptUser');
+        adal.logOut();
+        expect(adal.promptUser).toHaveBeenCalledWith('https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0');
+    })
+
     it('gets user from cache', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
         adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
         adal.config.loginResource = RESOURCE1;
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        var err = '';
-        var user = {};
+        var err = '', user = '';
         var callback = function (valErr, valResult) {
             err = valErr;
             user = valResult;
@@ -673,11 +691,11 @@ describe('Adal', function () {
 
     it('tests that callbacks are called when renewal token request was canceled', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal._renewStates = [];
         adal._user = { userName: 'test@testuser.com' };
@@ -687,8 +705,9 @@ describe('Adal', function () {
         }, 'token renew status not updated', 1000);
         runs(function () {
             expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
-            expect(err).toBe('Token renewal operation failed due to timeout');
+            expect(errDesc).toBe('Token renewal operation failed due to timeout');
             expect(token).toBe(null);
+            expect(err).toBe('Token Renewal Failed');
 
         });
     });
@@ -698,11 +717,11 @@ describe('Adal', function () {
         adal.config.clientId = 'client';
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         adal.config.tenant = 'testtenant';
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal._renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
@@ -710,7 +729,6 @@ describe('Adal', function () {
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN)).toBe('33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333' + '|' + 'client');
         expect(adal._renewStates.length).toBe(1);
-        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST)).toBe('');
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
         waitsFor(function () {
@@ -735,17 +753,18 @@ describe('Adal', function () {
                 requestType: adal.REQUEST_TYPE.RENEW_TOKEN
             };
         };
-        var err = '';
-        var token = '';
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         window.parent = {};
         window.parent.callBackMappedToRenewStates = {};
         window.parent.callBackMappedToRenewStates[adal.getRequestInfo().stateResponse] = callback;
         adal.handleWindowCallback();
-        expect(err).toBe('error description');
+        expect(errDesc).toBe('error description');
+        expect(err).toBe('invalid');
         expect(token).toBe(IDTOKEN_MOCK);
         adal.getRequestInfo = _getRequestInfo;
 
@@ -862,18 +881,19 @@ describe('Adal', function () {
         adal.popUp = true;
         adal.config.clientId = 'client';
         adal.config.redirectUri = 'contoso_site';
-        var err;
-        var token;
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         window.open = function () {
             return null;
         }
         adal.callback = callback;
         adal.login();
-        expect(err).toBe('Popup Window is null. This can happen if you are using IE');
+        expect(errDesc).toBe('Popup Window is null. This can happen if you are using IE');
+        expect(err).toBe('Error opening popup');
         expect(token).toBe(null);
         expect(adal.loginInProgress()).toBe(false);
     });
@@ -902,11 +922,11 @@ describe('Adal', function () {
             };
             return popupWindow;
         };
-        var err;
-        var token;
-        var callback = function (valErr, valToken) {
-            err = valErr;
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
             token = valToken;
+            err = valErr;
         };
         adal.callback = callback;
         mathMock.random = function () {
@@ -922,6 +942,8 @@ describe('Adal', function () {
         runs(function () {
             expect(adal.loginInProgress()).toBe(false);
             expect(token).toBe(IDTOKEN_MOCK);
+            expect(err).toBe('invalid id_token');
+            expect(errDesc).toBe('Invalid id_token. id_token: ' + IDTOKEN_MOCK);
             expect(window.location.href).not.toBe('home page');
         });
 
@@ -944,7 +966,7 @@ describe('Adal', function () {
     });
 
     it('tests _guid function if window.crypto is defined in the browser', function () {
-        var buffer = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+        var buffer = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
         window.msCrypto = null;
         window.crypto = {
             getRandomValues: function (_buffer) {
@@ -956,6 +978,26 @@ describe('Adal', function () {
         expect(adal._guid()).toBe('00010203-0405-4607-8809-0a0b0c0d0e0f');
         window.crypto = null;
     });
-    // TODO angular intercepptor
-    // TODO angular authenticationService
+
+    it('tests if error parameter is passed to acquireToken callback', function () {
+        var errorHash = '#error=interaction_required&error_description=some_description&state=someState';
+        var errDesc = '', token = '', err = '';
+        var callback = function (valErrDesc, valToken, valErr) {
+            errDesc = valErrDesc;
+            token = valToken;
+            err = valErr;
+        }
+        window.parent = {
+            AuthenticationContext: function () {
+                return {
+                    _renewStates: ['someState']
+                }
+            },
+            callBackMappedToRenewStates: { "someState": callback }
+        };
+        adal.handleWindowCallback(errorHash);
+        expect(err).toBe('interaction_required');
+        expect(token).toBe(undefined);
+        expect(errDesc).toBe('some_description');
+    });
 });

@@ -1,3 +1,10 @@
+Version 1.0.13
+=========================
+* Pass 'error' parameter to the callback besides 'error_description': #424
+* Adding API documentation of adal.js
+* Adding 'acquireTokenSuccess' and 'acquireTokenFailure' events in adal-angular.js
+* Other bug fixes and updates
+
 Version 1.0.12
 ==========================
 * Adding support for Login using a pop-up instead of a full redirect. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/60

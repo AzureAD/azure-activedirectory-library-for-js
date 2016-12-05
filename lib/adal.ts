@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// AdalJS v1.0.12
+// AdalJS v1.0.13
 // @preserve Copyright (c) Microsoft Open Technologies, Inc.
 // All Rights Reserved
 // Apache License 2.0
@@ -35,7 +35,7 @@ type AuthenticationConfig = {
     endpoints: string;
     displayCall: Function;
 
-}
+};
 
 type CloneAuthenticationConfig = {
     tenant: string;
@@ -52,7 +52,7 @@ type CloneAuthenticationConfig = {
     cacheLocation: string;
     expireOffsetSeconds: number;
     postLogoutRedirectUri: string;
-}
+};
 
 
 export class AuthenticationContext {
@@ -253,7 +253,7 @@ export class AuthenticationContext {
     }
 
     private _libVersion() {
-        return "1.0.12";
+        return "1.0.1";
     }
 
     private _saveItem(key: string, obj: any): any {

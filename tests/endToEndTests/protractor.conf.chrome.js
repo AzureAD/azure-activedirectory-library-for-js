@@ -1,7 +1,7 @@
 exports.config = {
     framework: 'jasmine',
     'seleniumAddress': 'https://hub-cloud.browserstack.com/wd/hub',
-    specs: ['tests/e2eTestsSpec.js'],
+    specs: ['e2eTestsSpec.js'],
     capabilities: {
         'os': 'WINDOWS',
         'os_version': '7',

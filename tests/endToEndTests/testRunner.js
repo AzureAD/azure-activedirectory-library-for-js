@@ -14,7 +14,7 @@ var i = 0;
 
 var runProtractorConfiguration = function () {
     console.log("Running " + configurationFiles[i]);
-    var testCommand = 'node runTests.js ' + configurationFiles[i];
+    var testCommand = 'node protractorTestWrapper.js ' + configurationFiles[i];
     exec(testCommand,
         function (error, stdout, stderr) {
             console.log("Completed " + configurationFiles[i]);

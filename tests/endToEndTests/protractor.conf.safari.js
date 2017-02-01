@@ -1,7 +1,7 @@
 exports.config = {
     framework: 'jasmine',
     'seleniumAddress': 'http://hub-cloud.browserstack.com/wd/hub',
-    specs: ['tests/e2eTestsSpec.js'],
+    specs: ['e2eTestsSpec.js'],
     capabilities: {
         'os': 'OS X',
         'os_version': 'Yosemite',

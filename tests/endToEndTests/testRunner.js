@@ -18,6 +18,7 @@ var runProtractorConfiguration = function () {
     exec(testCommand,
         function (error, stdout, stderr) {
             console.log("Completed " + configurationFiles[i]);
+            console.log(stdout);
             fs.writeFileSync("output-" + configurationFiles[i], stdout);
             i++;
             if (i < configurationFiles.length) {
@@ -25,5 +26,5 @@ var runProtractorConfiguration = function () {
             }
         });
 }
-
+console.log(process.env.BROWSERSTACK_USERNAME);
 runProtractorConfiguration();

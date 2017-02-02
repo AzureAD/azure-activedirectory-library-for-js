@@ -13,7 +13,9 @@ var configurationFiles = [
 var i = 0;
 
 var inputConfigurationFiles = process.argv.slice(2)[0];
-if (inputConfigurationFiles != null) configurationFiles = inputConfigurationFiles;
+if (inputConfigurationFiles != null) {
+    configurationFiles = inputConfigurationFiles.split(",");
+}
 
 var runProtractorConfiguration = function () {
     console.log("Running " + configurationFiles[i]);

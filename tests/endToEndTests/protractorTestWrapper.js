@@ -22,16 +22,12 @@ var elementsArray = [
 var runCount = {};
 var passedTests = {};
 
-console.log("inside protractorTestWrapper file");
-
-
 for (var i = 0; i < elementsArray.length; i++) {
     runCount[elementsArray[i]] = 0;
 }
 var configurationFile = process.argv.slice(2)[0];
 var runTest = function (elementId, testsId) {
     runCount[elementId]++;
-    console.log("inside runTest method");
     var testCommand = 'protractor ' + configurationFile + ' --params.appSetting ' + elementId;
     if (testsId) {
         testCommand += ' --params.testsId ' + testsId;

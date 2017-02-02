@@ -12,6 +12,9 @@ var configurationFiles = [
 
 var i = 0;
 
+var inputConfigurationFiles = process.argv.slice(2)[0];
+if (inputConfigurationFiles != null) configurationFiles = inputConfigurationFiles;
+
 var runProtractorConfiguration = function () {
     console.log("Running " + configurationFiles[i]);
     var testCommand = 'node protractorTestWrapper.js ' + configurationFiles[i];
@@ -26,5 +29,4 @@ var runProtractorConfiguration = function () {
             }
         });
 }
-console.log(process.env.BROWSERSTACK_USERNAME);
 runProtractorConfiguration();

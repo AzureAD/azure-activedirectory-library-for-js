@@ -89,7 +89,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.taskCall = function () {
         TaskFactory.getItem(5).then(function (response) {
             $scope.task = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -98,7 +98,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.itemCall = function () {
         ItemFactory.getItem(13).then(function (response) {
             $scope.item = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -107,7 +107,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.taskCall2 = function () {
         TaskFactory.getItem2('https://test.com/').then(function (response) {
             $scope.task = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -116,7 +116,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.taskCall3 = function () {
         TaskFactory.getItem2('https://testapi.com/').then(function (response) {
             $scope.task = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -125,7 +125,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.taskCall4 = function () {
         TaskFactory.getItem2('/someapi/item').then(function (response) {
             $scope.task = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -134,7 +134,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
     $scope.taskCall5 = function () {
         TaskFactory.getItem2('https://myapp.com/someapi/item').then(function (response) {
             $scope.task = response.data;
-        },function (err) {
+        }, function (err) {
             $scope.error = err;
             $scope.loadingMsg = "";
         });
@@ -142,7 +142,7 @@ app.controller('TaskCtl', ['$scope', '$location', 'adalAuthenticationService', '
 
     $scope.taskCall6 = function () {
         TaskFactory.getItem2('http://testwebapi.com/').then(function (response) {
-            $scope.task = response;
+            $scope.task = response.data;
         }, function (err) {
             $scope.error = err;
             $scope.loaingMsg = "";

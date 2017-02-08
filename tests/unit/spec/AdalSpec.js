@@ -773,6 +773,7 @@ describe('Adal', function () {
     it('tests handleWindowCallback function for LOGIN_REQUEST', function () {
         window.location = {};
         window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        window.location.href = 'www.test.com' + '#/id_token=' + IDTOKEN_MOCK;
         var _getRequestInfo = adal.getRequestInfo;
         adal.getRequestInfo = function () {
             return {
@@ -780,13 +781,13 @@ describe('Adal', function () {
                 parameters: { 'error_description': 'error description', 'error': 'invalid', 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
                 stateMatch: true,
                 stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
-                requestType: adal.REQUEST_TYPE.LOGIN_REQUEST
+                requestType: adal.REQUEST_TYPE.LOGIN
             };
         };
         storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, "www.test.com");
         window.oauth2Callback = {};
         adal.handleWindowCallback();
-        expect(window.location).toBe('www.test.com');
+        expect(window.location.href).toBe('www.test.com');
         adal.getRequestInfo = _getRequestInfo;
 
     });
@@ -896,6 +897,7 @@ describe('Adal', function () {
         expect(err).toBe('Error opening popup');
         expect(token).toBe(null);
         expect(adal.loginInProgress()).toBe(false);
+        adal.popUp = false;
     });
 
     it('tests login functionality in case of popup window', function () {
@@ -946,7 +948,7 @@ describe('Adal', function () {
             expect(errDesc).toBe('Invalid id_token. id_token: ' + IDTOKEN_MOCK);
             expect(window.location.href).not.toBe('home page');
         });
-
+        adal.popUp = false;
     });
 
     it('ensures that adal.callback is not overridden in calls to getUser', function () {
@@ -999,5 +1001,36 @@ describe('Adal', function () {
         expect(err).toBe('interaction_required');
         expect(token).toBe(undefined);
         expect(errDesc).toBe('some_description');
+    });
+
+    it('tests if error is logged and code flow is completed when there is a failure in the user defined callback function in case of login', function () {
+        window.location = {};
+        window.location.href = 'www.test.com' + '#/id_token=' + IDTOKEN_MOCK;
+        window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        var _getRequestInfo = adal.getRequestInfo;
+        Logging.level = 0;
+        Logging.log = function (message) {
+            window.logMessage = message;
+        }
+        adal.getRequestInfo = function () {
+            return {
+                valid: true,
+                parameters: { 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
+                stateMatch: true,
+                stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
+                requestType: adal.REQUEST_TYPE.LOGIN
+            };
+        };
+        var callback = function () {
+            throw new Error("Error in callback function");
+        }
+        adal.callback = callback;
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, 'www.test.com');
+        adal.handleWindowCallback();
+        expect(window.logMessage).toContain("Error occurred in user defined callback function");
+        expect(window.location.href).toBe('www.test.com');
+        adal.getRequestInfo = _getRequestInfo;
+        Logging.level = 2;
+
     });
 });

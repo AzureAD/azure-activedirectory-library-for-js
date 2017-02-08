@@ -147,6 +147,11 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('app/views/abc')).toBe(null);
         expect(adal.getResourceForEndpoint('default/app/views/abc')).toBe(null);
         expect(adal.getResourceForEndpoint('app/home')).toBe('defaultResource');
+
+        adal.config.endpoints = { 'abc': 'resourceABC' };
+        expect(adal.getResourceForEndpoint('abc')).toBe('resourceABC');
+        adal.config.anonymousEndpoints = ['abc'];
+        expect(adal.getResourceForEndpoint('abc')).toBe(null);
     });
 
     it('says token expired', function () {

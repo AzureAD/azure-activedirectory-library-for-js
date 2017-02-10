@@ -25,21 +25,8 @@ global.window = {};
 var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
-    var adal;
+    var adal, window;
     global.Logging = global.window.Logging;
-    var window = {
-        location: {
-            hash: '#hash',
-            href: 'href',
-            replace: function (val) {
-            }
-        },
-        localStorage: {},
-        sessionStorage: {},
-        atob: atobHelper,
-        innerWidth: 100,
-        innerHeight: 100
-    };
     var mathMock = {
         random: function () {
             return 0.2;
@@ -111,6 +98,19 @@ describe('Adal', function () {
         // add key
         storageFake.setItem(STORAGE_TOKEN_KEYS, RESOURCE1 + '|');
 
+        window = {
+            location: {
+                hash: '#hash',
+                href: 'href',
+                replace: function (val) {
+                }
+            },
+            localStorage: {},
+            sessionStorage: {},
+            atob: atobHelper,
+            innerWidth: 100,
+            innerHeight: 100
+        };
         window.localStorage = storageFake;
         window.sessionStorage = storageFake;
         // Init adal 
@@ -122,7 +122,8 @@ describe('Adal', function () {
         global.Math = mathMock;
         global.angular = angularMock;
 
-        adal = new AdalModule.inject(conf);
+        AdalModule.prototype._singletonInstance = null;
+        adal = new AdalModule(conf);
         adal._user = null;
         adal._renewStates = [];
         adal._activeRenewals = {};
@@ -704,6 +705,7 @@ describe('Adal', function () {
             return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
         }, 'token renew status not updated', 1000);
         runs(function () {
+            window.callBackMappedToRenewStates[adal.config.state]('Token renewal operation failed due to timeout', null, 'Token Renewal Failed');
             expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
             expect(errDesc).toBe('Token renewal operation failed due to timeout');
             expect(token).toBe(null);
@@ -1045,4 +1047,17 @@ describe('Adal', function () {
         adal.saveTokenFromHash(requestInfo);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3599);
     });
+
+    it('tests default value of redirect uri', function () {
+        global.window = {
+            location: {
+                hash: '#/hash',
+                href: 'https://www.testurl.com/#/hash?q1=p1'
+            }
+        };
+        AdalModule.prototype._singletonInstance = null;
+        var localConfig = { clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+        var localAdal = new AdalModule.inject(localConfig);
+        expect(localAdal.config.redirectUri).toBe('https://www.testurl.com/');
+    })
 });

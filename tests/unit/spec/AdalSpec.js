@@ -1033,4 +1033,16 @@ describe('Adal', function () {
         Logging.level = 2;
 
     });
+
+    it('tests default value for expires_in', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: { 'access_token': 'token123', 'state': '123' },
+            stateMatch: true,
+            stateResponse: '123|loginResource1',
+            requestType: adal.REQUEST_TYPE.RENEW_TOKEN
+        };
+        adal.saveTokenFromHash(requestInfo);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3599);
+    });
 });

@@ -1,3 +1,15 @@
+Version 1.0.14
+=========================
+* Adding ability to specify anonymous sub-urls for a configured endpoint
+* Adding api documentation
+* Adding ability to turn off default navigation to start page after login. Set navigateToLoginRequestUrl:false.
+* Fixing http interceptor to look into templateCache first
+* Fixing infinite loop issues when using popUp for angular versions 1.5.8 or above
+* Fixing silent exception error in case of user defined callback function
+* Fixing double error pipeline in angular acquireToken method
+* Updating the default token expiry offset from 2 minutes to 5 minutes
+* Other bug fixes and updates
+
 Version 1.0.13
 =========================
 * Pass 'error' parameter to the callback besides 'error_description': #424

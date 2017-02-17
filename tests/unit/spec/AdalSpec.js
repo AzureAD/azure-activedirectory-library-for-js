@@ -25,21 +25,8 @@ global.window = {};
 var AdalModule = require('../../../lib/adal.js');
 
 describe('Adal', function () {
-    var adal;
+    var adal, window;
     global.Logging = global.window.Logging;
-    var window = {
-        location: {
-            hash: '#hash',
-            href: 'href',
-            replace: function (val) {
-            }
-        },
-        localStorage: {},
-        sessionStorage: {},
-        atob: atobHelper,
-        innerWidth: 100,
-        innerHeight: 100
-    };
     var mathMock = {
         random: function () {
             return 0.2;
@@ -61,7 +48,7 @@ describe('Adal', function () {
     };
 
     var angularMock = {};
-    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl:true };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
@@ -111,6 +98,19 @@ describe('Adal', function () {
         // add key
         storageFake.setItem(STORAGE_TOKEN_KEYS, RESOURCE1 + '|');
 
+        window = {
+            location: {
+                hash: '#hash',
+                href: 'href',
+                replace: function (val) {
+                }
+            },
+            localStorage: {},
+            sessionStorage: {},
+            atob: atobHelper,
+            innerWidth: 100,
+            innerHeight: 100
+        };
         window.localStorage = storageFake;
         window.sessionStorage = storageFake;
         // Init adal 
@@ -122,7 +122,8 @@ describe('Adal', function () {
         global.Math = mathMock;
         global.angular = angularMock;
 
-        adal = new AdalModule.inject(conf);
+        AdalModule.prototype._singletonInstance = null;
+        adal = new AdalModule(conf);
         adal._user = null;
         adal._renewStates = [];
         adal._activeRenewals = {};
@@ -147,6 +148,11 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('app/views/abc')).toBe(null);
         expect(adal.getResourceForEndpoint('default/app/views/abc')).toBe(null);
         expect(adal.getResourceForEndpoint('app/home')).toBe('defaultResource');
+
+        adal.config.endpoints = { 'abc': 'resourceABC' };
+        expect(adal.getResourceForEndpoint('abc')).toBe('resourceABC');
+        adal.config.anonymousEndpoints = ['abc'];
+        expect(adal.getResourceForEndpoint('abc')).toBe(null);
     });
 
     it('says token expired', function () {
@@ -704,6 +710,7 @@ describe('Adal', function () {
             return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
         }, 'token renew status not updated', 1000);
         runs(function () {
+            window.callBackMappedToRenewStates[adal.config.state]('Token renewal operation failed due to timeout', null, 'Token Renewal Failed');
             expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
             expect(errDesc).toBe('Token renewal operation failed due to timeout');
             expect(token).toBe(null);
@@ -773,6 +780,7 @@ describe('Adal', function () {
     it('tests handleWindowCallback function for LOGIN_REQUEST', function () {
         window.location = {};
         window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        window.location.href = 'www.test.com' + '#/id_token=' + IDTOKEN_MOCK;
         var _getRequestInfo = adal.getRequestInfo;
         adal.getRequestInfo = function () {
             return {
@@ -780,13 +788,13 @@ describe('Adal', function () {
                 parameters: { 'error_description': 'error description', 'error': 'invalid', 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
                 stateMatch: true,
                 stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
-                requestType: adal.REQUEST_TYPE.LOGIN_REQUEST
+                requestType: adal.REQUEST_TYPE.LOGIN
             };
         };
         storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, "www.test.com");
         window.oauth2Callback = {};
         adal.handleWindowCallback();
-        expect(window.location).toBe('www.test.com');
+        expect(window.location.href).toBe('www.test.com');
         adal.getRequestInfo = _getRequestInfo;
 
     });
@@ -896,6 +904,7 @@ describe('Adal', function () {
         expect(err).toBe('Error opening popup');
         expect(token).toBe(null);
         expect(adal.loginInProgress()).toBe(false);
+        adal.popUp = false;
     });
 
     it('tests login functionality in case of popup window', function () {
@@ -946,7 +955,7 @@ describe('Adal', function () {
             expect(errDesc).toBe('Invalid id_token. id_token: ' + IDTOKEN_MOCK);
             expect(window.location.href).not.toBe('home page');
         });
-
+        adal.popUp = false;
     });
 
     it('ensures that adal.callback is not overridden in calls to getUser', function () {
@@ -1000,4 +1009,60 @@ describe('Adal', function () {
         expect(token).toBe(undefined);
         expect(errDesc).toBe('some_description');
     });
+
+    it('tests if error is logged and code flow is completed when there is a failure in the user defined callback function in case of login', function () {
+        window.location = {};
+        window.location.href = 'www.test.com' + '#/id_token=' + IDTOKEN_MOCK;
+        window.location.hash = '#/id_token=' + IDTOKEN_MOCK;
+        var _getRequestInfo = adal.getRequestInfo;
+        Logging.level = 0;
+        Logging.log = function (message) {
+            window.logMessage = message;
+        }
+        adal.getRequestInfo = function () {
+            return {
+                valid: true,
+                parameters: { 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
+                stateMatch: true,
+                stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
+                requestType: adal.REQUEST_TYPE.LOGIN
+            };
+        };
+        var callback = function () {
+            throw new Error("Error in callback function");
+        }
+        adal.callback = callback;
+        storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, 'www.test.com');
+        adal.handleWindowCallback();
+        expect(window.logMessage).toContain("Error occurred in user defined callback function");
+        expect(window.location.href).toBe('www.test.com');
+        adal.getRequestInfo = _getRequestInfo;
+        Logging.level = 2;
+
+    });
+
+    it('tests default value for expires_in', function () {
+        var requestInfo = {
+            valid: true,
+            parameters: { 'access_token': 'token123', 'state': '123' },
+            stateMatch: true,
+            stateResponse: '123|loginResource1',
+            requestType: adal.REQUEST_TYPE.RENEW_TOKEN
+        };
+        adal.saveTokenFromHash(requestInfo);
+        expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3599);
+    });
+
+    it('tests default value of redirect uri', function () {
+        global.window = {
+            location: {
+                hash: '#/hash',
+                href: 'https://www.testurl.com/#/hash?q1=p1'
+            }
+        };
+        AdalModule.prototype._singletonInstance = null;
+        var localConfig = { clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+        var localAdal = new AdalModule.inject(localConfig);
+        expect(localAdal.config.redirectUri).toBe('https://www.testurl.com/');
+    })
 });

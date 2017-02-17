@@ -1,4 +1,31 @@
-//----------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: adal.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: adal.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>//----------------------------------------------------------------------
 // AdalJS v1.0.14
 // @preserve Copyright (c) Microsoft Open Technologies, Inc.
 // All Rights Reserved
@@ -34,7 +61,7 @@ var AuthenticationContext = (function () {
      *  @property {function} displayCall - User defined function of handling the navigation to Azure AD authorization endpoint in case of login. Defaults to 'null'.
      *  @property {string} postLogoutRedirectUri - Redirects the user to postLogoutRedirectUri after logout. Defaults is 'redirectUri'.
      *  @property {string} cacheLocation - Sets browser storage to either 'localStorage' or sessionStorage'. Defaults to 'sessionStorage'.
-     *  @property {Array.<string>} anonymousEndpoints Array of keywords or URI's. Adal will not attach a token to outgoing requests that have these keywords or uri. Defaults to 'null'.
+     *  @property {Array.&lt;string>} anonymousEndpoints Array of keywords or URI's. Adal will not attach a token to outgoing requests that have these keywords or uri. Defaults to 'null'.
      *  @property {number} expireOffsetSeconds If the cached token is about to be expired in the expireOffsetSeconds (in seconds), Adal will renew the token instead of using the cached token. Defaults to 120 seconds.
      *  @property {string} correlationId Unique identifier used to map the request with the response. Defaults to RFC4122 version 4 guid (128 bits).
      */
@@ -368,7 +395,7 @@ var AuthenticationContext = (function () {
         window.callBacksMappedToRenewStates[expectedState].push(callback);
         if (!window.callBackMappedToRenewStates[expectedState]) {
             window.callBackMappedToRenewStates[expectedState] = function (errorDesc, token, error) {
-                for (var i = 0; i < window.callBacksMappedToRenewStates[expectedState].length; ++i) {
+                for (var i = 0; i &lt; window.callBacksMappedToRenewStates[expectedState].length; ++i) {
                     try {
                         window.callBacksMappedToRenewStates[expectedState][i](errorDesc, token, error);
                     }
@@ -573,7 +600,7 @@ var AuthenticationContext = (function () {
 
         if (!this._isEmpty(keys)) {
             keys = keys.split(this.CONSTANTS.RESOURCE_DELIMETER);
-            for (var i = 0; i < keys.length; i++) {
+            for (var i = 0; i &lt; keys.length; i++) {
                 this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + keys[i], '');
                 this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + keys[i], 0);
             }
@@ -807,7 +834,7 @@ var AuthenticationContext = (function () {
                 // external api requests may have many renewtoken requests for different resource
                 if (!requestInfo.stateMatch && window.parent && window.parent.AuthenticationContext) {
                     var statesInParentContext = window.parent.AuthenticationContext()._renewStates;
-                    for (var i = 0; i < statesInParentContext.length; i++) {
+                    for (var i = 0; i &lt; statesInParentContext.length; i++) {
                         if (statesInParentContext[i] === requestInfo.stateResponse) {
                             requestInfo.requestType = this.REQUEST_TYPE.RENEW_TOKEN;
                             requestInfo.stateMatch = true;
@@ -828,7 +855,7 @@ var AuthenticationContext = (function () {
     AuthenticationContext.prototype._getResourceFromState = function (state) {
         if (state) {
             var splitIndex = state.indexOf('|');
-            if (splitIndex > -1 && splitIndex + 1 < state.length) {
+            if (splitIndex > -1 && splitIndex + 1 &lt; state.length) {
                 return state.substring(splitIndex + 1);
             }
         }
@@ -925,7 +952,7 @@ var AuthenticationContext = (function () {
 
         // if user specified list of anonymous endpoints, no need to send token to these endpoints, return null.
         if (this.config && this.config.anonymousEndpoints) {
-            for (var i = 0; i < this.config.anonymousEndpoints.length; i++) {
+            for (var i = 0; i &lt; this.config.anonymousEndpoints.length; i++) {
                 if (endpoint.indexOf(this.config.anonymousEndpoints[i]) > -1) {
                     return null;
                 }
@@ -1077,7 +1104,7 @@ var AuthenticationContext = (function () {
         }
 
         var h1, h2, h3, h4, bits, c1, c2, c3, decoded = '';
-        for (var i = 0; i < length; i += 4) {
+        for (var i = 0; i &lt; length; i += 4) {
             //Every 4 base64 encoded character will be converted to 3 byte string, which is 24 bits
             // then 6 bits per base64 encoded character
             h1 = codes.indexOf(base64IdToken.charAt(i));
@@ -1087,7 +1114,7 @@ var AuthenticationContext = (function () {
 
             // For padding, if last two are '='
             if (i + 2 === length - 1) {
-                bits = h1 << 18 | h2 << 12 | h3 << 6;
+                bits = h1 &lt;&lt; 18 | h2 &lt;&lt; 12 | h3 &lt;&lt; 6;
                 c1 = bits >> 16 & 255;
                 c2 = bits >> 8 & 255;
                 decoded += String.fromCharCode(c1, c2);
@@ -1095,13 +1122,13 @@ var AuthenticationContext = (function () {
             }
                 // if last one is '='
             else if (i + 1 === length - 1) {
-                bits = h1 << 18 | h2 << 12
+                bits = h1 &lt;&lt; 18 | h2 &lt;&lt; 12
                 c1 = bits >> 16 & 255;
                 decoded += String.fromCharCode(c1);
                 break;
             }
 
-            bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
+            bits = h1 &lt;&lt; 18 | h2 &lt;&lt; 12 | h3 &lt;&lt; 6 | h4;
 
             // then convert to 3 byte chars
             c1 = bits >> 16 & 255;
@@ -1127,7 +1154,7 @@ var AuthenticationContext = (function () {
         var idTokenPartsRegex = /^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$/;
 
         var matches = idTokenPartsRegex.exec(jwtToken);
-        if (!matches || matches.length < 4) {
+        if (!matches || matches.length &lt; 4) {
             this.warn('The returned id_token is not parseable.');
             return null;
         }
@@ -1207,7 +1234,7 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype._decimalToHex = function (number) {
         var hex = number.toString(16);
-        while (hex.length < 2) {
+        while (hex.length &lt; 2) {
             hex = '0' + hex;
         }
         return hex;
@@ -1257,7 +1284,7 @@ var AuthenticationContext = (function () {
             var hex = '0123456789abcdef';
             var r = 0;
             var guidResponse = "";
-            for (var i = 0; i < 36; i++) {
+            for (var i = 0; i &lt; 36; i++) {
                 if (guidHolder[i] !== '-' && guidHolder[i] !== '4') {
                     // each x and y needs to be random
                     r = Math.random() * 16 | 0;
@@ -1320,7 +1347,7 @@ var AuthenticationContext = (function () {
                 adalFrame = document.getElementsByTagName('body')[0].appendChild(ifr);
             }
             else if (document.body && document.body.insertAdjacentHTML) {
-                document.body.insertAdjacentHTML('beforeEnd', '<iframe name="' + iframeId + '" id="' + iframeId + '" style="display:none"></iframe>');
+                document.body.insertAdjacentHTML('beforeEnd', '&lt;iframe name="' + iframeId + '" id="' + iframeId + '" style="display:none">&lt;/iframe>');
             }
             if (window.frames && window.frames[iframeId]) {
                 adalFrame = window.frames[iframeId];
@@ -1452,7 +1479,7 @@ var AuthenticationContext = (function () {
      * @param {string} error  -  Error to log.
      */
     AuthenticationContext.prototype.log = function (level, message, error) {
-        if (level <= Logging.level) {
+        if (level &lt;= Logging.level) {
             var timestamp = new Date().toUTCString();
             var formattedMessage = '';
 
@@ -1526,3 +1553,26 @@ var AuthenticationContext = (function () {
 }());
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="AuthenticationContext.html">AuthenticationContext</a></li><li><a href="config.html">config</a></li><li><a href="RequestInfo.html">RequestInfo</a></li><li><a href="User.html">User</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 16 2017 18:45:41 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

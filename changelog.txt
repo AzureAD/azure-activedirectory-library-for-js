@@ -1,6 +1,7 @@
 Version 1.0.14
 =========================
 * Adding ability to specify anonymous sub-urls for a configured endpoint
+* Fixing http interceptor to look into templateCache first
 * Fixing infinite loop issues when using popUp for angular versions 1.5.8 or above
 * Fixing silent exception error in case of user defined callback function
 * Fixing double error pipeline in angular acquireToken method

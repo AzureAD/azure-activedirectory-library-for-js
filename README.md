@@ -12,7 +12,8 @@ You can find the changes for each version in the [change log](https://github.com
 
 ## Samples and Documentation
 
-[We provide a full suite of sample applications and documentation on GitHub](https://github.com/azure-samples?query=active-directory) to help you get started with learning the Azure Identity system. This includes tutorials for native clients such as Windows, Windows Phone, iOS, OSX, Android, and Linux. We also provide full walkthroughs for authentication flows such as OAuth2, OpenID Connect, Graph API, and other awesome features. 
+[We provide a full suite of sample applications and documentation on GitHub](https://github.com/azure-samples?query=active-directory) to help you get started with learning the Azure Identity system. This includes tutorials for native clients such as Windows, Windows Phone, iOS, OSX, Android, and Linux; and a detailed guide to registering your app with Azure Active Directory. We also provide full walkthroughs for authentication flows such as OAuth2, OpenID Connect, Graph API, and other awesome features.
+ 
 
 ## Community Help and Support
 
@@ -92,14 +93,14 @@ Install grunt; call
     grunt doc
 
 
-
+# Getting Started
 **Quick usage guide**
 
-Below you can find a quick reference for the most common operations you need to perform to use adal js.
+Below you can find a quick reference for the most common operations you need to perform to use ADAL JS.
 
-1- Include references to angular.js libraries, adal.js, adal-angular.js in your main app page.
+1- Include references to angular.js libraries, adal.js, adal-angular.js in your main app page. The ADAL should be included after Angular, but before your application scripts as shown below.
 
-2- include a reference to adal module
+2- Include a reference to the ADAL module in your app module.
 ```js
 var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 ```
@@ -113,7 +114,15 @@ var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 
 Without the hashPrefix set, the AAD login will loop indefinitely as the callback URL from AAD (in the form of, {yourBaseUrl}/#{AADTokenAndState}) will be rewritten to remove the '#' causing the token parsing to fail and login sequence to occur again.
 
-4- Initialize adal with the AAD app coordinates at app config time
+4- Initialize ADAL with the AAD app coordinates at app config time. The minimum required object to initialize ADAL is:
+```js
+adalAuthenticationServiceProvider.init({
+    // clientId is the identifier assigned to your app by Azure Active Directory.
+    clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e" 
+})
+```
+
+A single-tenant configuration, with CORS, looks like this:
 ```js
 // endpoint to resource mapping(optional)
     var endpoints = {
@@ -131,7 +140,8 @@ adalAuthenticationServiceProvider.init(
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );
 ```
-5- Define which routes you want to secure via adal - by adding `requireADLogin: true` to their definition
+
+5- Define which routes you want to secure via ADAL - by adding `requireADLogin: true` to their definition
 ```js
 $routeProvider.
     when("/todoList", {
@@ -141,10 +151,13 @@ $routeProvider.
     });
 
 ```
-6- Any service invocation code you might have will remain unchanged. Adal's interceptor will automatically add tokens for every outgoing call.
+6- Any service invocation code you might have will remain unchanged. ADAL's interceptor will automatically add tokens for every outgoing call. 
+
+Anonymous endpoints, introduced in version 1.0.10, is an array of values that will be ignored by the ADAL route/state change handlers. ADAL will not attach a token to outgoing requests that have these keywords or URI. Routes that *do not* specify the ```requireADLogin=true``` property are added to the ```anonymousEndpoints``` array automatically. 
 
 ***Optional***
-7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile):
+7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile).
+The userInfo.profile property provides access to the claims in the ID token received from AAD. The claims can be used by the application for validation, to identify the subject's directory tenant, and so on. The complete list of claims with a brief description of each value is here, [Claims in Azure AD Security Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-authentication-scenarios%23claims-in-azure-ad-security-tokens):
 ```html
 <!DOCTYPE html>
 <html>
@@ -229,7 +242,9 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 
 ### Multi-Tenant
 
-By default, you have multi-tenant support. Adal will set tenant to 'common', if it is not specified in the config.
+By default, you have multi-tenant support. ADAL will set tenant to 'common', if it is not specified in the config. This allows any Microsoft account to authenticate to your application. If you are not interested in multi-tenant behavior, you will need to set the ```tenant``` property as shown above.
+
+If you allow multi-tenant authentication, and you do not wish to allow all Microsoft account users to use your application, you must provide your own method of filtering the token issuers to only those tenants who are allowed to login.
 
 ### Cache Location
 Default storage location is sessionStorage. You can specify localStorage in the config as well.
@@ -246,14 +261,14 @@ adalAuthenticationServiceProvider.init(
 ```
 
 ### Security
-Tokens are accessible from javascript since Adal.JS is using HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should ask user to login again for important operations on your app.
-You should protect your site for XSS. Please check the article here: https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
+Tokens are accessible from javascript since ADAL.JS is using HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should ask user to login again for important operations on your app.
+You should protect your site for XSS. Please check the article here: [https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet](https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet)
 
 
 ### CORS API usage and IE
-Adal will get access token for given CORS API endpoints in the config. Access token is requested using Iframe. Iframe needs to access the cookies for the same domain that you did the initial sign in. IE does not allow to access cookies in IFrame for localhost. Your url needs to be fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
+ADAL will get access token for given CORS API endpoints in the config. Access token is requested using Iframe. Iframe needs to access the cookies for the same domain that you did the initial sign in. IE does not allow to access cookies in IFrame for localhost. Your url needs to be fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
 
-To make CORS API call, you need to specify endpoints in the config for your CORS API. Your service will be similar to this to make the call from JS. In your api project, you need to enable CORS api requests to receive flight requests. You can check the sample for that  CORS API [sample ](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet).
+To make CORS API call, you need to specify endpoints in the config for your CORS API. Your service will be similar to this to make the call from JS. In your API project, you need to enable CORS API requests to receive flight requests. You can check the sample for CORS API [sample](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet).
 
 ```js
 'use strict';
@@ -273,9 +288,13 @@ app.factory('contactService', ['$http', function ($http) {
 ```
 
 You can read extended blogs for CORS API related to learn about Office365 usage.
-Andrew's related to Cors and office365 usage
+
+Andrew's related to CORS and Office365 usage
+
 http://www.andrewconnell.com/blog/adal-js-cors-with-o365-apis-files-sharepoint
+
 Vittorio's blog
+
 http://www.cloudidentity.com/blog/2015/02/19/introducing-adal-js-v1/
 http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-dive/
 

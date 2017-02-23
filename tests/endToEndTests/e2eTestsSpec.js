@@ -539,7 +539,7 @@ describe('E2ETests', function () {
                             errorElement = element(by.id('service_exception_message'));
                             return browser.wait(EC.presenceOf(errorElement), 4000, 'AAD did not return error html');
                         }).then(function () {
-                            expect(errorElement.getInnerHtml()).toContain("AADSTS50011: The reply address '" + invalidRedirectUri + "'");
+                            expect(errorElement.getAttribute("innerHTML")).toContain("AADSTS50011: The reply address '" + invalidRedirectUri + "'");
                             return browser.switchTo().defaultContent();
                         });
                     });

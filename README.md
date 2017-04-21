@@ -155,6 +155,31 @@ $routeProvider.
 
 Anonymous endpoints, introduced in version 1.0.10, is an array of values that will be ignored by the ADAL route/state change handlers. ADAL will not attach a token to outgoing requests that have these keywords or URI. Routes that *do not* specify the ```requireADLogin=true``` property are added to the ```anonymousEndpoints``` array automatically. 
 
+7- **Prevent automatic token injection**
+
+There can be a scenario where an application requires routes to be guarded for authorized users. However, some of the outgoing requests do require special bearer token along with requests. To avoid broken requests in such scenarios set ```preventAccessTokenInjection:true``` in configuration of ```$http``` request. Some example snippets given below - 
+
+```js
+$http({
+  method: 'GET',
+  url: '/someUrl',
+  preventAccessTokenInjection : true
+}).then(function successCallback(response) {
+    // this callback will be called asynchronously
+    // when the response is available
+  }, function errorCallback(response) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
+```
+
+```js
+$http.get('/someUrl', {
+        preventAccessTokenInjection : true
+    }).then(successCallback, errorCallback);
+```
+
+
 ***Optional***
 7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile).
 The userInfo.profile property provides access to the claims in the ID token received from AAD. The claims can be used by the application for validation, to identify the subject's directory tenant, and so on. The complete list of claims with a brief description of each value is here, [Claims in Azure AD Security Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-authentication-scenarios):

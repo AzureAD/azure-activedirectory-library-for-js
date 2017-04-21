@@ -1,17 +1,17 @@
 {
-  "name": "adal-angular",
+  "name": "adal-vanilla",
   "version": "1.0.17",
-  "homepage": "https://github.com/AzureAD/azure-activedirectory-library-for-js",
+  "homepage": "https://github.com/jmgoncalves/azure-activedirectory-library-for-js",
   "authors": [
-    "MSOpentech"
+    "MSOpentech",
+    "jmgoncalves"
   ],
   "description": "Azure Active Directory Client Library for js",
   "main": [
-    "./lib/adal.js",
-    "./lib/adal-angular.js"
+    "./lib/adal.js"
   ],
   "moduleType": [
-    "node"
+    "amd"
   ],
   "keywords": [
     "adal",
@@ -33,14 +33,7 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "angular": "*"
-  },
   "devDependencies": {
-    "angular-resource": "~1.2.26",
-    "angular-mocks": "^1.3.0",
-    "jasmine": "2.0.0",
-    "angular-route": "~1.2.26",
-    "angular-ui-router": "^0.3.1"
+    "jasmine": "2.0.0"
   }
 }

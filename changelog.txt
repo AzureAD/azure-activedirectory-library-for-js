@@ -1,3 +1,10 @@
+Version 1.0.15
+=========================
+* Added acquireTokenRedirect and acquireTokenPopup api's to acquire a token for resource interactively (MFA) and support conditional access.
+* Fixed a bug in acquireToken method that was happening when Adaljs was consumed as a module using loaders such as webpack.
+* Added custom event polyfill to support IE
+* Other bug fixes and updates
+
 Version 1.0.14
 =========================
 * Adding ability to specify anonymous sub-urls for a configured endpoint

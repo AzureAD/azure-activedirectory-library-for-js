@@ -6,7 +6,7 @@ Active Directory Authentication Library for JavaScript (ADAL JS) helps you to us
 This library is optimized for working together with AngularJS.
 
 ## Versions
-Current version - 1.0.14  
+Current version - 1.0.15  
 Minimum recommended version - 1.0.11  
 You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
 
@@ -27,7 +27,7 @@ If you find a security issue with our libraries or services please report it to 
 
 ## The Library
 
-This is a GA released version. The current version is **1.0.14**.
+This is a GA released version. The current version is **1.0.15**.
 
 You have multiple ways of getting ADAL JS:
 
@@ -38,10 +38,10 @@ Via NPM:
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.14/js/adal.min.js"></script>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.14/js/adal-angular.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 1.0.14.
+CDN will be updated to latest version 1.0.15.
 
 Via Bower:
 

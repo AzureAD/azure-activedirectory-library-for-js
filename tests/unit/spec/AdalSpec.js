@@ -48,7 +48,7 @@ describe('Adal', function () {
     };
 
     var angularMock = {};
-    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl:true };
+    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl: true };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
@@ -125,7 +125,7 @@ describe('Adal', function () {
         AdalModule.prototype._singletonInstance = null;
         adal = new AdalModule(conf);
         adal._user = null;
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._activeRenewals = {};
         adal.CONSTANTS.LOADFRAME_TIMEOUT = 800;
     });
@@ -166,11 +166,6 @@ describe('Adal', function () {
         expect(adal.getCachedToken(RESOURCE1)).toBe(null);
     });
 
-    it('gets cache username', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
-        expect(adal.getCachedUser().userName).toBe('user@oauthimplicit.ccsctp.net');
-    });
-
     it('navigates user to login by default', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
         adal.config.displayCall = null;
@@ -208,7 +203,7 @@ describe('Adal', function () {
             + '&client-request-id=33333333-3333-4333-b333-333333333333'
             + adal._addLibMetadata()
             + '&nonce=33333333-3333-4333-b333-333333333333'
-            );
+        );
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333');
     });
 
@@ -250,11 +245,11 @@ describe('Adal', function () {
             token = valToken;
             err = valErr;
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal.callback).toBe(null);
-        expect(adal._renewStates.length).toBe(1);
+        expect(window.renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
         waitsFor(function () {
@@ -285,12 +280,12 @@ describe('Adal', function () {
             token2 = valToken;
             err2 = valErr;
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         //Simulate second acquire i.e. second service call from Angular.
         adal.acquireToken(RESOURCE1, callback2);
-        expect(adal._renewStates.length).toBe(1);
+        expect(window.renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
         waitsFor(function () {
@@ -385,7 +380,7 @@ describe('Adal', function () {
         var store = storageFake.storeVerify();
         for (var prop in store) {
             if (prop == adal.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + RESOURCE1 ||
-               prop == adal.CONSTANTS.STORAGE.EXPIRATION_KEY + RESOURCE1) {
+                prop == adal.CONSTANTS.STORAGE.EXPIRATION_KEY + RESOURCE1) {
                 expect((store[prop] === '' || store[prop] == 0 || !store[prop])).toBe(true);
             }
         }
@@ -435,22 +430,6 @@ describe('Adal', function () {
         expect(adal.promptUser).toHaveBeenCalledWith('https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0');
     })
 
-    it('gets user from cache', function () {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
-        adal.config.clientId = 'e9a5a8b6-8af7-4719-9821-0deef255f68e';
-        adal.config.loginResource = RESOURCE1;
-        adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE - 100;
-        var err = '', user = '';
-        var callback = function (valErr, valResult) {
-            err = valErr;
-            user = valResult;
-        };
-        spyOn(adal, 'getCachedToken').andCallThrough();
-        adal.getUser(callback);
-        expect(adal.getCachedToken).not.toHaveBeenCalledWith(RESOURCE1);
-        expect(user.userName).toBe('user@oauthimplicit.ccsctp.net');
-    });
-
     it('is callback if has error or access token or idtoken', function () {
         expect(adal.isCallback('not a callback')).toBe(false);
         expect(adal.isCallback('#error_description=someting_wrong')).toBe(true);
@@ -483,7 +462,7 @@ describe('Adal', function () {
 
     var checkStateType = function (state, stateExpected, requestType) {
         storageFake.setItem(state, stateExpected);
-        adal._renewStates.push(stateExpected);
+        window.renewStates.push(stateExpected);
         var requestInfo = adal.getRequestInfo('#error_description=someting_wrong&state=' + stateExpected);
         expect(requestInfo.valid).toBe(true);
         expect(requestInfo.stateResponse).toBe(stateExpected);
@@ -529,26 +508,6 @@ describe('Adal', function () {
         };
         adal.saveTokenFromHash(requestInfo);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY + 'loginResource1')).toBe(mathMock.round(1) + 3589);
-    });
-
-    it('saves username after extracting idtoken', function () {
-        var requestInfo = {
-            valid: true,
-            parameters: {
-                'id_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk2MDkwMiwibmJmIjoxNDExOTYwOTAyLCJleHAiOjE0MTE5NjQ4MDIsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiIxOWU2N2IyNC1jZDk5LTQ1YjYtYTU4OC04NDBlM2Y4ZjJhNzAiLCJwd2RfZXhwIjoiNTc3ODAwOCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.GzbTwMXhjs4uJFogd1B46C_gKX6uZ4BfgJIpzFS-n-HRXEWeKdZWboRC_-C4UnEy6G9kR6vNFq7zi3DY1P8uf1lUavdOFUE27xNY1McN1Vjm6HKxKNYOLU549-wIb6SSfGVycdyskdJfplf5VRasMGclwHlY0l9bBCTaPunjhfcg-mQmGKND-aO0B54EGhdGs740NiLMCh6kNXbp1WAv7V6Yn408qZEIsOQoPO0dW-wO54DTqpbLtqiwae0pk0hDxXWczaUPxR_wcz0f3TgF42iTp-j5bXTf2GOP1VPZtN9PtdjcjDIfZ6ihAVZCEDB_Y9czHv7et0IvB1bzRWP6bQ',
-                'state': '123'
-            },
-            stateMatch: true,
-            stateResponse: '123',
-            requestType: adal.REQUEST_TYPE.ID_TOKEN
-        };
-        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, '19e67b24-cd99-45b6-a588-840e3f8f2a70');
-        adal.config.clientId = conf.clientId;
-        adal._user = null;
-        adal.saveTokenFromHash(requestInfo);
-        var cachedUser = adal.getCachedUser();
-        expect(cachedUser.userName).toBe('user@oauthimplicit.ccsctp.net');
-        expect(cachedUser.profile.upn).toBe('user@oauthimplicit.ccsctp.net');
     });
 
     it('does not save user for invalid nonce in idtoken', function () {
@@ -703,7 +662,7 @@ describe('Adal', function () {
             token = valToken;
             err = valErr;
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { userName: 'test@testuser.com' };
         adal.acquireToken(RESOURCE1, callback);
         waitsFor(function () {
@@ -730,12 +689,12 @@ describe('Adal', function () {
             token = valToken;
             err = valErr;
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(adal.config.clientId, callback);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN)).toBe('33333333-3333-4333-b333-333333333333');
         expect(adal.config.state).toBe('33333333-3333-4333-b333-333333333333' + '|' + 'client');
-        expect(adal._renewStates.length).toBe(1);
+        expect(window.renewStates.length).toBe(1);
         // Wait for initial timeout load
         console.log('Waiting for initial timeout');
         waitsFor(function () {
@@ -744,7 +703,7 @@ describe('Adal', function () {
 
         runs(function () {
             expect(mockFrames['adalIdTokenFrame'].src).toBe(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=' + adal.config.clientId + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Cclient'
-    		+ '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com' + '&nonce=33333333-3333-4333-b333-333333333333');
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com' + '&nonce=33333333-3333-4333-b333-333333333333');
         });
     });
 
@@ -806,18 +765,18 @@ describe('Adal', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var callback = function () {
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         spyOn(adal, '_loadFrameTimeout');
         adal.acquireToken(RESOURCE1, callback);
         expect(adal._loadFrameTimeout).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com', 'adalRenewFrametoken.resource1', 'token.resource1');
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com', 'adalRenewFrametoken.resource1', 'token.resource1');
 
         adal._activeRenewals = {};
         adal._user = { profile: { 'sub': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal._loadFrameTimeout).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource1'
-                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none', 'adalRenewFrametoken.resource1', 'token.resource1');
+            + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none', 'adalRenewFrametoken.resource1', 'token.resource1');
     });
 
     it('generates new correlationId for each request sent to AAD if not set by user', function () {
@@ -827,7 +786,7 @@ describe('Adal', function () {
         adal.config.expireOffsetSeconds = SECONDS_TO_EXPIRE + 100;
         var callback = function () {
         };
-        adal._renewStates = [];
+        window.renewStates = [];
         adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
         mathMock.random = function () {
             return 0.1;
@@ -835,7 +794,7 @@ describe('Adal', function () {
         spyOn(adal, '_loadFrameTimeout');
         adal.acquireToken(RESOURCE1, callback);
         expect(adal._loadFrameTimeout).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=11111111-1111-4111-9111-111111111111%7Ctoken.resource1'
-                + '&client-request-id=11111111-1111-4111-9111-111111111111' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com', 'adalRenewFrametoken.resource1', 'token.resource1');
+            + '&client-request-id=11111111-1111-4111-9111-111111111111' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com', 'adalRenewFrametoken.resource1', 'token.resource1');
 
         mathMock.random = function () {
             return 0.3;
@@ -844,7 +803,7 @@ describe('Adal', function () {
         adal._user = { profile: { 'sub': 'test@testuser.com' }, userName: 'test@domain.com' };
         adal.acquireToken(RESOURCE1, callback);
         expect(adal._loadFrameTimeout).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE1 + '&redirect_uri=contoso_site&state=44444444-4444-4444-8444-444444444444%7Ctoken.resource1'
-                + '&client-request-id=44444444-4444-4444-8444-444444444444' + adal._addLibMetadata() + '&prompt=none', 'adalRenewFrametoken.resource1', 'token.resource1');
+            + '&client-request-id=44444444-4444-4444-8444-444444444444' + adal._addLibMetadata() + '&prompt=none', 'adalRenewFrametoken.resource1', 'token.resource1');
 
     });
 
@@ -863,12 +822,12 @@ describe('Adal', function () {
 
         adal._deserialize = function (query) {
             var match,
-            pl = /\+/g,  // Regex for replacing addition symbol with a space
-            search = /([^&=]+)=?([^&]*)/g,
-            decode = function (s) {
-                return decodeURIComponent(s.replace(pl, ' '));
-            },
-            obj = {};
+                pl = /\+/g,  // Regex for replacing addition symbol with a space
+                search = /([^&=]+)=?([^&]*)/g,
+                decode = function (s) {
+                    return decodeURIComponent(s.replace(pl, ' '));
+                },
+                obj = {};
             match = search.exec(query);
             while (match) {
                 obj[decode(match[1])] = decode(match[2]);
@@ -997,11 +956,7 @@ describe('Adal', function () {
             err = valErr;
         }
         window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['someState']
-                }
-            },
+            renewStates: ['someState'],
             callBackMappedToRenewStates: { "someState": callback }
         };
         adal.handleWindowCallback(errorHash);

@@ -228,11 +228,7 @@ describe('TaskCtl', function () {
 
     it('tests stateMismatch broadcast when state does not match', function () {
         window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: {}
-                }
-            },
+            renewStates: ['4344']
         };
         location.hash('#id_token=sample&state=4343');
         spyOn(rootScope, '$broadcast').andCallThrough();
@@ -256,11 +252,7 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
         };
         window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
+            renewStates: ['4343'],
             callBackMappedToRenewStates: { "4343": callback }
         };
         location.hash('#error=sample&error_description=renewfailed&state=4343');
@@ -277,17 +269,13 @@ describe('TaskCtl', function () {
             token = valToken;
         };
         window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
+            renewStates: ['4343'],
             callBackMappedToRenewStates: { "4343": callback }
         };
         location.hash('#access_token=newAccessToken123&state=4343');
         scope.$apply();
-        expect(error).toBe('');
-        expect(errorDesc).toBe('');
+        expect(error).toBeUndefined();
+        expect(errorDesc).toBeUndefined();
         expect(token).toBe('newAccessToken123');
     });
 
@@ -299,18 +287,14 @@ describe('TaskCtl', function () {
             token = valToken;
         };
         window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
+            renewStates: ['4343'],
             callBackMappedToRenewStates: { "4343": callback }
         };
         location.hash('#id_token=newIdToken123&state=4343');
         
         scope.$apply();
-        expect(errorDesc).toBe('Invalid id_token. id_token: newIdToken123');
-        expect(error).toBe('invalid id_token');
+        expect(errorDesc).toBeUndefined();
+        expect(error).toBeUndefined();
         expect(token).toBe('newIdToken123');
     });
 
@@ -465,6 +449,9 @@ describe('AcquireTokenCtl', function () {
         });
         spyOn(sessionStorage, 'setItem').andCallFake(function (key, value) {
             store[key] = value;
+        });
+        spyOn(sessionStorage, 'removeItem').andCallFake(function (key) {
+            delete store[key];
         });
         spyOn(window, 'Date').andCallFake(function () {
             return {

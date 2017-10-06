@@ -358,7 +358,6 @@ describe('Adal', function () {
         storageFake.setItem(adal.CONSTANTS.STORAGE.EXPIRATION_KEY, 3);
         storageFake.setItem(adal.CONSTANTS.STORAGE.SESSION_STATE, 'session_state');
         storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, 'state login');
-        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'username');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR, 'error');
         storageFake.setItem(adal.CONSTANTS.STORAGE.ERROR_DESCRIPTION, 'error description');
         adal.clearCache();
@@ -1019,5 +1018,16 @@ describe('Adal', function () {
         var localConfig = { clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
         var localAdal = new AdalModule.inject(localConfig);
         expect(localAdal.config.redirectUri).toBe('https://www.testurl.com/');
+    })
+
+    it('tests if LOADFRAME_TIMEOUT is configurable', function () {
+        AdalModule.prototype._singletonInstance = null;
+        var localConfig = { clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };
+        var localAdal = new AdalModule.inject(localConfig);
+        expect(localAdal.CONSTANTS.LOADFRAME_TIMEOUT).toBe(6000);
+        localConfig.loadFrameTimeout = 10000;
+        AdalModule.prototype._singletonInstance = null;
+        var localAdal = new AdalModule.inject(localConfig);
+        expect(localAdal.CONSTANTS.LOADFRAME_TIMEOUT).toBe(10000);
     })
 });

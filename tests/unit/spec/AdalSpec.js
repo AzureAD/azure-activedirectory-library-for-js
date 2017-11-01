@@ -450,11 +450,11 @@ describe('Adal', function () {
         requestInfo = adal.getRequestInfo('#error_description=someting_wrong');
         expect(requestInfo.valid).toBe(true);
         expect(requestInfo.stateResponse).toBe('');
-
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, '1232');
         requestInfo = adal.getRequestInfo('#error_description=someting_wrong&state=1232');
         expect(requestInfo.valid).toBe(true);
         expect(requestInfo.stateResponse).toBe('1232');
-        expect(requestInfo.stateMatch).toBe(false);
+        expect(requestInfo.stateMatch).toBe(true);
 
         checkStateType(adal.CONSTANTS.STORAGE.STATE_LOGIN, '1234', adal.REQUEST_TYPE.LOGIN);
     });
@@ -956,12 +956,14 @@ describe('Adal', function () {
         }
         window.parent = {
             renewStates: ['someState'],
-            callBackMappedToRenewStates: { "someState": callback }
+            callBackMappedToRenewStates: { "someState": callback },
+            requestType:adal.REQUEST_TYPE.RENEW_TOKEN
         };
         adal.handleWindowCallback(errorHash);
         expect(err).toBe('interaction_required');
         expect(token).toBe(undefined);
         expect(errDesc).toBe('some_description');
+        window.parent = {};
     });
 
     it('tests if error is logged and code flow is completed when there is a failure in the user defined callback function in case of login', function () {

@@ -1030,4 +1030,18 @@ describe('Adal', function () {
         var localAdal = new AdalModule.inject(localConfig);
         expect(localAdal.CONSTANTS.LOADFRAME_TIMEOUT).toBe(10000);
     })
+
+    it('removes the prompt query parameter user provided', function() {
+        var url = 'https://login.onmicrosoft.com?prompt=none&client_id=12345&response_type=id_token';
+        var newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
+        expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
+
+        url = 'https://login.onmicrosoft.com?client_id=12345&prompt=none&response_type=id_token';
+        newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
+        expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
+
+        url = 'https://login.onmicrosoft.com?client_id=12345&response_type=id_token&prompt=none';
+        newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
+        expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
+    })
 });

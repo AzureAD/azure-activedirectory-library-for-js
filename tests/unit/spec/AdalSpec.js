@@ -746,7 +746,8 @@ describe('Adal', function () {
                 parameters: { 'error_description': 'error description', 'error': 'invalid', 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
                 stateMatch: true,
                 stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
-                requestType: adal.REQUEST_TYPE.LOGIN
+                requestType: adal.REQUEST_TYPE.LOGIN,
+                authenticationMode: adal.AUTHENTICATION_MODES.REDIRECT
             };
         };
         storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, "www.test.com");
@@ -900,9 +901,12 @@ describe('Adal', function () {
             return 0.2;
         };
         adal.login();
+        window.parent = window;
+        window.parent.renewStates = ['33333333-3333-4333-b333-333333333333'];
         waitsFor(function () {
             timercallback();
             storageFake.setItem(adal.CONSTANTS.STORAGE.LOGIN_REQUEST, 'home page');
+            window.parent = {};
             return popupWindow.closed == true;
         }, 'error closing popup window', 2000);
 
@@ -979,7 +983,8 @@ describe('Adal', function () {
                 parameters: { 'id_token': IDTOKEN_MOCK, 'session_state': '61ae5247-eaf8-4496-a667-32b0acbad7a0', 'state': '19537a2a-e9e7-489d-ae7d-3eefab9e4137' },
                 stateMatch: true,
                 stateResponse: '19537a2a-e9e7-489d-ae7d-3eefab9e4137',
-                requestType: adal.REQUEST_TYPE.LOGIN
+                requestType: adal.REQUEST_TYPE.LOGIN,
+                authenticationMode: adal.AUTHENTICATION_MODES.REDIRECT
             };
         };
         var callback = function () {

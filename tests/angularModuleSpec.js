@@ -319,8 +319,9 @@ describe('TaskCtl', function () {
     });
 
     it('tests login success after users logs in', function () {
-        var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOm51bGx9.DLCO6yIWhnNBYfHH8qFPswcH4M2Alpjn6AZy7K6HENY';
+        var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOiIxMjM0In0.bpIBG3n1w7Cv3i_JHRGji6Zuc9F5H8jbDV5q3oj0gcw';
         location.hash('#' + 'id_token=' + mockIdToken + '&state=1234');
+        window.sessionStorage.setItem('adal.nonce.idtoken', '1234');
         window.sessionStorage.setItem('adal.state.login', '1234');
         spyOn(rootScope, '$broadcast').andCallThrough();
         var eventName = '', token = '';

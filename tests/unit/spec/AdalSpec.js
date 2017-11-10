@@ -1049,4 +1049,25 @@ describe('Adal', function () {
         newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
         expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
     })
+
+    it('to add sid=<sid value> instead of login_hint=<upn value> if sid is present in the id_token response received from the server ', function () {
+        var url = 'https://login.onmicrosoft.com?prompt=none';
+        adal._user = { // sid and upn are both present in the user object derived from the id_token
+            profile: {
+                sid: '123',
+                upn:'123@xxx.onmicrosoft.com'
+            }
+        }
+        var newUrl = adal._addHintParameters(url);
+        // url should add sid = <sid> and domain_hint
+        expect(newUrl).toBe('https://login.onmicrosoft.com?prompt=none' + '&sid=' + encodeURIComponent(adal._user.profile.sid) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
+        adal._user.profile = {// only upn is present in the user object derived from the id_token
+            upn: '123@xxx.onmicrosoft.com'
+        }
+        var newUrl = adal._addHintParameters(url);
+        // url should add login_hint = <upn> and domain_hint
+        expect(newUrl).toBe('https://login.onmicrosoft.com?prompt=none' + '&login_hint=' + encodeURIComponent(adal._user.profile.upn) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
+        adal._user = null;
+
+    })
 });

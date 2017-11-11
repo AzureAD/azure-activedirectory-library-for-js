@@ -1051,22 +1051,26 @@ describe('Adal', function () {
     })
 
     it('to add sid=<sid value> instead of login_hint=<upn value> if sid is present in the id_token response received from the server ', function () {
-        var url = 'https://login.onmicrosoft.com?prompt=none';
-        adal._user = { // sid and upn are both present in the user object derived from the id_token
+        //If you don’t use prompt=none, then if the session does not exist, there will be a failure.
+        //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
+        //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
+        var url = 'https://login.onmicrosoft.com&prompt=none'; // add sid if prompt=none and user.profile has sid
+        adal._user = { 
             profile: {
                 sid: '123',
                 upn:'123@xxx.onmicrosoft.com'
             }
         }
         var newUrl = adal._addHintParameters(url);
-        // url should add sid = <sid> and domain_hint
-        expect(newUrl).toBe('https://login.onmicrosoft.com?prompt=none' + '&sid=' + encodeURIComponent(adal._user.profile.sid) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
-        adal._user.profile = {// only upn is present in the user object derived from the id_token
-            upn: '123@xxx.onmicrosoft.com'
+        expect(newUrl).toBe('https://login.onmicrosoft.com&prompt=none' + '&sid=' + encodeURIComponent(adal._user.profile.sid));
+
+        var url = 'https://login.onmicrosoft.com'; //  if prompt!==none, do not add sid
+        adal._user.profile = {
+                sid: '123',
+                upn: '123@xxx.onmicrosoft.com'
         }
         var newUrl = adal._addHintParameters(url);
-        // url should add login_hint = <upn> and domain_hint
-        expect(newUrl).toBe('https://login.onmicrosoft.com?prompt=none' + '&login_hint=' + encodeURIComponent(adal._user.profile.upn) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
+        expect(newUrl).toBe('https://login.onmicrosoft.com' + '&login_hint=' + encodeURIComponent(adal._user.profile.upn) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
         adal._user = null;
 
     })

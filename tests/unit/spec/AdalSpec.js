@@ -48,13 +48,15 @@ describe('Adal', function () {
     };
 
     var angularMock = {};
-    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl: true };
+    var endpoints = { 'token.resource2': { resource: 'token.resource2', scope: ['one', 'two'] } };
+    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl: true, endpoints: endpoints };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
     var STORAGE_EXPIRATION_KEY = STORAGE_PREFIX + '.expiration.key';
     var STORAGE_TOKEN_KEYS = STORAGE_PREFIX + '.token.keys';
     var RESOURCE1 = 'token.resource1';
+    var RESOURCE2 = 'token.resource2';
     var SECONDS_TO_EXPIRE = 3600;
     var DEFAULT_INSTANCE = "https://login.microsoftonline.com/";
     var IDTOKEN_MOCK = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVUa0d0S1JrZ2FpZXpFWTJFc0xDMmdPTGpBNCJ9.eyJhdWQiOiJlOWE1YThiNi04YWY3LTQ3MTktOTgyMS0wZGVlZjI1NWY2OGUiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLXBwZS5uZXQvNTJkNGIwNzItOTQ3MC00OWZiLTg3MjEtYmMzYTFjOTkxMmExLyIsImlhdCI6MTQxMTk1OTAwMCwibmJmIjoxNDExOTU5MDAwLCJleHAiOjE0MTE5NjI5MDAsInZlciI6IjEuMCIsInRpZCI6IjUyZDRiMDcyLTk0NzAtNDlmYi04NzIxLWJjM2ExYzk5MTJhMSIsImFtciI6WyJwd2QiXSwib2lkIjoiZmEzYzVmYTctN2Q5OC00Zjk3LWJmYzQtZGJkM2E0YTAyNDMxIiwidXBuIjoidXNlckBvYXV0aGltcGxpY2l0LmNjc2N0cC5uZXQiLCJ1bmlxdWVfbmFtZSI6InVzZXJAb2F1dGhpbXBsaWNpdC5jY3NjdHAubmV0Iiwic3ViIjoiWTdUbXhFY09IUzI0NGFHa3RjbWpicnNrdk5tU1I4WHo5XzZmbVc2NXloZyIsImZhbWlseV9uYW1lIjoiYSIsImdpdmVuX25hbWUiOiJ1c2VyIiwibm9uY2UiOiI4MGZmYTkwYS1jYjc0LTRkMGYtYTRhYy1hZTFmOTNlMzJmZTAiLCJwd2RfZXhwIjoiNTc3OTkxMCIsInB3ZF91cmwiOiJodHRwczovL3BvcnRhbC5taWNyb3NvZnRvbmxpbmUuY29tL0NoYW5nZVBhc3N3b3JkLmFzcHgifQ.WHsl8TH1rQ3dQbRkV0TS6GBVAxzNOpG3nGG6mpEBCwAOCbyW6qRsSoo4qq8I5IGyerDf2cvcS-zzatHEROpRC9dcpwkRm6ta5dFZuouFyZ_QiYVKSMwfzEC_FI-6p7eT8gY6FbV51bp-Ah_WKJqEmaXv-lqjIpgsMGeWDgZRlB9cPODXosBq-PEk0q27Be-_A-KefQacJuWTX2eEhECLyuAu-ETVJb7s19jQrs_LJXz_ISib4DdTKPa7XTBDJlVGdCI18ctB67XwGmGi8MevkeKqFI8dkykTxeJ0MXMmEQbE6Fw-gxmP7uJYbZ61Jqwsw24zMDMeXatk2VWMBPCuhA';
@@ -132,6 +134,12 @@ describe('Adal', function () {
 
     it('gets specific resource for defined endpoint mapping', function () {
         adal.config.endpoints = { 'a': 'resource for a' };
+        expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
+        expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
+    });
+
+    it('gets specific resource for defined endpoint object mapping', function () {
+        adal.config.endpoints = { 'a': { resource: 'resource for a', scopes: ['one'] } };
         expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
         expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
     });
@@ -261,6 +269,16 @@ describe('Adal', function () {
                 + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=none&login_hint=test%40testuser.com&domain_hint=testuser.com');
         });
 
+    });
+
+    it('allows scopes to be defined for endpoints', function() {
+        adal.config.redirectUri = 'reenhanced_site';
+        adal.config.clientId = 'client';
+        adal._user = { profile: { 'upn': 'testuser@example.com' }, userName: 'test@example.com' };
+        spyOn(adal, 'promptUser');
+        adal.acquireTokenRedirect(RESOURCE2);
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE2 + '&redirect_uri=reenhanced_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource2'
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=select_account&scope=one%20two&login_hint=testuser%40example.com&domain_hint=example.com');
     });
 
     //Necessary for integration with Angular when multiple http calls are queued.

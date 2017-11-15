@@ -227,9 +227,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests stateMismatch broadcast when state does not match', function () {
-        window.parent = {
-            renewStates: ['4344']
-        };
+        console.log(adalServiceProvider);
+
         location.hash('#id_token=sample&state=4343');
         spyOn(rootScope, '$broadcast').andCallThrough();
 
@@ -251,10 +250,10 @@ describe('TaskCtl', function () {
             error = valError;
             errorDesc = valErrorDesc;
         };
-        window.parent = {
-            renewStates: ['4343'],
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates =  { "4343": callback }
         location.hash('#error=sample&error_description=renewfailed&state=4343');
         scope.$apply();
         expect(error).toBe('sample');
@@ -268,10 +267,10 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             token = valToken;
         };
-        window.parent = {
-            renewStates: ['4343'],
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates = { "4343": callback }
         location.hash('#access_token=newAccessToken123&state=4343');
         scope.$apply();
         expect(error).toBeUndefined();
@@ -286,16 +285,22 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             token = valToken;
         };
-        window.parent = {
-            renewStates: ['4343'],
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates = { "4343": callback }
+        var createUser = adalInstance._createUser;
+        adalInstance._createUser = function (idtoken) {
+            return {
+                profile: {}
+            }
+        }
         location.hash('#id_token=newIdToken123&state=4343');
-        
         scope.$apply();
         expect(errorDesc).toBeUndefined();
         expect(error).toBeUndefined();
         expect(token).toBe('newIdToken123');
+        adalInstance._createUser = createUser;
     });
 
 
@@ -310,6 +315,7 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             error = valError;
         });
+        window.parent = window;
         scope.$apply();
         expect(rootScope.$broadcast).toHaveBeenCalled();
         expect(eventName).toBe('adal:loginFailure');

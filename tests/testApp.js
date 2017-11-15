@@ -46,7 +46,7 @@ app.config(['$httpProvider', '$routeProvider', 'adalAuthenticationServiceProvide
         '/api/Todo/': 'resource1',
         '/anotherApi/Item/': 'resource2',
         'https://testapi.com/': 'resource1',
-        'https://authenticatedapi.com': { resource: 'resource3', scopes: ['openid', 'profile']}
+        'https://authenticatedapi.com': { resource: 'resource3', scope: ['openid', 'profile']}
     };
 
     adalAuthenticationServiceProvider.init(

@@ -139,7 +139,7 @@ describe('Adal', function () {
     });
 
     it('gets specific resource for defined endpoint object mapping', function () {
-        adal.config.endpoints = { 'a': { resource: 'resource for a', scopes: ['one'] } };
+        adal.config.endpoints = { 'a': { resource: 'resource for a', scope: ['one'] } };
         expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
         expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
     });

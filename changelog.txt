@@ -1,3 +1,20 @@
+Version 1.0.16
+=========================
+* Added ability to login in multiple tabs simultaneously when using localStorage where data is shared across tabs. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/639.
+* Added ablity to pass prompt parameter specifically to login method of adal which was not possible in previous versions. You can set extraQueryParameter:'prompt=select_account' in the adal config and this
+  value will only get appended to login url. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/636.
+* Added support for ui-router versions > 1.0 in which all state change events were deprecated and replaced with transition events. Please see this : https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/574.
+* Added ability to make loadFrameTimeout property of adal configurable. This is the time adal waits to receive a response for the token renewal request in case of acquireToken. 
+  The default value is 6 seconds but there were several instances where increasing the timeout to 10 seconds helped reduce network latency errors.
+* Added error condition to cover the case when user opens the popup window for login and then closes it without entering their credentials. The same error is thrown when popup window handle is destroyed during cross zone
+  navigation in IE/Edge. The error message ('Popup Window closed by UI action/ Popup Window handle destroyed due to cross zone navigation in IE/Edge') is broadcasted as an event in case adal-angular is used and it is 
+  passed to the callback function in the config in case plain adalJs is used.
+* In the case where user already has an existing session with AAD and just wants to acquire a token for a resource for the same user using Adal, he can set  extraQueryParameter:'login_hint=xxx' in the adal config and
+  directly call acquireToken without calling login first. In this scenario, adal will send the request with responseType = 'id_token token' in a hidden iframe to receive both an id_token to estabilish user context 
+  as well as an access_token for the specified resource. 
+  This feature allows silent login as opposed to showing a UI in the case where the user has an existing session with AAD.
+* Other bug fixes and updates
+
 Version 1.0.15
 =========================
 * Added acquireTokenRedirect and acquireTokenPopup api's to acquire a token for resource interactively (MFA) and support conditional access.

@@ -6,7 +6,7 @@ Active Directory Authentication Library for JavaScript (ADAL JS) helps you to us
 This library is optimized for working together with AngularJS.
 
 ## Versions
-Current version - 1.0.15  
+Current version - 1.0.16  
 Minimum recommended version - 1.0.11  
 You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
 
@@ -27,7 +27,7 @@ If you find a security issue with our libraries or services please report it to 
 
 ## The Library
 
-This is a GA released version. The current version is **1.0.15**.
+This is a GA released version. The current version is **1.0.16**.
 
 You have multiple ways of getting ADAL JS:
 
@@ -38,10 +38,10 @@ Via NPM:
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal.min.js"></script>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal-angular.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.16/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.16/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 1.0.15.
+CDN will be updated to latest version 1.0.16.
 
 Via Bower:
 
@@ -300,6 +300,9 @@ http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-
 
 ### Trusted Site settings in IE
 If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority url for the login to the trusted sites as well.
+
+### Known issues on Edge
+Certain issues have been reported when using ADAL.js with the Microsoft Edge version 40.15063.0.0. Please take a look at [this page](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Known-issues-on-Edge) for details and work arounds before filing a new issue.
 
 ## We Value and Adhere to the Microsoft Open Source Code of Conduct
 

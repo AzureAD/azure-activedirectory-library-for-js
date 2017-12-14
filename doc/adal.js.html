@@ -26,7 +26,7 @@
     <section>
         <article>
             <pre class="prettyprint source"><code>//----------------------------------------------------------------------
-// AdalJS v1.0.14
+// AdalJS v1.0.15
 // @preserve Copyright (c) Microsoft Open Technologies, Inc.
 // All Rights Reserved
 // Apache License 2.0
@@ -36,7 +36,7 @@
 // You may obtain a copy of the License at
 //
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+//id
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,7 @@ var AuthenticationContext = (function () {
      * Configuration options for Authentication Context.
      * @class config
      *  @property {string} tenant - Your target tenant.
-     *  @property {string} clientID - Client ID assigned to your app by Azure Active Directory.
+     *  @property {string} clientId - Client ID assigned to your app by Azure Active Directory.
      *  @property {string} redirectUri - Endpoint at which you expect to receive tokens.Defaults to `window.location.href`.
      *  @property {string} instance - Azure Active Directory Instance.Defaults to `https://login.microsoftonline.com/`.
      *  @property {Array} endpoints - Collection of {Endpoint-ResourceId} used for automatically attaching tokens in webApi calls.
@@ -62,8 +62,9 @@ var AuthenticationContext = (function () {
      *  @property {string} postLogoutRedirectUri - Redirects the user to postLogoutRedirectUri after logout. Defaults is 'redirectUri'.
      *  @property {string} cacheLocation - Sets browser storage to either 'localStorage' or sessionStorage'. Defaults to 'sessionStorage'.
      *  @property {Array.&lt;string>} anonymousEndpoints Array of keywords or URI's. Adal will not attach a token to outgoing requests that have these keywords or uri. Defaults to 'null'.
-     *  @property {number} expireOffsetSeconds If the cached token is about to be expired in the expireOffsetSeconds (in seconds), Adal will renew the token instead of using the cached token. Defaults to 120 seconds.
+     *  @property {number} expireOffsetSeconds If the cached token is about to be expired in the expireOffsetSeconds (in seconds), Adal will renew the token instead of using the cached token. Defaults to 300 seconds.
      *  @property {string} correlationId Unique identifier used to map the request with the response. Defaults to RFC4122 version 4 guid (128 bits).
+     *  @property {number} loadFrameTimeout The number of milliseconds of inactivity before a token renewal response from AAD should be considered timed out.
      */
 
     /**
@@ -110,7 +111,7 @@ var AuthenticationContext = (function () {
                 RENEW_STATUS: 'adal.token.renew.status'
             },
             RESOURCE_DELIMETER: '|',
-            LOADFRAME_TIMEOUT: '6000',
+            LOADFRAME_TIMEOUT: 6000,
             TOKEN_RENEW_STATUS_CANCELED: 'Canceled',
             TOKEN_RENEW_STATUS_COMPLETED: 'Completed',
             TOKEN_RENEW_STATUS_IN_PROGRESS: 'In Progress',
@@ -146,8 +147,9 @@ var AuthenticationContext = (function () {
         this._user = null;
         this._activeRenewals = {};
         this._loginInProgress = false;
-        this._renewStates = [];
+        this._acquireTokenInProgress = false;
 
+        window.renewStates = [];
         window.callBackMappedToRenewStates = {};
         window.callBacksMappedToRenewStates = {};
 
@@ -198,12 +200,18 @@ var AuthenticationContext = (function () {
         if (this.config.isAngular) {
             this.isAngular = this.config.isAngular;
         }
+
+        if (this.config.loadFrameTimeout) {
+            this.CONSTANTS.LOADFRAME_TIMEOUT = this.config.loadFrameTimeout;
+        }
     };
 
-    window.Logging = {
-        level: 0,
-        log: function (message) { }
-    };
+    if (typeof window !== 'undefined') {
+        window.Logging = {
+            level: 0,
+            log: function (message) { }
+        };
+    }
 
     /**
      * Initiates the login process by redirecting the user to Azure AD authorization endpoint.
@@ -233,7 +241,7 @@ var AuthenticationContext = (function () {
         else if (this.popUp) {
             this._loginPopup(urlNavigate);
         }
-       else {
+        else {
             this.promptUser(urlNavigate);
         }
     };
@@ -276,15 +284,21 @@ var AuthenticationContext = (function () {
      * attached to the URI fragment as an id_token field. It closes popup window after redirection.
      * @ignore
      */
-    AuthenticationContext.prototype._loginPopup = function (urlNavigate) {
+    AuthenticationContext.prototype._loginPopup = function (urlNavigate, resource, callback) {
         var popupWindow = this._openPopup(urlNavigate, "login", this.CONSTANTS.POPUP_WIDTH, this.CONSTANTS.POPUP_HEIGHT);
+        var loginCallback = callback || this.callback;
         if (popupWindow == null) {
             this.warn('Popup Window is null. This can happen if you are using IE');
             this._saveItem(this.CONSTANTS.STORAGE.ERROR, 'Error opening popup');
             this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, 'Popup Window is null. This can happen if you are using IE');
             this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, 'Popup Window is null. This can happen if you are using IE');
-            if (this.callback)
-                this.callback(this._getItem(this.CONSTANTS.STORAGE.LOGIN_ERROR), null, this._getItem(this.CONSTANTS.STORAGE.ERROR));
+            if (resource && this._activeRenewals[resource]) {
+                this._activeRenewals[resource] = null;
+            }
+            this._loginInProgress = false;
+            this._acquireTokenInProgress = false;
+            if (loginCallback)
+                loginCallback(this._getItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION), null, this._getItem(this.CONSTANTS.STORAGE.ERROR));
             return;
         }
         if (this.config.redirectUri.indexOf('#') != -1)
@@ -295,6 +309,10 @@ var AuthenticationContext = (function () {
         var pollTimer = window.setInterval(function () {
             if (!popupWindow || popupWindow.closed || popupWindow.closed === undefined) {
                 that._loginInProgress = false;
+                that._acquireTokenInProgress = false;
+                if (resource && that._activeRenewals[resource]) {
+                    that._activeRenewals[resource] = null;
+                }
                 window.clearInterval(pollTimer);
             }
             try {
@@ -307,15 +325,34 @@ var AuthenticationContext = (function () {
                     }
                     window.clearInterval(pollTimer);
                     that._loginInProgress = false;
+                    that._acquireTokenInProgress = false;
                     that.info("Closing popup window");
                     popupWindow.close();
                 }
             } catch (e) {
             }
-        }, 20);
+        }, 1);
     };
 
     AuthenticationContext.prototype._onPopUpHashChanged = function (hash) {
+        // Custom Event is not supported in IE, below IIFE will polyfill the CustomEvent() constructor functionality in Internet Explorer 9 and higher
+        (function () {
+
+            if (typeof window.CustomEvent === "function") {
+                return false;
+            }
+
+            function CustomEvent(event, params) {
+                params = params || { bubbles: false, cancelable: false, detail: undefined };
+                var evt = document.createEvent('CustomEvent');
+                evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+                return evt;
+            }
+
+            CustomEvent.prototype = window.Event.prototype;
+            window.CustomEvent = CustomEvent;
+        })();
+
         var evt = new CustomEvent('adal:popUpHashChanged', { detail: hash });
         window.dispatchEvent(evt);
     };
@@ -395,6 +432,8 @@ var AuthenticationContext = (function () {
         window.callBacksMappedToRenewStates[expectedState].push(callback);
         if (!window.callBackMappedToRenewStates[expectedState]) {
             window.callBackMappedToRenewStates[expectedState] = function (errorDesc, token, error) {
+                self._activeRenewals[resource] = null;
+
                 for (var i = 0; i &lt; window.callBacksMappedToRenewStates[expectedState].length; ++i) {
                     try {
                         window.callBacksMappedToRenewStates[expectedState][i](errorDesc, token, error);
@@ -403,7 +442,6 @@ var AuthenticationContext = (function () {
                         self.warn(error);
                     }
                 }
-                self._activeRenewals[resource] = null;
                 window.callBacksMappedToRenewStates[expectedState] = null;
                 window.callBackMappedToRenewStates[expectedState] = null;
             };
@@ -426,7 +464,7 @@ var AuthenticationContext = (function () {
         var expectedState = this._guid() + '|' + resource;
         this.config.state = expectedState;
         // renew happens in iframe, so it keeps javascript context
-        this._renewStates.push(expectedState);
+        window.renewStates.push(expectedState);
 
         this.verbose('Renew token Expected state: ' + expectedState);
         var urlNavigate = this._getNavigateUrl('token', resource) + '&prompt=none';
@@ -452,7 +490,7 @@ var AuthenticationContext = (function () {
         this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, this._idTokenNonce);
         this.config.state = expectedState;
         // renew happens in iframe, so it keeps javascript context
-        this._renewStates.push(expectedState);
+        window.renewStates.push(expectedState);
 
         this.verbose('Renew Idtoken Expected state: ' + expectedState);
         var urlNavigate = this._getNavigateUrl('id_token', null) + '&prompt=none';
@@ -571,6 +609,104 @@ var AuthenticationContext = (function () {
     };
 
     /**
+  * Acquires token (interactive flow using a popUp window) by sending request to AAD to obtain a new token.
+  * @param {string}   resource  ResourceUri identifying the target resource
+  * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+  * @param {tokenCallback} callback -  The callback provided by the caller. It will be called with token or error.
+  */
+    AuthenticationContext.prototype.acquireTokenPopup = function (resource, extraQueryParameters, claims, callback) {
+        if (this._isEmpty(resource)) {
+            this.warn('resource is required');
+            callback('resource is required', null, 'resource is required');
+            return;
+        }
+
+        if (!this._user) {
+            this.warn('User login is required');
+            callback('User login is required', null, 'login required');
+            return;
+        }
+
+        if (this._acquireTokenInProgress) {
+            this.warn("Acquire token interactive is already in progress")
+            callback("Acquire token interactive is already in progress", null, "Acquire token interactive is already in progress");
+            return;
+        }
+
+        var expectedState = this._guid() + '|' + resource;
+        this.config.state = expectedState;
+        window.renewStates.push(expectedState);
+        this.verbose('Renew token Expected state: ' + expectedState);
+        var urlNavigate = this._getNavigateUrl('token', resource) + '&prompt=select_account';
+        if (extraQueryParameters) {
+            urlNavigate += encodeURIComponent(extraQueryParameters);
+        }
+
+        if (claims && (urlNavigate.indexOf("&claims") === -1)) {
+            urlNavigate += '&claims=' + encodeURIComponent(claims);
+        }
+        else if (claims && (urlNavigate.indexOf("&claims") !== -1)) {
+            throw new Error('Claims cannot be passed as an extraQueryParameter');
+        }
+
+        urlNavigate = this._addHintParameters(urlNavigate);
+        this._acquireTokenInProgress = true;
+        this.info('acquireToken interactive is called for the resource ' + resource);
+        this.registerCallback(expectedState, resource, callback);
+        this._loginPopup(urlNavigate, resource, callback);
+
+    };
+
+    /**
+      * Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authentication
+      * request constructor will be called.
+      * @param {string}   resource  ResourceUri identifying the target resource
+      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+      */
+    AuthenticationContext.prototype.acquireTokenRedirect = function (resource, extraQueryParameters, claims) {
+        if (this._isEmpty(resource)) {
+            this.warn('resource is required');
+            callback('resource is required', null, 'resource is required');
+            return;
+        }
+
+        if (!this._user) {
+            this.warn('User login is required');
+            callback('User login is required', null, 'login required');
+            return;
+        }
+
+        if (this._acquireTokenInProgress) {
+            this.warn("Acquire token interactive is already in progress")
+            callback("Acquire token interactive is already in progress", null, "Acquire token interactive is already in progress");
+            return;
+        }
+
+        var expectedState = this._guid() + '|' + resource;
+        this.config.state = expectedState;
+        window.renewStates.push(expectedState);
+        this.verbose('Renew token Expected state: ' + expectedState);
+        var urlNavigate = this._getNavigateUrl('token', resource) + '&prompt=select_account';
+        if (extraQueryParameters) {
+            urlNavigate += encodeURIComponent(extraQueryParameters);
+        }
+
+        if (claims && (urlNavigate.indexOf("&claims") === -1)) {
+            urlNavigate += '&claims=' + encodeURIComponent(claims);
+        }
+        else if (claims && (urlNavigate.indexOf("&claims") !== -1)) {
+            throw new Error('Claims cannot be passed as an extraQueryParameter');
+        }
+
+        urlNavigate = this._addHintParameters(urlNavigate);
+        this._acquireTokenInProgress = true;
+        this.info('acquireToken interactive is called for the resource ' + resource);
+
+        this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, window.location.href);
+        this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, expectedState);
+        this.promptUser(urlNavigate);
+    };
+    /**
      * Redirects the browser to Azure AD authorization endpoint.
      * @param {string}   urlNavigate  Url of the authorization endpoint.
      */
@@ -587,15 +723,14 @@ var AuthenticationContext = (function () {
      * Clears cache items.
      */
     AuthenticationContext.prototype.clearCache = function () {
-        this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY, '');
         this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY, 0);
         this._saveItem(this.CONSTANTS.STORAGE.SESSION_STATE, '');
         this._saveItem(this.CONSTANTS.STORAGE.STATE_LOGIN, '');
-        this._renewStates = [];
-        this._saveItem(this.CONSTANTS.STORAGE.USERNAME, '');
+        window.renewStates = [];
         this._saveItem(this.CONSTANTS.STORAGE.IDTOKEN, '');
         this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
         this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
+        this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
         var keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
 
         if (!this._isEmpty(keys)) {
@@ -699,8 +834,11 @@ var AuthenticationContext = (function () {
         // include hint params only if upn is present
         if (this._user && this._user.profile && this._user.profile.hasOwnProperty('upn')) {
 
-            // add login_hint
-            urlNavigate += '&login_hint=' + encodeURIComponent(this._user.profile.upn);
+            // don't add login_hint twice if user provided it in the extraQueryParameter value
+            if (!this._urlContainsQueryStringParameter("login_hint", urlNavigate)) {
+                // add login_hint
+                urlNavigate += '&login_hint=' + encodeURIComponent(this._user.profile.upn);
+            }
 
             // don't add domain_hint twice if user provided it in the extraQueryParameter value
             if (!this._urlContainsQueryStringParameter("domain_hint", urlNavigate) && this._user.profile.upn.indexOf('@') > -1) {
@@ -831,9 +969,15 @@ var AuthenticationContext = (function () {
                     return requestInfo;
                 }
 
+                else if (stateResponse === this._getItem(this.CONSTANTS.STORAGE.STATE_RENEW)) {
+                    requestInfo.requestType = this.REQUEST_TYPE.RENEW_TOKEN;
+                    requestInfo.stateMatch = true;
+                    return requestInfo;
+                }
+
                 // external api requests may have many renewtoken requests for different resource
-                if (!requestInfo.stateMatch && window.parent && window.parent.AuthenticationContext) {
-                    var statesInParentContext = window.parent.AuthenticationContext()._renewStates;
+                if (!requestInfo.stateMatch && window.parent) {
+                    var statesInParentContext = window.parent.renewStates;
                     for (var i = 0; i &lt; statesInParentContext.length; i++) {
                         if (statesInParentContext[i] === requestInfo.stateResponse) {
                             requestInfo.requestType = this.REQUEST_TYPE.RENEW_TOKEN;
@@ -1012,7 +1156,7 @@ var AuthenticationContext = (function () {
             this.info('Returned from redirect url');
             this.saveTokenFromHash(requestInfo);
             var token = null, callback = null;
-            if ((requestInfo.requestType === this.REQUEST_TYPE.RENEW_TOKEN) && window.parent && (window.parent !== window)) {
+            if ((requestInfo.requestType === this.REQUEST_TYPE.RENEW_TOKEN) && window.parent) {
                 // iframe call but same single page
                 this.verbose('Window is in iframe');
                 callback = window.parent.callBackMappedToRenewStates[requestInfo.stateResponse];
@@ -1029,7 +1173,7 @@ var AuthenticationContext = (function () {
             }
             if (!this.popUp) {
                 window.location.hash = '';
-                if (this.config.navigateToLoginRequestUrl && window.location.href.replace('#', '') !== this._getItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST))
+                if (this.config.navigateToLoginRequestUrl)
                     window.location.href = this._getItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST);
             }
         }
@@ -1120,7 +1264,7 @@ var AuthenticationContext = (function () {
                 decoded += String.fromCharCode(c1, c2);
                 break;
             }
-                // if last one is '='
+            // if last one is '='
             else if (i + 1 === length - 1) {
                 bits = h1 &lt;&lt; 18 | h2 &lt;&lt; 12
                 c1 = bits >> 16 & 255;
@@ -1277,7 +1421,7 @@ var AuthenticationContext = (function () {
             buffer[8] |= 0x80; //buffer[8] | 10000000 will set the 7 bit to 1.
             buffer[8] &= 0xbf; //buffer[8] & 10111111 will set the 6 bit to 0.
             return this._decimalToHex(buffer[0]) + this._decimalToHex(buffer[1]) + this._decimalToHex(buffer[2]) + this._decimalToHex(buffer[3]) + '-' + this._decimalToHex(buffer[4]) + this._decimalToHex(buffer[5]) + '-' + this._decimalToHex(buffer[6]) + this._decimalToHex(buffer[7]) + '-' +
-             this._decimalToHex(buffer[8]) + this._decimalToHex(buffer[9]) + '-' + this._decimalToHex(buffer[10]) + this._decimalToHex(buffer[11]) + this._decimalToHex(buffer[12]) + this._decimalToHex(buffer[13]) + this._decimalToHex(buffer[14]) + this._decimalToHex(buffer[15]);
+                this._decimalToHex(buffer[8]) + this._decimalToHex(buffer[9]) + '-' + this._decimalToHex(buffer[10]) + this._decimalToHex(buffer[11]) + this._decimalToHex(buffer[12]) + this._decimalToHex(buffer[13]) + this._decimalToHex(buffer[14]) + this._decimalToHex(buffer[15]);
         }
         else {
             var guidHolder = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
@@ -1340,6 +1484,7 @@ var AuthenticationContext = (function () {
                 (window.opera || window.navigator.userAgent.indexOf('MSIE 5.0') === -1)) {
                 var ifr = document.createElement('iframe');
                 ifr.setAttribute('id', iframeId);
+                ifr.setAttribute('aria-hidden', 'true');
                 ifr.style.visibility = 'hidden';
                 ifr.style.position = 'absolute';
                 ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
@@ -1416,12 +1561,12 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype._supportsLocalStorage = function () {
         try {
-            var supportsLocalStorage = 'localStorage' in window && window['localStorage'];
-            if (supportsLocalStorage) {
-                window.localStorage.setItem('storageTest', '');
-                window.localStorage.removeItem('storageTest');
-            }
-            return supportsLocalStorage;
+            if (!window.localStorage) return false; // Test availability
+            window.localStorage.setItem('storageTest', 'A'); // Try write
+            if (window.localStorage.getItem('storageTest') != 'A') return false; // Test read/write
+            window.localStorage.removeItem('storageTest'); // Try delete
+            if (window.localStorage.getItem('storageTest')) return false; // Test delete
+            return true; // Success
         } catch (e) {
             return false;
         }
@@ -1433,12 +1578,12 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype._supportsSessionStorage = function () {
         try {
-            var supportsSessionStorage = 'sessionStorage' in window && window['sessionStorage'];
-            if (supportsSessionStorage) {
-                window.sessionStorage.setItem('storageTest', '');
-                window.sessionStorage.removeItem('storageTest');
-            }
-            return supportsSessionStorage;
+            if (!window.sessionStorage) return false; // Test availability
+            window.sessionStorage.setItem('storageTest', 'A'); // Try write
+            if (window.sessionStorage.getItem('storageTest') != 'A') return false; // Test read/write
+            window.sessionStorage.removeItem('storageTest'); // Try delete
+            if (window.sessionStorage.getItem('storageTest')) return false; // Test delete
+            return true; // Success
         } catch (e) {
             return false;
         }
@@ -1534,7 +1679,7 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._libVersion = function () {
-        return '1.0.14';
+        return '1.0.15';
     };
 
     /**
@@ -1551,8 +1696,6 @@ var AuthenticationContext = (function () {
     return AuthenticationContext;
 
 }());
-
-
 </code></pre>
         </article>
     </section>
@@ -1569,7 +1712,7 @@ var AuthenticationContext = (function () {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Feb 16 2017 18:45:41 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Oct 20 2017 15:19:15 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

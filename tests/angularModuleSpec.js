@@ -227,13 +227,8 @@ describe('TaskCtl', function () {
     });
 
     it('tests stateMismatch broadcast when state does not match', function () {
-        window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: {}
-                }
-            },
-        };
+        console.log(adalServiceProvider);
+
         location.hash('#id_token=sample&state=4343');
         spyOn(rootScope, '$broadcast').andCallThrough();
 
@@ -255,14 +250,10 @@ describe('TaskCtl', function () {
             error = valError;
             errorDesc = valErrorDesc;
         };
-        window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates =  { "4343": callback }
         location.hash('#error=sample&error_description=renewfailed&state=4343');
         scope.$apply();
         expect(error).toBe('sample');
@@ -276,18 +267,14 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             token = valToken;
         };
-        window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates = { "4343": callback }
         location.hash('#access_token=newAccessToken123&state=4343');
         scope.$apply();
-        expect(error).toBe('');
-        expect(errorDesc).toBe('');
+        expect(error).toBeUndefined();
+        expect(errorDesc).toBeUndefined();
         expect(token).toBe('newAccessToken123');
     });
 
@@ -298,20 +285,22 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             token = valToken;
         };
-        window.parent = {
-            AuthenticationContext: function () {
-                return {
-                    _renewStates: ['4343']
-                }
-            },
-            callBackMappedToRenewStates: { "4343": callback }
-        };
+        var adalInstance = window.AuthenticationContext();
+        adalInstance._renewStates = ['4343'];
+        adalInstance._requestType = 'RENEW_TOKEN',
+        adalInstance._callBackMappedToRenewStates = { "4343": callback }
+        var createUser = adalInstance._createUser;
+        adalInstance._createUser = function (idtoken) {
+            return {
+                profile: {}
+            }
+        }
         location.hash('#id_token=newIdToken123&state=4343');
-        
         scope.$apply();
-        expect(errorDesc).toBe('Invalid id_token. id_token: newIdToken123');
-        expect(error).toBe('invalid id_token');
+        expect(errorDesc).toBeUndefined();
+        expect(error).toBeUndefined();
         expect(token).toBe('newIdToken123');
+        adalInstance._createUser = createUser;
     });
 
 
@@ -326,6 +315,7 @@ describe('TaskCtl', function () {
             errorDesc = valErrorDesc;
             error = valError;
         });
+        window.parent = window;
         scope.$apply();
         expect(rootScope.$broadcast).toHaveBeenCalled();
         expect(eventName).toBe('adal:loginFailure');
@@ -335,8 +325,9 @@ describe('TaskCtl', function () {
     });
 
     it('tests login success after users logs in', function () {
-        var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOm51bGx9.DLCO6yIWhnNBYfHH8qFPswcH4M2Alpjn6AZy7K6HENY';
+        var mockIdToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjbGllbnRpZDEyMyIsIm5hbWUiOiJKb2huIERvZSIsInVwbiI6ImpvaG5AZW1haWwuY29tIiwibm9uY2UiOiIxMjM0In0.bpIBG3n1w7Cv3i_JHRGji6Zuc9F5H8jbDV5q3oj0gcw';
         location.hash('#' + 'id_token=' + mockIdToken + '&state=1234');
+        window.sessionStorage.setItem('adal.nonce.idtoken', '1234');
         window.sessionStorage.setItem('adal.state.login', '1234');
         spyOn(rootScope, '$broadcast').andCallThrough();
         var eventName = '', token = '';
@@ -465,6 +456,9 @@ describe('AcquireTokenCtl', function () {
         });
         spyOn(sessionStorage, 'setItem').andCallFake(function (key, value) {
             store[key] = value;
+        });
+        spyOn(sessionStorage, 'removeItem').andCallFake(function (key) {
+            delete store[key];
         });
         spyOn(window, 'Date').andCallFake(function () {
             return {

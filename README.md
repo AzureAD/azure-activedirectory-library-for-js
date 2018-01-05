@@ -115,7 +115,8 @@ $routeProvider.
 Anonymous endpoints, introduced in version 1.0.10, is an array of values that will be ignored by the ADAL route/state change handlers. ADAL will not attach a token to outgoing requests that have these keywords or URI. Routes that *do not* specify the ```requireADLogin=true``` property are added to the ```anonymousEndpoints``` array automatically.
 
 ***Optional***
-7- If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile).
+
+If you so choose, in addition (or substitution) to route level protection you can add explicit login/logout UX elements. Furthermore, you can access properties of the currently signed in user directly form JavaScript (via userInfo and userInfo.profile).
 The userInfo.profile property provides access to the claims in the ID token received from AAD. The claims can be used by the application for validation, to identify the subject's directory tenant, and so on. The complete list of claims with a brief description of each value is here, [Claims in Azure AD Security Tokens](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-authentication-scenarios):
 ```html
 <!DOCTYPE html>
@@ -216,7 +217,6 @@ adalAuthenticationServiceProvider.init(
         $httpProvider   // pass http provider to inject request interceptor to attach tokens
         );
 ```
-### Browser support
 
 ### Logging
 
@@ -278,9 +278,11 @@ http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-
 If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority url for the login to the trusted sites as well.
 
 ### Known issues on Edge
-Certain issues have been reported when using ADAL.js with the Microsoft Edge version 40.15063.0.0. Please take a look at [this page](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Known-issues-on-Edge) for details and work arounds before filing a new issue.
+Certain issues have been reported when using ADAL.js with the Microsoft Edge version 40.15063.0.0. Please take a look at [this page](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Known-issues-on-Edge) for details and work arounds before filing a new issue experienced with Edge.
 
 ## Contribution
+
+We encourage and welcome contributions to the library. Please read the [contributing guide](./contributing.md) before starting.
 
 ## Versions
 This is a GA released version. Current version - **1.0.16**  
@@ -302,6 +304,7 @@ We recommend you use the "adal" tag so we can see it! Here is the latest Q&A on 
 If you find a security issue with our libraries or services please report it to [secure@microsoft.com](mailto:secure@microsoft.com) with as much detail as possible. Your submission may be eligible for a bounty through the [Microsoft Bounty](http://aka.ms/bugbounty) program. Please do not post security issues to GitHub Issues or any other public site. We will contact you shortly upon receiving the information. We encourage you to get notifications of when security incidents occur by visiting [this page](https://technet.microsoft.com/en-us/security/dd252948) and subscribing to Security Advisory Alerts.
 
 ## License
+Copyright (c) Microsoft Corporation.  All rights reserved. Licensed under the Apache License, Version 2.0 (the "License");
 
 ## We value and adhere to the Microsoft Open Source Code of Conduct
 

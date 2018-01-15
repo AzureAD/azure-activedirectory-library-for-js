@@ -138,6 +138,12 @@ describe('Adal', function () {
         expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
     });
 
+    it('gets specific resource for defined endpoint object mapping', function () {
+        adal.config.endpoints = { 'a': { resource: 'resource for a', scope: ['one'] } };
+        expect(adal.getResourceForEndpoint('a')).toBe('resource for a');
+        expect(adal.getResourceForEndpoint('b')).toBe(adal.config.loginResource);
+    });
+
     it('gets default resource for empty endpoint mapping', function () {
         adal.config.endpoints = null;
         expect(adal.getResourceForEndpoint('a')).toBe('defaultResource');
@@ -264,15 +270,14 @@ describe('Adal', function () {
 
     });
 
-    it('allows scopes to be defined for auth', function() {
+    it('allows scopes to be defined for endpoints', function() {
         adal.config.redirectUri = 'reenhanced_site';
         adal.config.clientId = 'client';
-        adal.config.scope = ['openid', 'profile'];
         adal._user = { profile: { 'upn': 'testuser@example.com' }, userName: 'test@example.com' };
         spyOn(adal, 'promptUser');
-        adal.login();
-        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=id_token&client_id=client&redirect_uri=reenhanced_site&state=33333333-3333-4333-b333-333333333333'
-                + '&scope=openid%20profile&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&nonce=33333333-3333-4333-b333-333333333333');
+        adal.acquireTokenRedirect(RESOURCE2);
+        expect(adal.promptUser).toHaveBeenCalledWith(DEFAULT_INSTANCE + conf.tenant + '/oauth2/authorize?response_type=token&client_id=client&resource=' + RESOURCE2 + '&redirect_uri=reenhanced_site&state=33333333-3333-4333-b333-333333333333%7Ctoken.resource2'
+                + '&client-request-id=33333333-3333-4333-b333-333333333333' + adal._addLibMetadata() + '&prompt=select_account&scope=one%20two&login_hint=testuser%40example.com&domain_hint=example.com');
     });
 
     //Necessary for integration with Angular when multiple http calls are queued.

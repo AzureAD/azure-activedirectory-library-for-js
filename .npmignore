@@ -1,0 +1,38 @@
+# Node generated files
+node_modules
+npm-debug.log
+# OS generated files
+Thumbs.db
+.DS_Store
+
+.vscode
+
+.npmignore
+
+coverage/
+
+!dist
+
+scenario
+
+# TypeScript source files, apart generated type definitions
+**/*.ts
+!**/*.d.ts
+
+**/*.js
+
+dist/index.js
+
+
+# Other generated files
+*.spec.*
+*.map
+
+# Other build-related files
+.travis.yml
+karma.*
+tsconfig.*
+
+dist/scenario
+
+webpack.config.js

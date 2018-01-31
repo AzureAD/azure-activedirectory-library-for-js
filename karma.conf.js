@@ -1,51 +1,75 @@
-// Karma configuration
-module.exports = function(config) {
-  config.set({
-    // base path, that will be used to resolve files and exclude
-    basePath: '',
+module.exports = function (config) {
+    'use strict';
 
-    // testing framework to use (jasmine/mocha/qunit/...)
-    frameworks: ['jasmine'],
+    var testWebpackConfig = require('./webpack.test.config.js')();
 
-    // list of files / patterns to load in the browser
-    files: [
-      'bower_components/angular/angular.js',
-      'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/angular-route/angular-route.js',
-      'bower_components/angular-resource/angular-resource.js',
-      'bower_components/angular-ui-router/release/angular-ui-router.js',
-      'lib/*.js',
-      'tests/testApp.js',
-      'tests/stateApp.js',
-      'tests/angularModuleSpec.js'
-    ],
+    config.set({
+        basePath: './',
+        frameworks: ["jasmine"],
+        // list of files / patterns to load in the browser
+        files: [
+            //{ pattern: 'dist/*.js', included: true },
+            { pattern: './karma.specs.js', watched: true },
+        ],
 
-    // list of files / patterns to exclude
-    exclude: [],
+        // list of files / patterns to exclude
+        exclude: [],
 
-    // web server port
-    port: 8080,
-
-    // level of logging
-    // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: config.LOG_INFO,
-
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
-
-    // Start these browsers, currently available:
-    // - Chrome
-    // - ChromeCanary
-    // - Firefox
-    // - Opera
-    // - Safari (only Mac)
-    // - PhantomJS
-    // - IE (only Windows)
-    browsers: ['Chrome'],
+        preprocessors: {
+            './karma.specs.js': ['webpack', 'sourcemap'],
+            //'*.ts': ['webpack', 'sourcemap', 'coverage'],
+            //'**/!(*.spec)+(.js)': ['coverage']
+            //'**/*.js': ['coverage']
+        },
 
 
-    // Continuous Integration mode
-    // if true, it capture browsers, run tests and exit
-    singleRun: true
-  });
+        webpackServer: {
+            noInfo: true
+            //progress:false,
+            //stats: false,
+            //debug:false
+        },
+
+        // web server port
+        port: 9876,
+
+        // enable / disable colors in the output (reporters and logs)
+        colors: true,
+
+        // level of logging
+        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        logLevel: config.LOG_INFO,
+
+        // enable / disable watching file and executing tests whenever any file changes
+        autoWatch: (process.env.IS_TRAVIS == null) ? true : false,
+
+        browsers: [
+            //"Firefox",
+            "Chrome",
+            //"IE",
+            //"PhantomJS"
+        ],
+
+        // Continuous Integration mode
+        // if true, it capture browsers, run tests and exit
+        singleRun: (process.env.IS_TRAVIS == null) ? false : true,
+
+        reporters: ['progress', 'coverage', 'dots'],
+
+        // Webpack Config at ./webpack.test.config.js
+        webpack: testWebpackConfig,
+
+        coverageReporter: {
+            // specify a common output directory 
+            dir: './coverage',
+            reporters: [
+                { type: 'html', subdir: 'report-html' },
+                // generates ./coverage/lcov.info
+                {type:'lcovonly', subdir: '.'}
+                // generates ./coverage/coverage-final.json
+                //{type:'json', subdir: '.'},
+
+            ]
+        }
+    });
 };

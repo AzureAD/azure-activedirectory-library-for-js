@@ -1,8 +1,9 @@
-import { AdalConfig, TokenReceivedCallback } from "./adalConfig";
+import { AdalConfig } from "./adalConfig";
 import { User } from "./user";
 import { Constants } from "./constants";
 import { RequestType } from "./requestType";
 import { ResponseType } from "./responseType";
+import { TokenReceivedCallback } from "./tokenReceivedCallback";
 
 export class AuthenticationContext {
     public instance: string = 'https://login.microsoftonline.com/';
@@ -73,7 +74,62 @@ export class AuthenticationContext {
         }
 
         if (this.config.loadFrameTimeout) {
-            this.CONSTANTS.LOADFRAME_TIMEOUT = this.config.loadFrameTimeout;
+            Constants.LOADFRAME_TIMEOUT = this.config.loadFrameTimeout;
         }
+
+        // if (typeof window !== 'undefined') {
+        //     window.Logging = {
+        //         level: 0,
+        //         log: function (message) { }
+        //     };
+        // }
     }
+
+    /**
+     * Initiates the login process by redirecting the user to Azure AD authorization endpoint.
+     */
+    public login(): void {
+        if (this._loginInProgress) {
+            this.info("Login in progress");
+            return;
+        }
+
+        this._loginInProgress = true;
+
+        // Token is not present and user needs to login
+        var expectedState = this._guid();
+        this.config.state = expectedState;
+        this._idTokenNonce = this._guid();
+        var loginStartPage = this._getItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST);
+
+        if (!loginStartPage || loginStartPage === "") {
+            loginStartPage = window.location.href;
+        }
+        else {
+            this._saveItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST, "")
+        }
+
+        this.verbose('Expected state: ' + expectedState + ' startPage:' + loginStartPage);
+        this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, loginStartPage);
+        this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
+        this._saveItem(this.CONSTANTS.STORAGE.STATE_LOGIN, expectedState, true);
+        this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, this._idTokenNonce, true);
+        this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
+        this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
+        var urlNavigate = this._getNavigateUrl('id_token', null) + '&nonce=' + encodeURIComponent(this._idTokenNonce);
+
+        if (this.config.displayCall) {
+            // User defined way of handling the navigation
+            this.config.displayCall(urlNavigate);
+        }
+        else if (this.popUp) {
+            this._saveItem(this.CONSTANTS.STORAGE.STATE_LOGIN, '');// so requestInfo does not match redirect case
+            this._renewStates.push(expectedState);
+            this.registerCallback(expectedState, this.config.clientId, this.callback);
+            this._loginPopup(urlNavigate);
+        }
+        else {
+            this.promptUser(urlNavigate);
+        }
+    };
 }

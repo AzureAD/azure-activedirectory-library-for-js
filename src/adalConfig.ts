@@ -1,4 +1,4 @@
-export type TokenReceivedCallback = (errorDesc: string, token: string, error: string, tokenType: string) => void;
+import { TokenReceivedCallback } from "./tokenReceivedCallback";
 
 export class AdalConfig {
     public tenant: string;

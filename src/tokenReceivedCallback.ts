@@ -1,0 +1,1 @@
+export type TokenReceivedCallback = (errorDesc: string, token: string, error: string, tokenType: string) => void;

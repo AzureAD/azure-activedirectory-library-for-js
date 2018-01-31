@@ -4,7 +4,7 @@ Active Directory Authentication Library (ADAL) for JavaScript
 | --- | --- | --- | --- |
 
 Active Directory Authentication Library for JavaScript (ADAL JS) helps you to use Azure AD for handling authentication in your single page applications.
-This library is optimized for working together with AngularJS.
+This library works with both plain JS as well as AngularJS applications.
 
 [![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=master)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)[![npm](https://img.shields.io/npm/v/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)[![npm](https://img.shields.io/npm/dm/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)
 
@@ -15,6 +15,8 @@ You have multiple ways of getting ADAL JS:
 Via NPM:
 
     npm install adal-angular
+
+*Note:* Currently there is one NPM package providing both the plain JS library (adal.js) and the AngularJS wrapper (adal-angular.js).
 
 Via CDN:
 
@@ -31,73 +33,77 @@ Via Bower:
 The adal.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal.js).
 The adal-angular.js source is [here](https://github.com/AzureAD/azure-activedirectory-library-for-js/tree/master/lib/adal-angular.js).
 
-## Build and run tests
-
-**Run tests**
-
-    npm install
-    bower install
-    npm test
-
-    // angular tests
-    karma start
-
-Karma as test runner:
-You need to install the karma command line.
-
-    npm install -g karma
-    npm install -g karma-cli
-
-**Documentation generation**
-
-Install grunt and run the command
-
-    grunt doc
-
 ## Usage
-Below you can find a quick reference for the most common operations you need to perform to use ADAL JS.
+
+**In JavaScript**
+
+You can use ADAL JS as follows in a plain JavaScript application without any frameworks.
+
+1- Include a reference to adal.js in your main app page before your application scripts.
+
+```html
+<script src="App/Scripts/adal.js"></script>
+<script src="App/Scripts/app.js"></script>
+```
+
+2- Initialize ADAL with the AAD app coordinates at app config time. The minimum required config to initialize ADAL is:
+```js
+window.config = {
+   clientId: 'g075edef-0efa-453b-997b-de1337c29185'
+};
+var authContext = new AuthenticationContext(config);
+```
+
+3- You can trigger the login and logout using the authContext
+```js
+$signInButton.click(function () {
+    authContext.login();
+});
+
+$signOutButton.click(function () {
+    authContext.logOut();
+});
+```
+
+Refer this [sample](https://github.com/Azure-Samples/active-directory-javascript-singlepageapp-dotnet-webapi) for a full implementation example.
+
+**In AngularJS**
+
+ADAL also provides an AngularJS wrapper as adal-angular.js. Below you can find a quick reference for the most common operations you need to perform in AngularJS applications to use ADAL JS.
 
 1- Include references to angular.js libraries, adal.js, adal-angular.js in your main app page. The ADAL should be included after Angular, but before your application scripts as shown below.
+```html
+<script src="/Scripts/angular.min.js"></script>
+<script src="/Scripts/angular-route.min.js"></script>
+<script src="/Scripts/adal.js"></script>
+<script src="/Scripts/adal-angular.js"></script>
+<script src="App/Scripts/app.js"></script>
+```
 
 2- Include a reference to the ADAL module in your app module.
 ```js
 var app = angular.module('demoApp', ['ngRoute', 'AdalAngular']);
 ```
+
 3- ***When HTML5 mode is configured***, ensure the $locationProvider hashPrefix is set
+
 ```js
-	// using '!' as the hashPrefix but can be a character of your choosing
-	app.config(['$locationProvider', function($locationProvider) {
-		$locationProvider.html5Mode(true).hashPrefix('!');
-	}]);
+// using '!' as the hashPrefix but can be a character of your choosing
+app.config(['$locationProvider', function($locationProvider) {
+	$locationProvider.html5Mode(true).hashPrefix('!');
+}]);
 ```
 
 Without the hashPrefix set, the AAD login will loop indefinitely as the callback URL from AAD (in the form of, {yourBaseUrl}/#{AADTokenAndState}) will be rewritten to remove the '#' causing the token parsing to fail and login sequence to occur again.
 
-4- Initialize ADAL with the AAD app coordinates at app config time. The minimum required object to initialize ADAL is:
+4- Initialize ADAL with the AAD app coordinates at app config time. The minimum required config to initialize ADAL is:
 ```js
 adalAuthenticationServiceProvider.init({
-    // clientId is the identifier assigned to your app by Azure Active Directory.
-    clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e"
-})
-```
-
-A single-tenant configuration, with CORS, looks like this:
-```js
-// endpoint to resource mapping(optional)
-    var endpoints = {
-        "https://yourhost/api": "b6a68585-5287-45b2-ba82-383ba1f60932",
-    };
-adalAuthenticationServiceProvider.init(
-        {
-            // Config to specify endpoints and similar for your app
-            tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1", // Optional by default, it sends common
-            clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e", // Required
-            //localLoginUrl: "/login",  // optional
-            //redirectUri : "your site", optional
-            endpoints: endpoints  // If you need to send CORS api requests.
-        },
-        $httpProvider   // pass http provider to inject request interceptor to attach tokens
-        );
+        // clientId is the identifier assigned to your app by Azure Active Directory.
+        clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e"
+    },
+    $httpProvider   // pass http provider to inject request interceptor to attach tokens
+);
 ```
 
 5- Define which routes you want to secure via ADAL - by adding `requireADLogin: true` to their definition
@@ -110,7 +116,7 @@ $routeProvider.
     });
 
 ```
-6- Any service invocation code you might have will remain unchanged. ADAL's interceptor will automatically add tokens for every outgoing call.
+Any service invocation code you might have will remain unchanged. ADAL's interceptor will automatically add tokens for every outgoing call.
 
 Anonymous endpoints, introduced in version 1.0.10, is an array of values that will be ignored by the ADAL route/state change handlers. ADAL will not attach a token to outgoing requests that have these keywords or URI. Routes that *do not* specify the ```requireADLogin=true``` property are added to the ```anonymousEndpoints``` array automatically.
 
@@ -158,7 +164,7 @@ The userInfo.profile property provides access to the claims in the ID token rece
 </body>
 </html>
 ```
-7- You have full control on how to trigger sign in, sign out and how to deal with errors:
+6- You have full control on how to trigger sign in, sign out and how to deal with errors:
 
 ```js
 'use strict';
@@ -200,22 +206,24 @@ app.controller('homeController', ['$scope', '$location', 'adalAuthenticationServ
 
 ### Multi-Tenant
 
-By default, you have multi-tenant support. ADAL will set tenant to 'common', if it is not specified in the config. This allows any Microsoft account to authenticate to your application. If you are not interested in multi-tenant behavior, you will need to set the ```tenant``` property as shown above.
+By default, you have multi-tenant support. ADAL will set tenant to 'common', if it is not specified in the config. This allows any Microsoft account to authenticate to your application. If you are not interested in multi-tenant behavior, you will need to set the ```tenant``` property as shown below.
 
+```js
+window.config = {
+    tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1", // Optional by default, it sends common
+    clientId: 'g075edef-0efa-453b-997b-de1337c29185'
+};
+```
 If you allow multi-tenant authentication, and you do not wish to allow all Microsoft account users to use your application, you must provide your own method of filtering the token issuers to only those tenants who are allowed to login.
 
 ### Cache Location
 Default storage location is sessionStorage. You can specify localStorage in the config as well.
 
 ```js
-adalAuthenticationServiceProvider.init(
-        {
-            // Config to specify endpoints and similar for your app
-            clientId: 'cb68f72f...',
-            cacheLocation: 'localStorage' // optional cache location. Default is sessionStorage
-        },
-        $httpProvider   // pass http provider to inject request interceptor to attach tokens
-        );
+window.config = {
+    clientId: 'g075edef-0efa-453b-997b-de1337c29185',
+    cacheLocation: 'localStorage' // optional cache location. Default is sessionStorage
+};
 ```
 
 ### Logging
@@ -242,9 +250,26 @@ You should protect your site for XSS. Please check the article here: [https://ww
 
 
 ### CORS API usage and IE
-ADAL will get access token for given CORS API endpoints in the config. Access token is requested using Iframe. Iframe needs to access the cookies for the same domain that you did the initial sign in. IE does not allow to access cookies in IFrame for localhost. Your url needs to be fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
+ADAL will get access token using Iframe for the given CORS API endpoints in the config. The Iframe needs to access cookies for the same domain that you did the initial sign in. Since IE does not allow to access cookies in an IFrame for localhost, your URL needs to be a fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
 
-To make CORS API call, you need to specify endpoints in the config for your CORS API. Your service will be similar to this to make the call from JS. In your API project, you need to enable CORS API requests to receive flight requests. You can check the sample for CORS API [sample](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet).
+To make CORS API call, you need to specify endpoints in the config for your CORS API as shown here.
+
+```js
+// endpoint to resource mapping(optional)
+var endpoints = {
+    "https://yourhost/api": "b6a68585-5287-45b2-ba82-383ba1f60932",
+};
+adalAuthenticationServiceProvider.init(
+    {
+        tenant: "52d4b072-9470-49fb-8721-bc3a1c9912a1", // Optional by default, it sends common
+        clientId: "e9a5a8b6-8af7-4719-9821-0deef255f68e", // Required
+        endpoints: endpoints  // If you need to send CORS API requests.
+    },
+    $httpProvider   // pass http provider to inject request interceptor to attach tokens
+);
+```
+
+Your service will be as shown below to make the call from JS. In your API project, you need to enable CORS API requests to receive pre-flight requests. You can check this [sample](https://github.com/AzureADSamples/SinglePageApp-WebAPI-AngularJS-DotNet) for CORS API.
 
 ```js
 'use strict';
@@ -263,9 +288,9 @@ app.factory('contactService', ['$http', function ($http) {
 }]);
 ```
 
-You can read extended blogs for CORS API related to learn about Office365 usage.
+You can read extended blogs about CORS API below.
 
-Andrew's related to CORS and Office365 usage
+Andrew's blog related to CORS and Office365 usage
 
 http://www.andrewconnell.com/blog/adal-js-cors-with-o365-apis-files-sharepoint
 
@@ -275,10 +300,32 @@ http://www.cloudidentity.com/blog/2015/02/19/introducing-adal-js-v1/
 http://www.cloudidentity.com/blog/2014/10/28/adal-javascript-and-angularjs-deep-dive/
 
 ### Trusted Site settings in IE
-If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority url for the login to the trusted sites as well.
+If you put your site in the trusted site list, cookies are not accessible for iFrame requests. You need to remove protected mode for Internet zone or add the authority URL for the login to the trusted sites as well.
 
 ### Known issues on Edge
-Certain issues have been reported when using ADAL.js with the Microsoft Edge version 40.15063.0.0. Please take a look at [this page](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Known-issues-on-Edge) for details and work arounds before filing a new issue experienced with Edge.
+Certain issues have been reported when using ADAL.js with the Microsoft Edge version 40.15063.0.0. Please take a look at [this page](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Known-issues-on-Edge) for details and workarounds before filing a new issue experienced with Edge.
+
+## Build and run tests
+
+**Run tests**
+
+    npm install
+    bower install
+    npm test
+
+    // angular tests
+    karma start
+
+To use Karma as test runner, you need to install the karma command line.
+
+    npm install -g karma
+    npm install -g karma-cli
+
+**Reference doc generation**
+
+Install grunt and run the command
+
+    grunt doc
 
 ## Contribution
 

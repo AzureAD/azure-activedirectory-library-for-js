@@ -19,6 +19,7 @@ export class AdalConfig {
     public navigateToLoginRequestUrl: boolean = true;
     public loginResource: string;
     public callback: TokenReceivedCallback = null;
+    public state: string;
 
     constructor(config : AdalConfig) {
 

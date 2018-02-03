@@ -4,6 +4,7 @@ import { Constants } from "./constants";
 import { RequestType } from "./requestType";
 import { ResponseType } from "./responseType";
 import { TokenReceivedCallback } from "./tokenReceivedCallback";
+import { Guid } from "./guid";
 
 export class AuthenticationContext {
     public instance: string = 'https://login.microsoftonline.com/';
@@ -20,7 +21,8 @@ export class AuthenticationContext {
     private _callBackMappedToRenewStates = {};
     private _callBacksMappedToRenewStates = {};
     private _openedWindows: any = []; // <=====================
-    private _requestType : string = RequestType.LOGIN;
+    private _requestType: string = RequestType.LOGIN;
+    private _idTokenNonce: string;
 
     private static _singletonInstance: AuthenticationContext = null;
 
@@ -90,16 +92,16 @@ export class AuthenticationContext {
      */
     public login(): void {
         if (this._loginInProgress) {
-            this.info("Login in progress");
+            //this.info("Login in progress");
             return;
         }
 
         this._loginInProgress = true;
 
         // Token is not present and user needs to login
-        var expectedState = this._guid();
+        var expectedState = Guid.createGuid();
         this.config.state = expectedState;
-        this._idTokenNonce = this._guid();
+        this._idTokenNonce = Guid.createGuid();
         var loginStartPage = this._getItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST);
 
         if (!loginStartPage || loginStartPage === "") {

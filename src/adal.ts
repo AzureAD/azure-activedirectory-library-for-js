@@ -304,35 +304,7 @@
             frameHandle.src = 'about:blank';
             this._loadFrameTimeout(urlNavigate, 'adalIdTokenFrame', this.config.clientId);
         };
-    
-        /**
-         * Checks if the authorization endpoint URL contains query string parameters
-         * @ignore
-         */
-        AuthenticationContext.prototype._urlContainsQueryStringParameter = function (name, url) {
-            // regex to detect pattern of a ? or & followed by the name parameter and an equals character
-            var regex = new RegExp("[\\?&]" + name + "=");
-            return regex.test(url);
-        }
-    
-        /**
-         * Removes the query string parameter from the authorization endpoint URL if it exists
-         * @ignore
-         */
-        AuthenticationContext.prototype._urlRemoveQueryStringParameter = function (url, name) {
-            // we remove &name=value, name=value& and name=value
-            // &name=value
-            var regex = new RegExp('(\\&' + name + '=)[^\&]+');
-            url = url.replace(regex, '');
-            // name=value&
-            regex = new RegExp('(' + name + '=)[^\&]+&');
-            url = url.replace(regex, '');
-            // name=value
-            regex = new RegExp('(' + name + '=)[^\&]+');
-            url = url.replace(regex, '');
-            return url;
-        }
-    
+      
         // Calling _loadFrame but with a timeout to signal failure in loadframeStatus. Callbacks are left
         // registered when network errors occur and subsequent token requests for same resource are registered to the pending request
         /**
@@ -446,7 +418,7 @@
             }
         };
     
-        /**
+      /**
       * Acquires token (interactive flow using a popUp window) by sending request to AAD to obtain a new token.
       * @param {string}   resource  ResourceUri identifying the target resource
       * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
@@ -638,10 +610,6 @@
             this.promptUser(urlNavigate);
         };
     
-        AuthenticationContext.prototype._isEmpty = function (str) {
-            return (typeof str === 'undefined' || !str || 0 === str.length);
-        };
-    
         /**
          * @callback userCallback
          * @param {string} error error message if user info is not available.
@@ -703,36 +671,6 @@
             return urlNavigate;
         }
     
-    
-        /**
-         * Returns the anchor part(#) of the URL
-         * @ignore
-         */
-        AuthenticationContext.prototype._getHash = function (hash) {
-            if (hash.indexOf('#/') > -1) {
-                hash = hash.substring(hash.indexOf('#/') + 2);
-            } else if (hash.indexOf('#') > -1) {
-                hash = hash.substring(1);
-            }
-    
-            return hash;
-        };
-    
-        /**
-         * Checks if the URL fragment contains access token, id token or error_description.
-         * @param {string} hash  -  Hash passed from redirect page
-         * @returns {Boolean} true if response contains id_token, access_token or error, false otherwise.
-         */
-        AuthenticationContext.prototype.isCallback = function (hash) {
-            hash = this._getHash(hash);
-            var parameters = this._deserialize(hash);
-            return (
-                parameters.hasOwnProperty(this.CONSTANTS.ERROR_DESCRIPTION) ||
-                parameters.hasOwnProperty(this.CONSTANTS.ACCESS_TOKEN) ||
-                parameters.hasOwnProperty(this.CONSTANTS.ID_TOKEN)
-            );
-        };
-    
         /**
          * Gets login error
          * @returns {string} error message related to login.
@@ -740,74 +678,7 @@
         AuthenticationContext.prototype.getLoginError = function () {
             return this._getItem(this.CONSTANTS.STORAGE.LOGIN_ERROR);
         };
-    
-        /**
-         * Request info object created from the response received from AAD.
-         *  @class RequestInfo
-         *  @property {object} parameters - object comprising of fields such as id_token/error, session_state, state, e.t.c.
-         *  @property {REQUEST_TYPE} requestType - either LOGIN, RENEW_TOKEN or UNKNOWN.
-         *  @property {boolean} stateMatch - true if state is valid, false otherwise.
-         *  @property {string} stateResponse - unique guid used to match the response with the request.
-         *  @property {boolean} valid - true if requestType contains id_token, access_token or error, false otherwise.
-         */
-    
-        /**
-         * Creates a requestInfo object from the URL fragment and returns it.
-         * @returns {RequestInfo} an object created from the redirect response from AAD comprising of the keys - parameters, requestType, stateMatch, stateResponse and valid.
-         */
-        AuthenticationContext.prototype.getRequestInfo = function (hash) {
-            hash = this._getHash(hash);
-            var parameters = this._deserialize(hash);
-            var requestInfo = {
-                valid: false,
-                parameters: {},
-                stateMatch: false,
-                stateResponse: '',
-                requestType: this.REQUEST_TYPE.UNKNOWN,
-            };
-    
-            if (parameters) {
-                requestInfo.parameters = parameters;
-                if (parameters.hasOwnProperty(this.CONSTANTS.ERROR_DESCRIPTION) ||
-                    parameters.hasOwnProperty(this.CONSTANTS.ACCESS_TOKEN) ||
-                    parameters.hasOwnProperty(this.CONSTANTS.ID_TOKEN)) {
-    
-                    requestInfo.valid = true;
-    
-                    // which call
-                    var stateResponse = '';
-                    if (parameters.hasOwnProperty('state')) {
-                        this.verbose('State: ' + parameters.state);
-                        stateResponse = parameters.state;
-                    } else {
-                        this.warn('No state returned');
-                        return requestInfo;
-                    }
-    
-                    requestInfo.stateResponse = stateResponse;
-    
-                    // async calls can fire iframe and login request at the same time if developer does not use the API as expected
-                    // incoming callback needs to be looked up to find the request type
-                    if (this._matchState(requestInfo)) { // loginRedirect or acquireTokenRedirect
-                        return requestInfo;
-                    }
-    
-                    // external api requests may have many renewtoken requests for different resource
-                    if (!requestInfo.stateMatch && window.parent) {
-                        requestInfo.requestType = this._requestType;
-                        var statesInParentContext = this._renewStates;
-                        for (var i = 0; i < statesInParentContext.length; i++) {
-                            if (statesInParentContext[i] === requestInfo.stateResponse) {
-                                requestInfo.stateMatch = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            return requestInfo;
-        };
-    
+        
         /**
         * Matches nonce from the request with the response.
         * @ignore
@@ -1103,139 +974,7 @@
             this.info('Navigate url:' + urlNavigate);
             return urlNavigate;
         };
-    
-        /**
-         * Returns the decoded id_token.
-         * @ignore
-         */
-        AuthenticationContext.prototype._extractIdToken = function (encodedIdToken) {
-            // id token will be decoded to get the username
-            var decodedToken = this._decodeJwt(encodedIdToken);
-    
-            if (!decodedToken) {
-                return null;
-            }
-    
-            try {
-                var base64IdToken = decodedToken.JWSPayload;
-                var base64Decoded = this._base64DecodeStringUrlSafe(base64IdToken);
-    
-                if (!base64Decoded) {
-                    this.info('The returned id_token could not be base64 url safe decoded.');
-                    return null;
-                }
-    
-                // ECMA script has JSON built-in support
-                return JSON.parse(base64Decoded);
-            } catch (err) {
-                this.error('The returned id_token could not be decoded', err);
-            }
-    
-            return null;
-        };
-    
-        /**
-         * Decodes a string of data which has been encoded using base-64 encoding.
-         * @ignore
-         */
-        AuthenticationContext.prototype._base64DecodeStringUrlSafe = function (base64IdToken) {
-            // html5 should support atob function for decoding
-            base64IdToken = base64IdToken.replace(/-/g, '+').replace(/_/g, '/');
-    
-            if (window.atob) {
-                return decodeURIComponent(escape(window.atob(base64IdToken))); // jshint ignore:line
-            }
-            else {
-                return decodeURIComponent(escape(this._decode(base64IdToken)));
-            }
-        };
-    
-        //Take https://cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js and https://en.wikipedia.org/wiki/Base64 as reference. 
-        AuthenticationContext.prototype._decode = function (base64IdToken) {
-            var codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-            base64IdToken = String(base64IdToken).replace(/=+$/, '');
-    
-            var length = base64IdToken.length;
-    
-            if (length % 4 === 1) {
-                throw new Error('The token to be decoded is not correctly encoded.');
-            }
-    
-            var h1, h2, h3, h4, bits, c1, c2, c3, decoded = '';
-    
-            for (var i = 0; i < length; i += 4) {
-                //Every 4 base64 encoded character will be converted to 3 byte string, which is 24 bits
-                // then 6 bits per base64 encoded character
-                h1 = codes.indexOf(base64IdToken.charAt(i));
-                h2 = codes.indexOf(base64IdToken.charAt(i + 1));
-                h3 = codes.indexOf(base64IdToken.charAt(i + 2));
-                h4 = codes.indexOf(base64IdToken.charAt(i + 3));
-    
-                // For padding, if last two are '='
-                if (i + 2 === length - 1) {
-                    bits = h1 << 18 | h2 << 12 | h3 << 6;
-                    c1 = bits >> 16 & 255;
-                    c2 = bits >> 8 & 255;
-                    decoded += String.fromCharCode(c1, c2);
-                    break;
-                }
-                    // if last one is '='
-                else if (i + 1 === length - 1) {
-                    bits = h1 << 18 | h2 << 12
-                    c1 = bits >> 16 & 255;
-                    decoded += String.fromCharCode(c1);
-                    break;
-                }
-    
-                bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
-    
-                // then convert to 3 byte chars
-                c1 = bits >> 16 & 255;
-                c2 = bits >> 8 & 255;
-                c3 = bits & 255;
-    
-                decoded += String.fromCharCode(c1, c2, c3);
-            }
-    
-            return decoded;
-        };
-    
-        /**
-         * Decodes an id token into an object with header, payload and signature fields.
-         * @ignore
-         */
-        // Adal.node js crack function
-        AuthenticationContext.prototype._decodeJwt = function (jwtToken) {
-            if (this._isEmpty(jwtToken)) {
-                return null;
-            };
-    
-            var idTokenPartsRegex = /^([^\.\s]*)\.([^\.\s]+)\.([^\.\s]*)$/;
-    
-            var matches = idTokenPartsRegex.exec(jwtToken);
-    
-            if (!matches || matches.length < 4) {
-                this.warn('The returned id_token is not parseable.');
-                return null;
-            }
-    
-            var crackedToken = {
-                header: matches[1],
-                JWSPayload: matches[2],
-                JWSSig: matches[3]
-            };
-    
-            return crackedToken;
-        };
-    
-        /**
-         * Converts string to represent binary data in ASCII string format by translating it into a radix-64 representation and returns it
-         * @ignore
-         */
-        AuthenticationContext.prototype._convertUrlSafeToRegularBase64EncodedString = function (str) {
-            return str.replace('-', '+').replace('_', '/');
-        };
-    
+       
         /**
          * Serializes the parameters for the authorization endpoint URL and returns the serialized uri string.
          * @ignore
@@ -1267,47 +1006,7 @@
     
             return str.join('&');
         };
-    
-        /**
-         * Parses the query string parameters into a key-value pair object.
-         * @ignore
-         */
-        AuthenticationContext.prototype._deserialize = function (query) {
-            var match,
-                pl = /\+/g,  // Regex for replacing addition symbol with a space
-                search = /([^&=]+)=([^&]*)/g,
-                decode = function (s) {
-                    return decodeURIComponent(s.replace(pl, ' '));
-                },
-                obj = {};
-            match = search.exec(query);
-    
-            while (match) {
-                obj[decode(match[1])] = decode(match[2]);
-                match = search.exec(query);
-            }
-    
-            return obj;
-        };
-    
-        /**
-         * Calculates the expires in value in milliseconds for the acquired token
-         * @ignore
-         */
-        AuthenticationContext.prototype._expiresIn = function (expires) {
-            // if AAD did not send "expires_in" property, use default expiration of 3599 seconds, for some reason AAD sends 3599 as "expires_in" value instead of 3600
-            if (!expires) expires = 3599;
-            return this._now() + parseInt(expires, 10);
-        };
-    
-        /**
-         * Return the number of milliseconds since 1970/01/01
-         * @ignore
-         */
-        AuthenticationContext.prototype._now = function () {
-            return Math.round(new Date().getTime() / 1000.0);
-        };
-    
+      
         /**
          * Adds the hidden iframe for silent token renewal
          * @ignore

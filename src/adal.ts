@@ -1,44 +1,3 @@
-
-
-    
-
- 
-    
-        /**
-         * Configures popup window for login.
-         * @ignore
-         */
-        AuthenticationContext.prototype._openPopup = function (urlNavigate, title, popUpWidth, popUpHeight) {
-            try {
-                /**
-                * adding winLeft and winTop to account for dual monitor
-                * using screenLeft and screenTop for IE8 and earlier
-                */
-                var winLeft = window.screenLeft ? window.screenLeft : window.screenX;
-                var winTop = window.screenTop ? window.screenTop : window.screenY;
-                /**
-                * window.innerWidth displays browser window's height and width excluding toolbars
-                * using document.documentElement.clientWidth for IE8 and earlier
-                */
-                var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-                var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-                var left = ((width / 2) - (popUpWidth / 2)) + winLeft;
-                var top = ((height / 2) - (popUpHeight / 2)) + winTop;
-    
-                var popupWindow = window.open(urlNavigate, title, 'width=' + popUpWidth + ', height=' + popUpHeight + ', top=' + top + ', left=' + left);
-    
-                if (popupWindow.focus) {
-                    popupWindow.focus();
-                }
-    
-                return popupWindow;
-            } catch (e) {
-                this.warn('Error opening popup, ' + e.message);
-                this._loginInProgress = false;
-                this._acquireTokenInProgress = false;
-                return null;
-            }
-        }
     
         AuthenticationContext.prototype._handlePopupError = function (loginCallback, resource, error, errorDesc, loginError) {
             this.warn(errorDesc);
@@ -143,10 +102,6 @@
     
             var evt = new CustomEvent(eventName, { detail: data });
             window.dispatchEvent(evt);
-        };
-    
-        AuthenticationContext.prototype.loginInProgress = function () {
-            return this._loginInProgress;
         };
     
         /**
@@ -333,27 +288,6 @@
         }
     
         /**
-         * Loads iframe with authorization endpoint URL
-         * @ignore
-         */
-        AuthenticationContext.prototype._loadFrame = function (urlNavigate, frameName) {
-            // This trick overcomes iframe navigation in IE
-            // IE does not load the page consistently in iframe
-            var self = this;
-            self.info('LoadFrame: ' + frameName);
-            var frameCheck = frameName;
-            setTimeout(function () {
-                var frameHandle = self._addAdalFrame(frameCheck);
-    
-                if (frameHandle.src === '' || frameHandle.src === 'about:blank') {
-                    frameHandle.src = urlNavigate;
-                    self._loadFrame(urlNavigate, frameCheck);
-                }
-    
-            }, 500);
-        };
-    
-        /**
          * @callback tokenCallback
          * @param {string} error_description error description returned from AAD if token request fails.
          * @param {string} token token returned from AAD if token request is successful.
@@ -522,18 +456,6 @@
             this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, window.location.href);
             this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, expectedState, true);
             this.promptUser(urlNavigate);
-        };
-        /**
-         * Redirects the browser to Azure AD authorization endpoint.
-         * @param {string}   urlNavigate  Url of the authorization endpoint.
-         */
-        AuthenticationContext.prototype.promptUser = function (urlNavigate) {
-            if (urlNavigate) {
-                this.info('Navigate to:' + urlNavigate);
-                window.location.replace(urlNavigate);
-            } else {
-                this.info('Navigate url is empty');
-            }
         };
     
         /**
@@ -1006,42 +928,7 @@
     
             return str.join('&');
         };
-      
-        /**
-         * Adds the hidden iframe for silent token renewal
-         * @ignore
-         */
-        AuthenticationContext.prototype._addAdalFrame = function (iframeId) {
-            if (typeof iframeId === 'undefined') {
-                return;
-            }
-    
-            this.info('Add adal frame to document:' + iframeId);
-            var adalFrame = document.getElementById(iframeId);
-    
-            if (!adalFrame) {
-                if (document.createElement && document.documentElement &&
-                    (window.opera || window.navigator.userAgent.indexOf('MSIE 5.0') === -1)) {
-                    var ifr = document.createElement('iframe');
-                    ifr.setAttribute('id', iframeId);
-                    ifr.setAttribute('aria-hidden', 'true');
-                    ifr.style.visibility = 'hidden';
-                    ifr.style.position = 'absolute';
-                    ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
-    
-                    adalFrame = document.getElementsByTagName('body')[0].appendChild(ifr);
-                }
-                else if (document.body && document.body.insertAdjacentHTML) {
-                    document.body.insertAdjacentHTML('beforeEnd', '<iframe name="' + iframeId + '" id="' + iframeId + '" style="display:none"></iframe>');
-                }
-                if (window.frames && window.frames[iframeId]) {
-                    adalFrame = window.frames[iframeId];
-                }
-            }
-    
-            return adalFrame;
-        };
-    
+          
         /**
          * Saves the key-value pair in the cache
          * @ignore

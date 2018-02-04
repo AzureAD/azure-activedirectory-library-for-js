@@ -136,6 +136,98 @@ export class AuthenticationContext {
     }
   };
 
+  //-------------------------------common --------------------------------------------
+
+    /*
+   * Configures popup window for login.
+   * @ignore
+   * @hidden
+   */
+  private openPopup(urlNavigate: string, title: string, popUpWidth: number, popUpHeight: number) {
+    try {
+      /*
+       * adding winLeft and winTop to account for dual monitor
+       * using screenLeft and screenTop for IE8 and earlier
+       */
+      const winLeft = window.screenLeft ? window.screenLeft : window.screenX;
+      const winTop = window.screenTop ? window.screenTop : window.screenY;
+      /*
+       * window.innerWidth displays browser window"s height and width excluding toolbars
+       * using document.documentElement.clientWidth for IE8 and earlier
+       */
+      const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      const left = ((width / 2) - (popUpWidth / 2)) + winLeft;
+      const top = ((height / 2) - (popUpHeight / 2)) + winTop;
+
+      const popupWindow = window.open(urlNavigate, title, "width=" + popUpWidth + ", height=" + popUpHeight + ", top=" + top + ", left=" + left);
+      if (popupWindow.focus) {
+        popupWindow.focus();
+      }
+
+      return popupWindow;
+    } catch (e) {
+      this._logger.error("error opening popup " + e.message);
+      this._loginInProgress = false;
+      this._acquireTokenInProgress = false;
+      return null;
+    }
+  }
+
+    /*
+   * Loads iframe with authorization endpoint URL
+   * @ignore
+   * @hidden
+   */
+  private loadFrame(urlNavigate: string, frameName: string): void {
+    // This trick overcomes iframe navigation in IE
+    // IE does not load the page consistently in iframe
+    this._logger.info("LoadFrame: " + frameName);
+    var frameCheck = frameName;
+    setTimeout(() => {
+      var frameHandle = this.addAdalFrame(frameCheck);
+      if (frameHandle.src === "" || frameHandle.src === "about:blank") {
+        frameHandle.src = urlNavigate;
+      }
+    },
+      500);
+  }
+
+    /*
+   * Adds the hidden iframe for silent token renewal.
+   * @ignore
+   * @hidden
+   */
+  private addAdalFrame(iframeId: string): HTMLIFrameElement {
+    if (typeof iframeId === "undefined") {
+      return null;
+    }
+
+    this._logger.info("Add msal frame to document:" + iframeId);
+    let adalFrame = document.getElementById(iframeId) as HTMLIFrameElement;
+    if (!adalFrame) {
+      if (document.createElement &&
+        document.documentElement &&
+        (window.navigator.userAgent.indexOf("MSIE 5.0") === -1)) {
+        const ifr = document.createElement("iframe");
+        ifr.setAttribute("id", iframeId);
+        ifr.style.visibility = "hidden";
+        ifr.style.position = "absolute";
+        ifr.style.width = ifr.style.height = "0";
+        ifr.style.border = "0";
+        adalFrame = (document.getElementsByTagName("body")[0].appendChild(ifr) as HTMLIFrameElement);
+      } else if (document.body && document.body.insertAdjacentHTML) {
+          document.body.insertAdjacentHTML('beforeend', '<iframe name="' + iframeId + '" id="' + iframeId + '" style="display:none"></iframe>');
+      }
+
+      if (window.frames && window.frames[iframeId]) {
+        adalFrame = window.frames[iframeId];
+      }
+    }
+
+    return adalFrame;
+  }
+
   /*
    * Returns the anchor part(#) of the URL
    * @ignore
@@ -227,5 +319,24 @@ export class AuthenticationContext {
       }
     }
     return tokenResponse;
+  }
+
+  /*
+  * Used to redirect the browser to the STS authorization endpoint
+  * @param {string} urlNavigate - URL of the authorization endpoint
+  * @hidden
+  */
+  private promptUser(urlNavigate: string) {
+    if (urlNavigate && !Utils.isEmpty(urlNavigate)) {
+      this._logger.info("Navigate to:" + urlNavigate);
+      window.location.replace(urlNavigate);
+    } else {
+      this._logger.info("Navigate url is empty");
+    }
+  }
+
+  // ----------------------------------unique to adal------------------------------------------
+  loginInProgress():boolean {
+    return this._loginInProgress;
   }
 }

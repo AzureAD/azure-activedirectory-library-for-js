@@ -339,4 +339,32 @@ export class AuthenticationContext {
   loginInProgress():boolean {
     return this._loginInProgress;
   }
+
+  private _serialize(responseType:string, obj:object, resource:string) {
+    var str = [];
+
+    if (obj !== null) {
+        str.push('?response_type=' + responseType);
+        str.push('client_id=' + encodeURIComponent(obj.clientId));
+        if (resource) {
+            str.push('resource=' + encodeURIComponent(resource));
+        }
+
+        str.push('redirect_uri=' + encodeURIComponent(obj.redirectUri));
+        str.push('state=' + encodeURIComponent(obj.state));
+
+        if (obj.hasOwnProperty('slice')) {
+            str.push('slice=' + encodeURIComponent(obj.slice));
+        }
+
+        if (obj.hasOwnProperty('extraQueryParameter')) {
+            str.push(obj.extraQueryParameter);
+        }
+
+        var correlationId = obj.correlationId ? obj.correlationId : this._guid();
+        str.push('client-request-id=' + encodeURIComponent(correlationId));
+    }
+
+    return str.join('&');
+  };
 }

@@ -105,16 +105,6 @@
         };
     
         /**
-         * Checks for the resource in the cache. By default, cache location is Session Storage
-         * @ignore
-         * @returns {Boolean} 'true' if login is in progress, else returns 'false'.
-         */
-        AuthenticationContext.prototype._hasResource = function (key) {
-            var keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
-            return keys && !this._isEmpty(keys) && (keys.indexOf(key + this.CONSTANTS.RESOURCE_DELIMETER) > -1);
-        };
-    
-        /**
          * Gets token for the specified resource from the cache.
          * @param {string}   resource A URI that identifies the resource for which the token is requested.
          * @returns {string} token if if it exists and not expired, otherwise null.
@@ -457,51 +447,7 @@
             this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, expectedState, true);
             this.promptUser(urlNavigate);
         };
-    
-        /**
-         * Clears cache items.
-         */
-        AuthenticationContext.prototype.clearCache = function () {
-            this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, '');
-            this._saveItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST, '');
-            this._saveItem(this.CONSTANTS.STORAGE.SESSION_STATE, '');
-            this._saveItem(this.CONSTANTS.STORAGE.STATE_LOGIN, '');
-            this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, '');
-            this._renewStates = [];
-            this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, '');
-            this._saveItem(this.CONSTANTS.STORAGE.IDTOKEN, '');
-            this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
-            this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
-            this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
-            this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
-            var keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
-    
-            if (!this._isEmpty(keys)) {
-                keys = keys.split(this.CONSTANTS.RESOURCE_DELIMETER);
-                for (var i = 0; i < keys.length && keys[i] !== ""; i++) {
-                    this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + keys[i], '');
-                    this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + keys[i], 0);
-                }
-            }
-    
-            this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, '');
-        };
-    
-        /**
-         * Clears cache items for a given resource.
-         * @param {string}  resource a URI that identifies the resource.
-         */
-        AuthenticationContext.prototype.clearCacheForResource = function (resource) {
-            this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, '');
-            this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
-            this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
-    
-            if (this._hasResource(resource)) {
-                this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + resource, '');
-                this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + resource, 0);
-            }
-        };
-    
+       
         /**
          * Redirects user to logout endpoint.
          * After logout, it will redirect to postLogoutRedirectUri if added as a property on the config object.
@@ -594,14 +540,6 @@
         }
     
         /**
-         * Gets login error
-         * @returns {string} error message related to login.
-         */
-        AuthenticationContext.prototype.getLoginError = function () {
-            return this._getItem(this.CONSTANTS.STORAGE.LOGIN_ERROR);
-        };
-        
-        /**
         * Matches nonce from the request with the response.
         * @ignore
         */
@@ -653,22 +591,6 @@
     
             return false;
     
-        };
-    
-        /**
-         * Extracts resource value from state.
-         * @ignore
-         */
-        AuthenticationContext.prototype._getResourceFromState = function (state) {
-            if (state) {
-                var splitIndex = state.indexOf('|');
-    
-                if (splitIndex > -1 && splitIndex + 1 < state.length) {
-                    return state.substring(splitIndex + 1);
-                }
-            }
-    
-            return '';
         };
     
         /**
@@ -801,17 +723,6 @@
         };
     
         /**
-         * Strips the protocol part of the URL and returns it.
-         * @ignore
-         */
-        AuthenticationContext.prototype._getHostFromUri = function (uri) {
-            // remove http:// or https:// from uri
-            var extractedUri = String(uri).replace(/^(https?:)\/\//, '');
-            extractedUri = extractedUri.split('/')[0];
-            return extractedUri;
-        };
-    
-        /**
          * This method must be called for processing the response received from AAD. It extracts the hash, processes the token or error, saves it in the cache and calls the registered callbacks with the result.
          * @param {string} [hash=window.location.hash] - Hash fragment of Url.
          */
@@ -895,39 +806,7 @@
             var urlNavigate = this.instance + tenant + '/oauth2/authorize' + this._serialize(responseType, this.config, resource) + this._addLibMetadata();
             this.info('Navigate url:' + urlNavigate);
             return urlNavigate;
-        };
-       
-        /**
-         * Serializes the parameters for the authorization endpoint URL and returns the serialized uri string.
-         * @ignore
-         */
-        AuthenticationContext.prototype._serialize = function (responseType, obj, resource) {
-            var str = [];
-    
-            if (obj !== null) {
-                str.push('?response_type=' + responseType);
-                str.push('client_id=' + encodeURIComponent(obj.clientId));
-                if (resource) {
-                    str.push('resource=' + encodeURIComponent(resource));
-                }
-    
-                str.push('redirect_uri=' + encodeURIComponent(obj.redirectUri));
-                str.push('state=' + encodeURIComponent(obj.state));
-    
-                if (obj.hasOwnProperty('slice')) {
-                    str.push('slice=' + encodeURIComponent(obj.slice));
-                }
-    
-                if (obj.hasOwnProperty('extraQueryParameter')) {
-                    str.push(obj.extraQueryParameter);
-                }
-    
-                var correlationId = obj.correlationId ? obj.correlationId : this._guid();
-                str.push('client-request-id=' + encodeURIComponent(correlationId));
-            }
-    
-            return str.join('&');
-        };
+        };     
               
         /**
          * Returns a cloned copy of the passed object.

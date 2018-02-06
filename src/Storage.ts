@@ -73,7 +73,53 @@ export class AdalStorage {
     } catch (e) {
       return false;
     }
-  };
+  }
+
+  clearCache() {
+    this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, '');
+    this._saveItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST, '');
+    this._saveItem(this.CONSTANTS.STORAGE.SESSION_STATE, '');
+    this._saveItem(this.CONSTANTS.STORAGE.STATE_LOGIN, '');
+    this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, '');
+    this._renewStates = [];
+    this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, '');
+    this._saveItem(this.CONSTANTS.STORAGE.IDTOKEN, '');
+    this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
+    this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
+    this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
+    this._saveItem(this.CONSTANTS.STORAGE.LOGIN_ERROR, '');
+    var keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
+
+    if (!this._isEmpty(keys)) {
+        keys = keys.split(this.CONSTANTS.RESOURCE_DELIMETER);
+        for (var i = 0; i < keys.length && keys[i] !== ""; i++) {
+            this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + keys[i], '');
+            this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + keys[i], 0);
+        }
+    }
+
+    this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, '');
+  }
+
+  clearCacheForResource(resource:string) {
+    this._saveItem(this.CONSTANTS.STORAGE.STATE_RENEW, '');
+    this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
+    this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
+
+    if (this._hasResource(resource)) {
+        this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + resource, '');
+        this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + resource, 0);
+    }
+  }
+
+  getLoginError() {
+    return this._getItem(this.CONSTANTS.STORAGE.LOGIN_ERROR);
+  }
+
+  _hasResource(key:string) {
+    var keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
+    return keys && !this._isEmpty(keys) && (keys.indexOf(key + this.CONSTANTS.RESOURCE_DELIMETER) > -1);
+  }
 }
 
 export class Storage {// Singleton

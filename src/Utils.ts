@@ -221,4 +221,12 @@ export class Utils {
     url = url.replace(regex, '');
     return url;
   }
+
+  static getHostFromUri(uri:string) {
+    // remove http:// or https:// from uri
+    var extractedUri = String(uri).replace(/^(https?:)\/\//, '');
+    extractedUri = extractedUri.split('/')[0];
+    return extractedUri;
+  }
+
 }

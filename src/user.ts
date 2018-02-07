@@ -1,16 +1,20 @@
+import { Utils } from "./Utils";
+
 export class User {
     userName : string;
-    profile : object;
+    profile: object;
 
-    constructor() {
+    private static _validAud: string;
 
+    static setValidAud(validAud: string) {
+        User._validAud = validAud.toLowerCase();
     }
 
     static createUser(idToken: string): User {
         var user = null;
-        var parsedJson = this._extractIdToken(idToken);
+        var parsedJson = Utils.extractIdToken(idToken);
         if (parsedJson && parsedJson.hasOwnProperty('aud')) {
-            if (parsedJson.aud.toLowerCase() === this.config.clientId.toLowerCase()) {
+            if (parsedJson.aud.toLowerCase() === User._validAud) {
 
                 user = {
                     userName: '',

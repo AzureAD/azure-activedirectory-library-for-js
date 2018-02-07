@@ -228,5 +228,4 @@ export class Utils {
     extractedUri = extractedUri.split('/')[0];
     return extractedUri;
   }
-
 }

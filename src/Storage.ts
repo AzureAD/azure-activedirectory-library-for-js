@@ -1,3 +1,5 @@
+import { Constants } from "./Constants";
+
 export class Storage {
 
   private static _instance: Storage;
@@ -21,7 +23,7 @@ export class Storage {
     return Storage._instance;
   }
 
-  setItem(key:string, obj:object, preserve:boolean) {
+  setItem(key:string, obj:object, preserve?:boolean) {
     if (window[this._cacheLocation]) {
       if (preserve) {
         let value = this.getItem(key);
@@ -51,22 +53,22 @@ export class Storage {
   }
 
   clearCacheForResource(resource:string) {
-    this.setItem(this.CONSTANTS.STORAGE.STATE_RENEW, '');
-    this.setItem(this.CONSTANTS.STORAGE.ERROR, '');
-    this.setItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
+    this.setItem(Constants.STORAGE.STATE_RENEW, '');
+    this.setItem(Constants.STORAGE.ERROR, '');
+    this.setItem(Constants.STORAGE.ERROR_DESCRIPTION, '');
 
     if (this._hasResource(resource)) {
-        this.setItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + resource, '');
-        this.setItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + resource, 0);
+        this.setItem(Constants.STORAGE.ACCESS_TOKEN_KEY + resource, '');
+        this.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, 0);
     }
   }
 
   getLoginError() {
-    return this.getItem(this.CONSTANTS.STORAGE.LOGIN_ERROR);
+      return this.getItem(Constants.STORAGE.LOGIN_ERROR);
   }
 
   hasResource(key:string) {
-    var keys = this.getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS);
-    return keys && !this._isEmpty(keys) && (keys.indexOf(key + this.CONSTANTS.RESOURCE_DELIMETER) > -1);
+      var keys = this.getItem(Constants.STORAGE.TOKEN_KEYS);
+      return keys && !this._isEmpty(keys) && (keys.indexOf(key + Constants.RESOURCE_DELIMETER) > -1);
   }
 }

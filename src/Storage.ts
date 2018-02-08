@@ -1,4 +1,5 @@
 import { Constants } from "./Constants";
+import { Utils } from "./Utils";
 
 export class Storage {
 
@@ -23,13 +24,13 @@ export class Storage {
     return Storage._instance;
   }
 
-  setItem(key:string, obj:object, preserve?:boolean) {
+  setItem(key: string, value: string, preserve?: boolean) {
     if (window[this._cacheLocation]) {
       if (preserve) {
-        let value = this.getItem(key);
-        window[this._cacheLocation].setItem(key, value + obj + this.CONSTANTS.CACHE_DELIMETER); 
+        let val = this.getItem(key);
+        window[this._cacheLocation].setItem(key, value + val + Constants.CACHE_DELIMETER); 
       } else {
-        window[this._cacheLocation].setItem(key, obj);
+        window[this._cacheLocation].setItem(key, value);
       }        
     } else {  
       throw new Error("localStorage and sessionStorage are not supported");  
@@ -67,8 +68,8 @@ export class Storage {
       return this.getItem(Constants.STORAGE.LOGIN_ERROR);
   }
 
-  hasResource(key:string) {
+  private _hasResource(key:string) {
       var keys = this.getItem(Constants.STORAGE.TOKEN_KEYS);
-      return keys && !this._isEmpty(keys) && (keys.indexOf(key + Constants.RESOURCE_DELIMETER) > -1);
+      return keys && !Utils.isEmpty(keys) && (keys.indexOf(key + Constants.RESOURCE_DELIMETER) > -1);
   }
 }

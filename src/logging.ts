@@ -1,3 +1,4 @@
+import { Constants } from "./Constants";
 
 export class Logging {
 
@@ -7,15 +8,15 @@ export class Logging {
      * @param {string} message  -  Message to log.
      * @param {string} error  -  Error to log.
      */
-    public static log(level: string, message: string, error: any): void {
+    public static log(level: number, message: string, error?: any): void {
         if (level <= Logging.level) {
             var timestamp = new Date().toUTCString();
             var formattedMessage = '';
 
             if (this.config.correlationId)
-                formattedMessage = timestamp + ':' + this.config.correlationId + '-' + this._libVersion() + '-' + this.CONSTANTS.LEVEL_STRING_MAP[level] + ' ' + message;
+                formattedMessage = timestamp + ':' + this.config.correlationId + '-' + this._libVersion() + '-' + Constants.LEVEL_STRING_MAP[level] + ' ' + message;
             else
-                formattedMessage = timestamp + ':' + this._libVersion() + '-' + this.CONSTANTS.LEVEL_STRING_MAP[level] + ' ' + message;
+                formattedMessage = timestamp + ':' + this._libVersion() + '-' + Constants.LEVEL_STRING_MAP[level] + ' ' + message;
 
             if (error) {
                 formattedMessage += '\nstack:\n' + error.stack;
@@ -30,8 +31,8 @@ export class Logging {
      * @param {string} message  -  Message to log.
      * @param {string} error  -  Error to log.
      */
-    public static error(message: string, error: any): void {
-        this.log(this.CONSTANTS.LOGGING_LEVEL.ERROR, message, error);
+    public static error(message: string, error?: any): void {
+        this.log(Constants.LOGGING_LEVEL.ERROR, message, error);
     };
 
     /**
@@ -39,7 +40,7 @@ export class Logging {
      * @param {string} message  -  Message to log.
      */
     public static warn(message: string): void {
-        this.log(this.CONSTANTS.LOGGING_LEVEL.WARN, message, null);
+        this.log(Constants.LOGGING_LEVEL.WARN, message, null);
     };
 
     /**
@@ -47,7 +48,7 @@ export class Logging {
      * @param {string} message  -  Message to log.
      */
     public static info(message: string): void {
-        this.log(this.CONSTANTS.LOGGING_LEVEL.INFO, message, null);
+        this.log(Constants.LOGGING_LEVEL.INFO, message, null);
     };
 
     /**
@@ -55,7 +56,7 @@ export class Logging {
      * @param {string} message  -  Message to log.
      */
     public static verbose(message: string): void {
-        this.log(this.CONSTANTS.LOGGING_LEVEL.VERBOSE, message, null);
+        this.log(Constants.LOGGING_LEVEL.VERBOSE, message, null);
     };
 
     /**

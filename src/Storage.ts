@@ -1,6 +1,7 @@
 import { Constants } from "./Constants";
 import { Utils } from "./Utils";
 
+
 export class Storage {
 
   private static _instance: Storage;

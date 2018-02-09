@@ -419,7 +419,7 @@ export class AuthenticationContext {
         var errorDesc = 'Popup Window closed by UI action/ Popup Window handle destroyed due to cross zone navigation in IE/Edge'
 
         if (that.isAngular) {
-          that._broadcast('adal:popUpClosed', errorDesc + that.CONSTANTS.RESOURCE_DELIMETER + error);
+          that._broadcast('adal:popUpClosed', errorDesc + that.Constants.RESOURCE_DELIMETER + error);
         }
 
         that._handlePopupError(loginCallback, resource, error, errorDesc, errorDesc);
@@ -591,18 +591,18 @@ export class AuthenticationContext {
     var self = this;
 
     setTimeout(function () {
-      if (self._storage.getItem(self.CONSTANTS.STORAGE.RENEW_STATUS + resource) === self.CONSTANTS.TOKEN_RENEW_STATUS_IN_PROGRESS) {
+      if (self._storage.getItem(Constants.STORAGE.RENEW_STATUS + resource) === Constants.TOKEN_RENEW_STATUS_IN_PROGRESS) {
         // fail the iframe session if it's in pending state
-        self.verbose('Loading frame has timed out after: ' + (self.CONSTANTS.LOADFRAME_TIMEOUT / 1000) + ' seconds for resource ' + resource);
+        self.verbose('Loading frame has timed out after: ' + (Constants.LOADFRAME_TIMEOUT / 1000) + ' seconds for resource ' + resource);
         var expectedState = self._activeRenewals[resource];
 
         if (expectedState && self._callBackMappedToRenewStates[expectedState]) {
           self._callBackMappedToRenewStates[expectedState]('Token renewal operation failed due to timeout', null, 'Token Renewal Failed');
         }
 
-        self._storage.setItem(self.CONSTANTS.STORAGE.RENEW_STATUS + resource, self.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
+        self._storage.setItem(Constants.STORAGE.RENEW_STATUS + resource, Constants.TOKEN_RENEW_STATUS_CANCELED);
       }
-    }, self.CONSTANTS.LOADFRAME_TIMEOUT);
+    }, Constants.LOADFRAME_TIMEOUT);
   }
 
   acquireToken(resource:string, callback:tokenReceivedCallback) {
@@ -1028,15 +1028,15 @@ export class AuthenticationContext {
           self.verbose("acquiring token interactive in progress");
         }
 
-        token = requestInfo.parameters[self.CONSTANTS.ACCESS_TOKEN] || requestInfo.parameters[self.CONSTANTS.ID_TOKEN];
-        tokenType = self.CONSTANTS.ACCESS_TOKEN;
+        token = requestInfo.parameters[Constants.ACCESS_TOKEN] || requestInfo.parameters[Constants.ID_TOKEN];
+        tokenType = Constants.ACCESS_TOKEN;
       } else if (requestInfo.requestType === this.REQUEST_TYPE.LOGIN) {
-        token = requestInfo.parameters[self.CONSTANTS.ID_TOKEN];
-        tokenType = self.CONSTANTS.ID_TOKEN;
+        token = requestInfo.parameters[Constants.ID_TOKEN];
+        tokenType = Constants.ID_TOKEN;
       }
 
-      var errorDesc = requestInfo.parameters[self.CONSTANTS.ERROR_DESCRIPTION];
-      var error = requestInfo.parameters[self.CONSTANTS.ERROR];
+      var errorDesc = requestInfo.parameters[Constants.ERROR_DESCRIPTION];
+      var error = requestInfo.parameters[Constants.ERROR];
       try {
         if (tokenReceivedCallback) {
           tokenReceivedCallback(errorDesc, token, error, tokenType);
@@ -1048,7 +1048,7 @@ export class AuthenticationContext {
       if (window.parent === window && !isPopup) {
         window.location.hash = '';
         if (self.config.navigateToLoginRequestUrl) {
-          window.location.href = self._storage.getItem(self.CONSTANTS.STORAGE.LOGIN_REQUEST);
+          window.location.href = self._storage.getItem(Constants.STORAGE.LOGIN_REQUEST);
         }
       }
     }

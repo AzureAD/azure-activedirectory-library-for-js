@@ -229,6 +229,18 @@ export class Utils {
     return extractedUri;
   }
 
+  static getResourceFromState(state?: string) {
+    if (state) {
+      var splitIndex = state.indexOf('|');
+
+      if (splitIndex > -1 && splitIndex + 1 < state.length) {
+        return state.substring(splitIndex + 1);
+      }
+    }  
+
+    return '';
+  }
+
   static getLibMetadata() {
       return '&x-client-SKU=Js&x-client-Ver=' + Utils.getLibVersion();
   }

@@ -152,7 +152,7 @@ export class AuthenticationContext {
    * @ignore
    * @hidden
    */
-  private openPopup(urlNavigate: string, title: string, popUpWidth: number, popUpHeight: number) {
+  private _openPopup(urlNavigate: string, title: string, popUpWidth: number, popUpHeight: number) {
     try {
       /*
        * adding winLeft and winTop to account for dual monitor
@@ -188,13 +188,13 @@ export class AuthenticationContext {
    * @ignore
    * @hidden
    */
-  private loadFrame(urlNavigate: string, frameName: string): void {
+  private _loadFrame(urlNavigate: string, frameName: string): void {
     // This trick overcomes iframe navigation in IE
       // IE does not load the page consistently in iframe
     Logging.info("LoadFrame: " + frameName);
     var frameCheck = frameName;
     setTimeout(() => {
-      var frameHandle = this.addAdalFrame(frameCheck);
+      var frameHandle = this._addAdalFrame(frameCheck);
       if (frameHandle.src === "" || frameHandle.src === "about:blank") {
         frameHandle.src = urlNavigate;
       }
@@ -207,7 +207,7 @@ export class AuthenticationContext {
    * @ignore
    * @hidden
    */
-  private addAdalFrame(iframeId: string): HTMLIFrameElement {
+  private _addAdalFrame(iframeId: string): HTMLIFrameElement {
     if (typeof iframeId === "undefined") {
       return null;
     }
@@ -384,7 +384,7 @@ export class AuthenticationContext {
     }
   }
 
-  private _loginPopup(urlNavigate: string, resource: string, callback: TokenReceivedCallback) {
+  private _loginPopup(urlNavigate: string, resource?: string, callback?: TokenReceivedCallback) {
     var popupWindow = this._openPopup(urlNavigate, "login", Constants.POPUP_WIDTH, Constants.POPUP_HEIGHT);
     var loginCallback = callback || this.callback;
 
@@ -466,7 +466,7 @@ export class AuthenticationContext {
   }
 
   getCachedToken(resource: string) {
-      if (!this._storage.hasresource(resource)) {
+      if (!this._storage.hasResource(resource)) {
       return null;
     }
 
@@ -866,7 +866,7 @@ export class AuthenticationContext {
     this._storage.setItem(Constants.STORAGE.ERROR, '');
     this._storage.setItem(Constants.STORAGE.ERROR_DESCRIPTION, '');
 
-    var resource = this._getResourceFromState(requestInfo.stateResponse);
+    var resource = Utils.getResourceFromState(requestInfo.stateResponse);
 
     // Record error
     if (requestInfo.parameters.hasOwnProperty(Constants.ERROR_DESCRIPTION)) {
@@ -892,7 +892,7 @@ export class AuthenticationContext {
         if (requestInfo.parameters.hasOwnProperty(Constants.ACCESS_TOKEN)) {
           this.info('Fragment has access token');
 
-          if (!this._hasResource(resource)) {
+          if (!this._storage.hasResource(resource)) {
             keys = this._storage.getItem(Constants.STORAGE.TOKEN_KEYS) || '';
             this._storage.setItem(Constants.STORAGE.TOKEN_KEYS, keys + resource + Constants.RESOURCE_DELIMETER);
           }
@@ -917,7 +917,7 @@ export class AuthenticationContext {
               // Save idtoken as access token for app itself
               resource = this.config.loginResource ? this.config.loginResource : this.config.clientId;
 
-              if (!this._hasResource(resource)) {
+              if (!this._storage.hasResource(resource)) {
                 keys = this._storage.getItem(Constants.STORAGE.TOKEN_KEYS) || '';
                 this._storage.setItem(Constants.STORAGE.TOKEN_KEYS, keys + resource + Constants.RESOURCE_DELIMETER);
               }

@@ -58,9 +58,9 @@ export class Storage {
     this.setItem(Constants.STORAGE.ERROR, '');
     this.setItem(Constants.STORAGE.ERROR_DESCRIPTION, '');
 
-    if (this._hasResource(resource)) {
+    if (this.hasResource(resource)) {
         this.setItem(Constants.STORAGE.ACCESS_TOKEN_KEY + resource, '');
-        this.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, 0);
+        this.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, '0');
     }
   }
 
@@ -68,7 +68,7 @@ export class Storage {
       return this.getItem(Constants.STORAGE.LOGIN_ERROR);
   }
 
-  private _hasResource(key:string) {
+  hasResource(key:string) {
       var keys = this.getItem(Constants.STORAGE.TOKEN_KEYS);
       return keys && !Utils.isEmpty(keys) && (keys.indexOf(key + Constants.RESOURCE_DELIMETER) > -1);
   }

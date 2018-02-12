@@ -1,13 +1,12 @@
 import { AdalConfig } from "./adalConfig";
 import { User } from "./user";
 import { Constants } from "./Constants";
-import { RequestType } from "./requestType";
-import { ResponseType } from "./responseType";
-import { TokenReceivedCallback } from "./tokenReceivedCallback";
 import { Utils } from "./Utils";
 import { TokenResponse } from "./RequestInfo";
 import { Storage } from "./Storage";
 import { Logging } from "./logging";
+
+export type TokenReceivedCallback = (errorDesc: string, token: string, error: string, tokenType?: string) => void;
 
 export class AuthenticationContext {
   public instance: string = 'https://login.microsoftonline.com/';
@@ -24,7 +23,7 @@ export class AuthenticationContext {
   private _callBackMappedToRenewStates = {};
   private _callBacksMappedToRenewStates = {};
   private _openedWindows: any = []; // <=====================
-  private _requestType: string = RequestType.LOGIN;
+  private _requestType: string = Constants.REQUEST_TYPE.LOGIN;
   private _idTokenNonce: string;
   private _storage: Storage;
 
@@ -258,14 +257,14 @@ export class AuthenticationContext {
     hash = this.getHash(hash);
     const parameters = Utils.deserialize(hash);
     return (
-      parameters.hasOwnProperty(Constants.errorDescription) ||
-      parameters.hasOwnProperty(Constants.error) ||
-      parameters.hasOwnProperty(Constants.accessToken) ||
-      parameters.hasOwnProperty(Constants.idToken)
-
+        parameters.hasOwnProperty(Constants.ERROR_DESCRIPTION) ||
+        parameters.hasOwnProperty(Constants.ERROR) ||
+        parameters.hasOwnProperty(Constants.ACCESS_TOKEN) ||
+        parameters.hasOwnProperty(Constants.ID_TOKEN)
     );
   }
 
+  // different from msal
   /*
   * Creates a requestInfo object from the URL fragment and returns it.
   * @param {string} hash  -  Hash passed from redirect page
@@ -278,11 +277,11 @@ export class AuthenticationContext {
     const parameters = Utils.deserialize(hash);
     const tokenResponse = new TokenResponse();
     if (parameters) {
-      tokenResponse.parameters = parameters;
-      if (parameters.hasOwnProperty(Constants.errorDescription) ||
-        parameters.hasOwnProperty(Constants.error) ||
-        parameters.hasOwnProperty(Constants.accessToken) ||
-        parameters.hasOwnProperty(Constants.idToken)) {
+        tokenResponse.parameters = parameters;
+        if (parameters.hasOwnProperty(Constants.ERROR_DESCRIPTION) ||
+            parameters.hasOwnProperty(Constants.ERROR) ||
+            parameters.hasOwnProperty(Constants.ACCESS_TOKEN) ||
+            parameters.hasOwnProperty(Constants.ID_TOKEN)) {
         tokenResponse.valid = true;
         // which call
         let stateResponse: string;
@@ -295,31 +294,20 @@ export class AuthenticationContext {
         tokenResponse.stateResponse = stateResponse;
         // async calls can fire iframe and login request at the same time if developer does not use the API as expected
         // incoming callback needs to be looked up to find the request type
-        if (stateResponse === this._storage.getItem(Constants.stateLogin)) { // loginRedirect
-          tokenResponse.requestType = Constants.login;
-          tokenResponse.stateMatch = true;
-          return tokenResponse;
-        } else if (stateResponse === this._storage.getItem(Constants.stateAcquireToken)) { //acquireTokenRedirect
-          tokenResponse.requestType = Constants.renewToken;
-          tokenResponse.stateMatch = true;
-          return tokenResponse;
+        if (this._matchState(tokenResponse)) { // loginRedirect or acquireTokenRedirect
+            return tokenResponse;
         }
 
         // external api requests may have many renewtoken requests for different resource
-        if (!tokenResponse.stateMatch) {
-          if (window.parent && window.parent !== window) {
-            tokenResponse.requestType = Constants.renewToken;
-          }
-          else {
+        if (!tokenResponse.stateMatch && window.parent) {
             tokenResponse.requestType = this._requestType;
-          }
-          const statesInParentContext = this._renewStates;
-          for (let i = 0; i < statesInParentContext.length; i++) {
-            if (statesInParentContext[i] === tokenResponse.stateResponse) {
-              tokenResponse.stateMatch = true;
-              break;
+            var statesInParentContext = this._renewStates;
+            for (var i = 0; i < statesInParentContext.length; i++) {
+                if (statesInParentContext[i] === tokenResponse.stateResponse) {
+                    tokenResponse.stateMatch = true;
+                    break;
+                }
             }
-          }
         }
       }
     }

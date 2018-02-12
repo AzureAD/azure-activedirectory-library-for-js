@@ -43,5 +43,14 @@ export const Constants = {
         3: 'VERBOSE:'
     },
     POPUP_WIDTH: 483,
-    POPUP_HEIGHT: 600
+    POPUP_HEIGHT: 600,
+    REQUEST_TYPE: {
+        LOGIN: 'LOGIN',
+        RENEW_TOKEN: 'RENEW_TOKEN',
+        UNKNOWN: 'UNKNOWN'
+    },
+    RESPONSE_TYPE: {
+        ID_TOKEN_TOKEN: 'id_token token',
+        TOKEN: 'token'
+    }
 };

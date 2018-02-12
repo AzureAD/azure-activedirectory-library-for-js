@@ -1,4 +1,4 @@
-import { TokenReceivedCallback } from "./tokenReceivedCallback";
+import { TokenReceivedCallback } from "./Callback";
 
 export class AdalConfig {
   public tenant: string;
@@ -20,6 +20,8 @@ export class AdalConfig {
   public loginResource: string;
   public callback: TokenReceivedCallback = null;
   public state: string;
+  public extraQueryParameter: string;
+  public logOutUri: string;
 
   constructor(config : AdalConfig) {
 

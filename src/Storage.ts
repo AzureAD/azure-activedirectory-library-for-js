@@ -1,13 +1,6 @@
 import { Constants } from "./Constants";
 import { Utils } from "./Utils";
 
-declare global {
-    interface Window {
-        callBackMappedToRenewStates: Object;
-        callBacksMappedToRenewStates: Object;
-    }
-}
-
 export class Storage {
 
   private static _instance: Storage;

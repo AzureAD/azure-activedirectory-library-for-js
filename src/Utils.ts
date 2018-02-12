@@ -228,4 +228,12 @@ export class Utils {
     extractedUri = extractedUri.split('/')[0];
     return extractedUri;
   }
+
+  static getLibMetadata() {
+      return '&x-client-SKU=Js&x-client-Ver=' + Utils.getLibVersion();
+  }
+
+  static getLibVersion() {
+      return "1.0.16";
+  }
 }

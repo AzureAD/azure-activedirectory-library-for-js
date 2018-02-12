@@ -5,7 +5,13 @@ import { Utils } from "./Utils";
 import { TokenResponse } from "./RequestInfo";
 import { Storage } from "./Storage";
 import { Logging } from "./Logging";
-import { TokenReceviedCallback, UserCallback } from "/.Callback";
+import { TokenReceivedCallback, UserCallback } from "./Callback";
+
+declare global {
+    interface Window {
+        _adalInstance: AuthenticationContext;
+    }
+}
 
 export class AuthenticationContext {
   public instance: string = 'https://login.microsoftonline.com/';
@@ -27,8 +33,6 @@ export class AuthenticationContext {
   private _storage: Storage;
 
   private static _singletonInstance: AuthenticationContext = null;
-
-  //window._adalInstance = this;   //  <===================
 
   constructor(config: AdalConfig) {
     if (AuthenticationContext._singletonInstance != null)
@@ -82,6 +86,8 @@ export class AuthenticationContext {
     }
 
     this._storage = new Storage(this.config.cacheLocation);
+
+    window._adalInstance = this;
 
     // if (typeof window !== 'undefined') {
     //     window.Logging = {
@@ -332,7 +338,7 @@ export class AuthenticationContext {
     return this._loginInProgress;
   }
 
-  private _serialize(responseType:string, obj:object, resource:string) {
+  private _serialize(responseType: string, obj: AdalConfig, resource: string) {
     var str = [];
 
     if (obj !== null) {
@@ -353,7 +359,7 @@ export class AuthenticationContext {
             str.push(obj.extraQueryParameter);
         }
 
-        var correlationId = obj.correlationId ? obj.correlationId : this._guid();
+        var correlationId = obj.correlationId ? obj.correlationId : Utils.createNewGuid();
         str.push('client-request-id=' + encodeURIComponent(correlationId));
     }
 
@@ -378,7 +384,7 @@ export class AuthenticationContext {
     }
   }
 
-  private _loginPopup(urlNavigate:string, resource:string, callback) {
+  private _loginPopup(urlNavigate: string, resource: string, callback: TokenReceivedCallback) {
     var popupWindow = this._openPopup(urlNavigate, "login", Constants.POPUP_WIDTH, Constants.POPUP_HEIGHT);
     var loginCallback = callback || this.callback;
 
@@ -406,7 +412,7 @@ export class AuthenticationContext {
         var errorDesc = 'Popup Window closed by UI action/ Popup Window handle destroyed due to cross zone navigation in IE/Edge'
 
         if (that.isAngular) {
-          that._broadcast('adal:popUpClosed', errorDesc + that.Constants.RESOURCE_DELIMETER + error);
+          that._broadcast('adal:popUpClosed', errorDesc + Constants.RESOURCE_DELIMETER + error);
         }
 
         that._handlePopupError(loginCallback, resource, error, errorDesc, errorDesc);
@@ -470,7 +476,7 @@ export class AuthenticationContext {
     // If expiration is within offset, it will force renew
     var offset = this.config.expireOffsetSeconds || 300;
 
-    if (expiry && (expiry > this._now() + offset)) {
+    if (expiry && (parseInt(expiry,10) > Utils.now() + offset)) {
       return token;
     } else {
       this._storage.setItem(Constants.STORAGE.ACCESS_TOKEN_KEY + resource, '');
@@ -485,7 +491,7 @@ export class AuthenticationContext {
     }
 
     var idtoken = this._storage.getItem(Constants.STORAGE.IDTOKEN);
-    this._user = this._createUser(idtoken);
+    this._user = User.createUser(idtoken);
     return this._user;
   }
 
@@ -518,22 +524,22 @@ export class AuthenticationContext {
     }
   }
 
-  private _renewToken(resource:string, callback:tokenReceivedCallback, responseType:string) {
+  private _renewToken(resource:string, callback:TokenReceivedCallback, responseType?:string) {
     // use iframe to try refresh token
     // use given resource to create new authz url
     this.info('renewToken is called for resource:' + resource);
     var frameHandle = this._addAdalFrame('adalRenewFrame' + resource);
-    var expectedState = this._guid() + '|' + resource;
+    var expectedState = Utils.createNewGuid() + '|' + resource;
     this.config.state = expectedState;
     // renew happens in iframe, so it keeps javascript context
     this._renewStates.push(expectedState);
     this.verbose('Renew token Expected state: ' + expectedState);
     // remove the existing prompt=... query parameter and add prompt=none
     responseType = responseType || 'token';
-    var urlNavigate = this._urlRemoveQueryStringParameter(this._getNavigateUrl(responseType, resource), 'prompt');
+    var urlNavigate = Utils.urlRemoveQueryStringParameter(this._getNavigateUrl(responseType, resource), 'prompt');
 
-    if (responseType === this.RESPONSE_TYPE.ID_TOKEN_TOKEN) {
-      this._idTokenNonce = this._guid();
+    if (responseType === Constants.RESPONSE_TYPE.ID_TOKEN_TOKEN) {
+        this._idTokenNonce = Utils.createNewGuid();
       this._storage.setItem(Constants.STORAGE.NONCE_IDTOKEN, this._idTokenNonce, true);
       urlNavigate += '&nonce=' + encodeURIComponent(this._idTokenNonce);
     }
@@ -546,12 +552,12 @@ export class AuthenticationContext {
     this._loadFrameTimeout(urlNavigate, 'adalRenewFrame' + resource, resource);
   }
 
-  private _renewIdToken(callback:tokenReceivedCallback, responseType:string) {
+  private _renewIdToken(callback:TokenReceivedCallback, responseType?:string) {
     // use iframe to try refresh token
     this.info('renewIdToken is called');
     var frameHandle = this._addAdalFrame('adalIdTokenFrame');
-    var expectedState = this._guid() + '|' + this.config.clientId;
-    this._idTokenNonce = this._guid();
+    var expectedState = Utils.createNewGuid() + '|' + this.config.clientId;
+    this._idTokenNonce = Utils.createNewGuid();
     this._storage.setItem(Constants.STORAGE.NONCE_IDTOKEN, this._idTokenNonce, true);
     this.config.state = expectedState;
     // renew happens in iframe, so it keeps javascript context
@@ -560,7 +566,7 @@ export class AuthenticationContext {
     // remove the existing prompt=... query parameter and add prompt=none
     var resource = responseType === null || typeof (responseType) === "undefined" ? null : this.config.clientId;
     var responseType = responseType || 'id_token';
-    var urlNavigate = this._urlRemoveQueryStringParameter(this._getNavigateUrl(responseType, resource), 'prompt');
+    var urlNavigate = Utils.urlRemoveQueryStringParameter(this._getNavigateUrl(responseType, resource), 'prompt');
     urlNavigate = urlNavigate + '&prompt=none';
     urlNavigate = this._addHintParameters(urlNavigate);
     urlNavigate += '&nonce=' + encodeURIComponent(this._idTokenNonce);
@@ -592,8 +598,8 @@ export class AuthenticationContext {
     }, Constants.LOADFRAME_TIMEOUT);
   }
 
-  acquireToken(resource:string, callback:tokenReceivedCallback) {
-    if (this._isEmpty(resource)) {
+  acquireToken(resource: string, callback: TokenReceivedCallback) {
+      if (Utils.isEmpty(resource)) {
       this.warn('resource is required');
       callback('resource is required', null, 'resource is required');
       return;
@@ -620,7 +626,7 @@ export class AuthenticationContext {
       this.registerCallback(this._activeRenewals[resource], resource, callback);
     }
     else {
-      this._requestType = this.REQUEST_TYPE.RENEW_TOKEN;
+        this._requestType = Constants.REQUEST_TYPE.RENEW_TOKEN;
       if (resource === this.config.clientId) {
         // App uses idtoken to send to api endpoints
         // Default resource is tracked as clientid to store this token
@@ -630,7 +636,7 @@ export class AuthenticationContext {
         }
         else {
           this.verbose('renewing idtoken and access_token');
-          this._renewIdToken(callback, this.RESPONSE_TYPE.ID_TOKEN_TOKEN);
+          this._renewIdToken(callback, Constants.RESPONSE_TYPE.ID_TOKEN_TOKEN);
         }
       } else {
         if (this._user) {
@@ -639,14 +645,14 @@ export class AuthenticationContext {
         }
         else {
           this.verbose('renewing idtoken and access_token');
-          this._renewToken(resource, callback, this.RESPONSE_TYPE.ID_TOKEN_TOKEN);
+          this._renewToken(resource, callback, Constants.RESPONSE_TYPE.ID_TOKEN_TOKEN);
         }
       }
     }
   }
 
-  acquireTokenPopup(resource:string, extraQueryParameters, claims, callback) {
-    if (this._isEmpty(resource)) {
+  acquireTokenPopup(resource: string, extraQueryParameters, claims, callback) {
+      if (Utils.isEmpty(resource)) {
       this.warn('resource is required');
       callback('resource is required', null, 'resource is required');
       return;
@@ -664,13 +670,13 @@ export class AuthenticationContext {
       return;
     }
 
-    var expectedState = this._guid() + '|' + resource;
+    var expectedState = Utils.createNewGuid() + '|' + resource;
     this.config.state = expectedState;
     this._renewStates.push(expectedState);
-    this._requestType = this.REQUEST_TYPE.RENEW_TOKEN;
+    this._requestType = Constants.REQUEST_TYPE.RENEW_TOKEN;
     this.verbose('Renew token Expected state: ' + expectedState);
     // remove the existing prompt=... query parameter and add prompt=select_account
-    var urlNavigate = this._urlRemoveQueryStringParameter(this._getNavigateUrl('token', resource), 'prompt');
+    var urlNavigate = Utils.urlRemoveQueryStringParameter(this._getNavigateUrl('token', resource), 'prompt');
     urlNavigate = urlNavigate + '&prompt=select_account';
 
     if (extraQueryParameters) {
@@ -692,7 +698,7 @@ export class AuthenticationContext {
   }
 
   acquireTokenRedirect(resource:string, extraQueryParameters, claims) {
-    if (this._isEmpty(resource)) {
+    if (Utils.isEmpty(resource)) {
       this.warn('resource is required');
       callback('resource is required', null, 'resource is required');
       return;
@@ -712,12 +718,12 @@ export class AuthenticationContext {
       return;
     }
 
-    var expectedState = this._guid() + '|' + resource;
+    var expectedState = Utils.createNewGuid() + '|' + resource;
     this.config.state = expectedState;
     this.verbose('Renew token Expected state: ' + expectedState);
 
     // remove the existing prompt=... query parameter and add prompt=select_account
-    var urlNavigate = this._urlRemoveQueryStringParameter(this._getNavigateUrl('token', resource), 'prompt');
+    var urlNavigate = Utils.urlRemoveQueryStringParameter(this._getNavigateUrl('token', resource), 'prompt');
     urlNavigate = urlNavigate + '&prompt=select_account';
     if (extraQueryParameters) {
       urlNavigate += extraQueryParameters;
@@ -739,7 +745,7 @@ export class AuthenticationContext {
   }
 
   logOut() {
-    this.clearCache();
+    this._storage.clearCache();
     this._user = null;
     var urlNavigate;
 
@@ -764,7 +770,7 @@ export class AuthenticationContext {
     this.promptUser(urlNavigate);
   }
 
-  getUser(callback:tokenReceivedCallback) {
+  getUser(callback: UserCallback) {
     // IDToken is first call
     if (typeof callback !== 'function') {
       throw new Error('callback is not a function');
@@ -779,9 +785,9 @@ export class AuthenticationContext {
     // frame is used to get idtoken
     var idtoken = this._storage.getItem(Constants.STORAGE.IDTOKEN);
 
-    if (!this._isEmpty(idtoken)) {
+    if (!Utils.isEmpty(idtoken)) {
       this.info('User exists in cache: ');
-      this._user = this._createUser(idtoken);
+      this._user = User.createUser(idtoken);
       callback(null, this._user);
     } else {
       this.warn('User information is not available');
@@ -794,13 +800,13 @@ export class AuthenticationContext {
     if (this._user && this._user.profile && this._user.profile.hasOwnProperty('upn')) {
 
       // don't add login_hint twice if user provided it in the extraQueryParameter value
-      if (!this._urlContainsQueryStringParameter("login_hint", urlNavigate)) {
+      if (!Utils.urlContainsQueryStringParameter("login_hint", urlNavigate)) {
         // add login_hint
         urlNavigate += '&login_hint=' + encodeURIComponent(this._user.profile.upn);
       }
 
       // don't add domain_hint twice if user provided it in the extraQueryParameter value
-      if (!this._urlContainsQueryStringParameter("domain_hint", urlNavigate) && this._user.profile.upn.indexOf('@') > -1) {
+      if (!Utils.urlContainsQueryStringParameter("domain_hint", urlNavigate) && this._user.profile.upn.indexOf('@') > -1) {
         var parts = this._user.profile.upn.split('@');
         // local part can include @ in quotes. Sending last part handles that.
         urlNavigate += '&domain_hint=' + encodeURIComponent(parts[parts.length - 1]);
@@ -814,9 +820,9 @@ export class AuthenticationContext {
     var requestNonce = this._storage.getItem(Constants.STORAGE.NONCE_IDTOKEN);
 
     if (requestNonce) {
-      requestNonce = requestNonce.split(Constants.CACHE_DELIMETER);
-      for (var i = 0; i < requestNonce.length; i++) {
-        if (requestNonce[i] === user.profile.nonce) {
+      var requestNonceArray = requestNonce.split(Constants.CACHE_DELIMETER);
+      for (var i = 0; i < requestNonceArray.length; i++) {
+          if (requestNonceArray[i] === user.profile.nonce) {
           return true;
         }
       }
@@ -829,10 +835,10 @@ export class AuthenticationContext {
     var loginStates = this._storage.getItem(Constants.STORAGE.STATE_LOGIN);
 
     if (loginStates) {
-      loginStates = loginStates.split(Constants.CACHE_DELIMETER);
-      for (var i = 0; i < loginStates.length; i++) {
-        if (loginStates[i] === requestInfo.stateResponse) {
-          requestInfo.requestType = this.REQUEST_TYPE.LOGIN;
+      var loginStatesArray = loginStates.split(Constants.CACHE_DELIMETER);
+      for (var i = 0; i < loginStatesArray.length; i++) {
+        if (loginStatesArray[i] === requestInfo.stateResponse) {
+          requestInfo.requestType = Constants.REQUEST_TYPE.LOGIN;
           requestInfo.stateMatch = true;
           return true;
         }
@@ -842,10 +848,10 @@ export class AuthenticationContext {
     var acquireTokenStates = this._storage.getItem(Constants.STORAGE.STATE_RENEW);
 
     if (acquireTokenStates) {
-      acquireTokenStates = acquireTokenStates.split(Constants.CACHE_DELIMETER);
-      for (var i = 0; i < acquireTokenStates.length; i++) {
-        if (acquireTokenStates[i] === requestInfo.stateResponse) {
-          requestInfo.requestType = this.REQUEST_TYPE.RENEW_TOKEN;
+      var acquireTokenStatesArray = acquireTokenStates.split(Constants.CACHE_DELIMETER);
+      for (var i = 0; i < acquireTokenStatesArray.length; i++) {
+        if (acquireTokenStatesArray[i] === requestInfo.stateResponse) {
+          requestInfo.requestType = Constants.REQUEST_TYPE.RENEW_TOKEN;
           requestInfo.stateMatch = true;
           return true;
         }
@@ -868,7 +874,7 @@ export class AuthenticationContext {
       this._storage.setItem(Constants.STORAGE.ERROR, requestInfo.parameters.error);
       this._storage.setItem(Constants.STORAGE.ERROR_DESCRIPTION, requestInfo.parameters[Constants.ERROR_DESCRIPTION]);
 
-      if (requestInfo.requestType === this.REQUEST_TYPE.LOGIN) {
+      if (requestInfo.requestType === Constants.REQUEST_TYPE.LOGIN) {
         this._loginInProgress = false;
         this._storage.setItem(Constants.STORAGE.LOGIN_ERROR, requestInfo.parameters.error_description);
       }
@@ -893,13 +899,13 @@ export class AuthenticationContext {
 
           // save token with related resource
           this._storage.setItem(Constants.STORAGE.ACCESS_TOKEN_KEY + resource, requestInfo.parameters[Constants.ACCESS_TOKEN]);
-          this._storage.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, this._expiresIn(requestInfo.parameters[Constants.EXPIRES_IN]));
+          this._storage.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, Utils.expiresIn(requestInfo.parameters[Constants.EXPIRES_IN]).toString());
         }
 
         if (requestInfo.parameters.hasOwnProperty(Constants.ID_TOKEN)) {
           this.info('Fragment has id token');
           this._loginInProgress = false;
-          this._user = this._createUser(requestInfo.parameters[Constants.ID_TOKEN]);
+          this._user = User.createUser(requestInfo.parameters[Constants.ID_TOKEN]);
           if (this._user && this._user.profile) {
             if (!this._matchNonce(this._user)) {
               this._storage.setItem(Constants.STORAGE.LOGIN_ERROR, 'Nonce received: ' + this._user.profile.nonce + ' is not same as requested: ' +
@@ -961,7 +967,7 @@ export class AuthenticationContext {
     // App will use idtoken for calls to itself
     // check if it's staring from http or https, needs to match with app host
     if (endpoint.indexOf('http://') > -1 || endpoint.indexOf('https://') > -1) {
-      if (this._getHostFromUri(endpoint) === this._getHostFromUri(this.config.redirectUri)) {
+      if (Utils.getHostFromUri(endpoint) === Utils.getHostFromUri(this.config.redirectUri)) {
         return this.config.loginResource;
       }
     }
@@ -1008,7 +1014,7 @@ export class AuthenticationContext {
       self.info("Returned from redirect url");
       self.saveTokenFromHash(requestInfo);
 
-      if ((requestInfo.requestType === this.REQUEST_TYPE.RENEW_TOKEN) && window.parent) {
+      if ((requestInfo.requestType === Constants.REQUEST_TYPE.RENEW_TOKEN) && window.parent) {
         if (window.parent !== window) {
           self.verbose("Window is in iframe, acquiring token silently");
         } else {
@@ -1017,7 +1023,7 @@ export class AuthenticationContext {
 
         token = requestInfo.parameters[Constants.ACCESS_TOKEN] || requestInfo.parameters[Constants.ID_TOKEN];
         tokenType = Constants.ACCESS_TOKEN;
-      } else if (requestInfo.requestType === this.REQUEST_TYPE.LOGIN) {
+      } else if (requestInfo.requestType === Constants.REQUEST_TYPE.LOGIN) {
         token = requestInfo.parameters[Constants.ID_TOKEN];
         tokenType = Constants.ID_TOKEN;
       }
@@ -1047,7 +1053,7 @@ export class AuthenticationContext {
         tenant = this.config.tenant;
     }
 
-    var urlNavigate = this.instance + tenant + '/oauth2/authorize' + this._serialize(responseType, this.config, resource) + this._addLibMetadata();
+    var urlNavigate = this.instance + tenant + '/oauth2/authorize' + this._serialize(responseType, this.config, resource) + Utils.getLibMetadata();
     this.info('Navigate url:' + urlNavigate);
     return urlNavigate;
   }     

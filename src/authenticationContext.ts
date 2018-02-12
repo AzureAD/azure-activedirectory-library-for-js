@@ -1,12 +1,11 @@
-import { AdalConfig } from "./adalConfig";
-import { User } from "./user";
+import { AdalConfig } from "./AdalConfig";
+import { User } from "./User";
 import { Constants } from "./Constants";
 import { Utils } from "./Utils";
 import { TokenResponse } from "./RequestInfo";
 import { Storage } from "./Storage";
-import { Logging } from "./logging";
-
-export type TokenReceivedCallback = (errorDesc: string, token: string, error: string, tokenType?: string) => void;
+import { Logging } from "./Logging";
+import { TokenReceviedCallback, UserCallback } from "/.Callback";
 
 export class AuthenticationContext {
   public instance: string = 'https://login.microsoftonline.com/';

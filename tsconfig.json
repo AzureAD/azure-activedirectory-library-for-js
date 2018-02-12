@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+	    "suppressImplicitAnyIndexErrors": true,
+        "importHelpers": true,
         "noImplicitAny": true,
         "module": "commonjs",
         "target": "ES5",

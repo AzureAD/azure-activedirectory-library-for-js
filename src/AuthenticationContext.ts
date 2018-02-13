@@ -10,6 +10,10 @@ import { TokenReceivedCallback, UserCallback } from "./Callback";
 declare global {
     interface Window {
         _adalInstance: AuthenticationContext;
+        Logging: {
+            level: number,
+            log: (message: string) => any
+        }
     }
 }
 
@@ -89,12 +93,12 @@ export class AuthenticationContext {
 
     window._adalInstance = this;
 
-    // if (typeof window !== 'undefined') {
-    //     window.Logging = {
-    //         level: 0,
-    //         log: function (message) { }
-    //     };
-    // }
+     if (typeof window !== 'undefined') {
+         window.Logging = {
+             level: 0,
+             log: function (message) { }
+         };
+     }
   }
 
   /**

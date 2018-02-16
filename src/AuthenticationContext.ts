@@ -10,6 +10,7 @@ import { TokenReceivedCallback, UserCallback } from "./Callback";
 declare global {
     interface Window {
         _adalInstance: AuthenticationContext;
+        _logger: Logging;
         Logging: {
             level: number,
             log: (message: string) => any
@@ -93,6 +94,7 @@ export class AuthenticationContext {
     this._storage = new Storage(this.config.cacheLocation);
 
     this._logger = new Logging(this.config);
+    window._logger = this._logger;
 
     window._adalInstance = this;
 
@@ -358,11 +360,11 @@ export class AuthenticationContext {
         str.push('redirect_uri=' + encodeURIComponent(obj.redirectUri));
         str.push('state=' + encodeURIComponent(obj.state));
 
-        if (obj.hasOwnProperty('slice')) {
+        if (obj['slice']) {
             str.push('slice=' + encodeURIComponent(obj.slice));
         }
 
-        if (obj.hasOwnProperty('extraQueryParameter')) {
+        if (obj['extraQueryParameter']) {
             str.push(obj.extraQueryParameter);
         }
 
@@ -373,7 +375,7 @@ export class AuthenticationContext {
     return str.join('&');
   };
 
-  private _handlePopupError(loginCallback, resource:string, error, errorDesc, loginError) {
+  private _handlePopupError(loginCallback: TokenReceivedCallback, resource: string, error: string, errorDesc: string, loginError: string) {
     this._logger.warn(errorDesc);
     this._storage.setItem(Constants.STORAGE.ERROR, error);
     this._storage.setItem(Constants.STORAGE.ERROR_DESCRIPTION, errorDesc);
@@ -487,7 +489,7 @@ export class AuthenticationContext {
       return token;
     } else {
       this._storage.setItem(Constants.STORAGE.ACCESS_TOKEN_KEY + resource, '');
-      this._storage.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, 0);
+      this._storage.setItem(Constants.STORAGE.EXPIRATION_KEY + resource, '0');
       return null;
     }
   }
@@ -502,7 +504,7 @@ export class AuthenticationContext {
     return this._user;
   }
 
-  registerCallback(expectedState:string, resource:string, callback) {
+  registerCallback(expectedState: string, resource: string, callback: TokenReceivedCallback) {
     this._activeRenewals[resource] = expectedState;
 
     if (!this._callBacksMappedToRenewStates[expectedState]) {
@@ -513,7 +515,7 @@ export class AuthenticationContext {
     this._callBacksMappedToRenewStates[expectedState].push(callback);
 
     if (!this._callBackMappedToRenewStates[expectedState]) {
-      this._callBackMappedToRenewStates[expectedState] = function (errorDesc, token, error, tokenType) {
+      this._callBackMappedToRenewStates[expectedState] = function (errorDesc: string, token: string, error: string, tokenType: string) {
         self._activeRenewals[resource] = null;
 
         for (var i = 0; i < self._callBacksMappedToRenewStates[expectedState].length; ++i) {
@@ -583,7 +585,7 @@ export class AuthenticationContext {
     this._loadFrameTimeout(urlNavigate, 'adalIdTokenFrame', this.config.clientId);
   }
 
-  private _loadFrameTimeout(urlNavigation:string, frameName, resource:string) {
+  private _loadFrameTimeout(urlNavigation: string, frameName: string, resource: string) {
     //set iframe session to pending
     this._logger.verbose('Set loading state to pending for: ' + resource);
     this._storage.setItem(Constants.STORAGE.RENEW_STATUS + resource, Constants.TOKEN_RENEW_STATUS_IN_PROGRESS);
@@ -658,7 +660,7 @@ export class AuthenticationContext {
     }
   }
 
-  acquireTokenPopup(resource: string, extraQueryParameters, claims, callback) {
+  acquireTokenPopup(resource: string, extraQueryParameters: string, claims, callback: TokenReceivedCallback) {
       if (Utils.isEmpty(resource)) {
       this._logger.warn('resource is required');
       callback('resource is required', null, 'resource is required');
@@ -704,7 +706,7 @@ export class AuthenticationContext {
     this._loginPopup(urlNavigate, resource, callback);
   }
 
-  acquireTokenRedirect(resource:string, extraQueryParameters, claims) {
+  acquireTokenRedirect(resource: string, extraQueryParameters: string, claims) {
     if (Utils.isEmpty(resource)) {
       this._logger.warn('resource is required');
       callback('resource is required', null, 'resource is required');
@@ -823,7 +825,7 @@ export class AuthenticationContext {
     return urlNavigate;
   }
 
-  private _matchNonce(user) {
+  private _matchNonce(user: User) {
     var requestNonce = this._storage.getItem(Constants.STORAGE.NONCE_IDTOKEN);
 
     if (requestNonce) {
@@ -838,7 +840,7 @@ export class AuthenticationContext {
     return false;
   }
 
-  private _matchState(requestInfo) {
+  private _matchState(requestInfo: TokenResponse) {
     var loginStates = this._storage.getItem(Constants.STORAGE.STATE_LOGIN);
 
     if (loginStates) {
@@ -868,7 +870,7 @@ export class AuthenticationContext {
     return false;
   }
 
-  saveTokenFromHash(requestInfo) {
+  saveTokenFromHash(requestInfo: TokenResponse) {
     this._logger.info('State status:' + requestInfo.stateMatch + '; Request type:' + requestInfo.requestType);
     this._storage.setItem(Constants.STORAGE.ERROR, '');
     this._storage.setItem(Constants.STORAGE.ERROR_DESCRIPTION, '');
@@ -876,14 +878,14 @@ export class AuthenticationContext {
     var resource = Utils.getResourceFromState(requestInfo.stateResponse);
 
     // Record error
-    if (requestInfo.parameters.hasOwnProperty(Constants.ERROR_DESCRIPTION)) {
-      this._logger.info('Error :' + requestInfo.parameters.error + '; Error description:' + requestInfo.parameters[Constants.ERROR_DESCRIPTION]);
-      this._storage.setItem(Constants.STORAGE.ERROR, requestInfo.parameters.error);
+    if (requestInfo.parameters.hasOwnProperty(Constants.ERROR_DESCRIPTION) || requestInfo.parameters.hasOwnProperty(Constants.ERROR)) {
+      this._logger.info('Error :' + requestInfo.parameters[Constants.ERROR] + '; Error description:' + requestInfo.parameters[Constants.ERROR_DESCRIPTION]);
+      this._storage.setItem(Constants.STORAGE.ERROR, requestInfo.parameters[Constants.ERROR]);
       this._storage.setItem(Constants.STORAGE.ERROR_DESCRIPTION, requestInfo.parameters[Constants.ERROR_DESCRIPTION]);
 
       if (requestInfo.requestType === Constants.REQUEST_TYPE.LOGIN) {
         this._loginInProgress = false;
-        this._storage.setItem(Constants.STORAGE.LOGIN_ERROR, requestInfo.parameters.error_description);
+        this._storage.setItem(Constants.STORAGE.LOGIN_ERROR, requestInfo.parameters[Constants.ERROR_DESCRIPTION]);
       }
     } else {
       // It must verify the state from redirect
@@ -951,7 +953,7 @@ export class AuthenticationContext {
     this._storage.setItem(Constants.STORAGE.RENEW_STATUS + resource, Constants.TOKEN_RENEW_STATUS_COMPLETED);
   }
 
-  getResourceForEndpoint(endpoint) {
+  getResourceForEndpoint(endpoint: string) {
     // if user specified list of anonymous endpoints, no need to send token to these endpoints, return null.
     if (this.config && this.config.anonymousEndpoints) {
       for (var i = 0; i < this.config.anonymousEndpoints.length; i++) {

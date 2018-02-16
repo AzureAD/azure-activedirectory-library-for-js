@@ -22,6 +22,7 @@ export class AdalConfig {
   public state: string;
   public extraQueryParameter: string;
   public logOutUri: string;
+  public slice: string;
 
   constructor(config : AdalConfig) {
 

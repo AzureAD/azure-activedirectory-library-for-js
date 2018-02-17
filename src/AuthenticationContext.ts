@@ -8,14 +8,16 @@ import { Logging } from "./Logging";
 import { TokenReceivedCallback, UserCallback } from "./Callback";
 
 declare global {
-    interface Window {
-        _adalInstance: AuthenticationContext;
-        _logger: Logging;
-        Logging: {
-            level: number,
-            log: (message: string) => any
-        }
-    }
+  interface Window {
+    _adalInstance: AuthenticationContext;
+    _logger: Logging;
+    Logging: {
+      level: number,
+      log: (message: string) => any
+    },
+    CustomEvent: any,
+    Event: any
+  }
 }
 
 export class AuthenticationContext {
@@ -451,7 +453,7 @@ export class AuthenticationContext {
     }, 1);
   }
 
-  private _broadcast(eventName, data) {
+  private _broadcast(eventName: any, data: any) {
     // Custom Event is not supported in IE, below IIFE will polyfill the CustomEvent() constructor functionality in Internet Explorer 9 and higher
     (function () {
 
@@ -459,7 +461,7 @@ export class AuthenticationContext {
             return false;
         }
 
-        function CustomEvent(event, params) {
+        function CustomEvent(event: any, params: any) {
             params = params || { bubbles: false, cancelable: false, detail: undefined };
             var evt = document.createEvent('CustomEvent');
             evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
@@ -660,7 +662,7 @@ export class AuthenticationContext {
     }
   }
 
-  acquireTokenPopup(resource: string, extraQueryParameters: string, claims, callback: TokenReceivedCallback) {
+  acquireTokenPopup(resource: string, extraQueryParameters: string, claims: string, callback: TokenReceivedCallback) {
       if (Utils.isEmpty(resource)) {
       this._logger.warn('resource is required');
       callback('resource is required', null, 'resource is required');
@@ -706,7 +708,7 @@ export class AuthenticationContext {
     this._loginPopup(urlNavigate, resource, callback);
   }
 
-  acquireTokenRedirect(resource: string, extraQueryParameters: string, claims) {
+  acquireTokenRedirect(resource: string, extraQueryParameters: string, claims: string) {
     if (Utils.isEmpty(resource)) {
       this._logger.warn('resource is required');
       callback('resource is required', null, 'resource is required');

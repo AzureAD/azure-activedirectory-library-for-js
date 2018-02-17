@@ -1068,8 +1068,8 @@ export class AuthenticationContext {
     this._logger.info('Navigate url:' + urlNavigate);
     return urlNavigate;
   }     
-      
-  private _cloneConfig(obj:object) {
+
+  private _cloneConfig(obj: Object) {
     if (null === obj || 'object' !== typeof obj) {
       return obj;
     }

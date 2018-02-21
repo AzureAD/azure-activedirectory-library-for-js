@@ -1,3 +1,4 @@
+var path = require("path");
 
 module.exports = {
     entry: "./src/index.ts",
@@ -8,8 +9,13 @@ module.exports = {
         // Name of the generated global.
         library: 'adaljs'
     },
+	
+	dependencies: [
+        path.join(__dirname, "..")
+    ],
 
     resolve: {
+
 
         /*
          * An array of extensions that should be used to resolve modules.

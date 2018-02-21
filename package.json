@@ -13,6 +13,9 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "report-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
   "devDependencies": {
     "@types/jasmine": "^2.2.33",
     "@types/js-base64": "^2.1.3",

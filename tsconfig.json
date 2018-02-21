@@ -4,7 +4,7 @@
         "importHelpers": true,
         "noImplicitAny": true,
         "module": "commonjs",
-        "target": "ES5",
+        "target": "es5",
         "outDir": "dist/",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -16,7 +16,8 @@
             "es2015.promise",
             "es5"
         ],
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+		"typeRoots": [ "../node_modules/@types" ]
     },
     "exclude": [
         "node_modules"

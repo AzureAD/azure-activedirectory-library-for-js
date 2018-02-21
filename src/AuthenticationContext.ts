@@ -93,6 +93,8 @@ export class AuthenticationContext {
       Constants.LOADFRAME_TIMEOUT = this.config.loadFrameTimeout;
     }
 
+	if (!this.config.cacheLocation)
+		this.config.cacheLocation = "sessionStorage";
     this._storage = new Storage(this.config.cacheLocation);
 
     this._logger = new Logging(this.config);

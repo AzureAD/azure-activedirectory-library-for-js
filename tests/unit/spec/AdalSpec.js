@@ -1056,4 +1056,23 @@ describe('Adal', function () {
         newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
         expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
     })
+
+    it('checks Logger to see if pii messages are logged when piiLogging is disabled by the developer', function () {
+        Logging.level = 2;//error, warning, info, verbose
+        Logging.log = function (message) {
+            window.logMessage = message;
+        }
+        adal.promptUser("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=token&state=9ff87e68-76a6-4537-9b2a-9313da6c576b&nonce=d503ae2c-51fc-447b-8b44-a0aed28033b8");
+
+        expect(window.logMessage).toEqual(null);
+        expect(Logging.level).toEqual(2);
+
+        Logging.piiLoggingEnabled = true;
+        adal.promptUser("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=token&state=9ff87e68-76a6-4537-9b2a-9313da6c576b&nonce=d503ae2c-51fc-447b-8b44-a0aed28033b8");
+
+        expect(window.logMessage).toContain("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=token&state=9ff87e68-76a6-4537-9b2a-9313da6c576b&nonce=d503ae2c-51fc-447b-8b44-a0aed28033b8");
+        expect(Logging.level).toEqual(2);
+        Logging.piiLoggingEnabled = false;
+       
+    })
 });

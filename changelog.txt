@@ -1,3 +1,10 @@
+Version 1.0.17
+=========================
+* Added sid support. When the session id parameter is provided in the id_token, use that instead of the upn
+* Add GDPR compliant logging. You can now set a flag piiLoggingEnabled by calling Logging.piiLoggingEnabled = true which when set, Adal JS will not log messages that contain the user's personal identifier.
+* Removed const keyword to support ES5 compatibility.
+* Other bug fixes and updates
+
 Version 1.0.16
 =========================
 * Added ability to login in multiple tabs simultaneously when using localStorage where data is shared across tabs. Please see this: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/639.

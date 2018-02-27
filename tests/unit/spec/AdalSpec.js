@@ -1056,7 +1056,31 @@ describe('Adal', function () {
         newUrl = adal._urlRemoveQueryStringParameter(url, 'prompt');
         expect(newUrl).toBe('https://login.onmicrosoft.com?client_id=12345&response_type=id_token');
     })
+  
+    it('to add sid=<sid value> instead of login_hint=<upn value> if sid is present in the id_token response received from the server ', function () {
+        //If you don�t use prompt=none, then if the session does not exist, there will be a failure.
+        //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
+        //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
+        var url = 'https://login.onmicrosoft.com&prompt=none'; // add sid if prompt=none and user.profile has sid
+        adal._user = { 
+            profile: {
+                sid: '123',
+                upn:'123@xxx.onmicrosoft.com'
+            }
+        }
+        var newUrl = adal._addHintParameters(url);
+        expect(newUrl).toBe('https://login.onmicrosoft.com&prompt=none' + '&sid=' + encodeURIComponent(adal._user.profile.sid));
 
+        var url = 'https://login.onmicrosoft.com'; //  if prompt!==none, do not add sid
+        adal._user.profile = {
+                sid: '123',
+                upn: '123@xxx.onmicrosoft.com'
+        }
+        var newUrl = adal._addHintParameters(url);
+        expect(newUrl).toBe('https://login.onmicrosoft.com' + '&login_hint=' + encodeURIComponent(adal._user.profile.upn) + '&domain_hint=' + encodeURIComponent(adal._user.profile.upn.split('@')[1]));
+        adal._user = null;
+    })
+  
     it('checks Logger to see if pii messages are logged when piiLogging is disabled by the developer', function () {
         Logging.level = 2;//error, warning, info, verbose
         Logging.log = function (message) {
@@ -1073,6 +1097,5 @@ describe('Adal', function () {
         expect(window.logMessage).toContain("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?response_type=token&state=9ff87e68-76a6-4537-9b2a-9313da6c576b&nonce=d503ae2c-51fc-447b-8b44-a0aed28033b8");
         expect(Logging.level).toEqual(2);
         Logging.piiLoggingEnabled = false;
-       
     })
 });

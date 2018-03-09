@@ -236,13 +236,28 @@ Log levels are mapped as:
     3: Verbose
 
 You can add the code below to app.js to turn on logging. Implement the `log` method depending on how you want to redirect logs.
+```javascript
+Logging = {
+    level: 3,
+    log: function (message) {
+        console.log(message);
+    },
+    piiLoggingEnabled: false
+};
+```
+#### Personal Identifiable Information (PII) & Organizational Identifiable Information (OII)
 
-    Logging = {
-        level: 3,
-        log: function (message) {
-            console.log(message);
-        }
-    };
+By default, ADAL logging does not capture or log any PII or OII. The library allows app developers to turn this on by configuring the `piiLoggingEnabled` flag on the log context. By turning on PII or OII, the app takes responsibility for safely handling highly-sensitive data and complying with any regulatory requirements.
+
+```javascript
+//PII or OII logging disabled. Default Logger does not capture any PII or OII
+Logging.piiLoggingEnabled = false
+    
+//PII or OII logging enabled
+Logging.piiLoggingEnabled = true
+
+```
+
 
 ### Security
 Tokens are accessible from JavaScript since ADAL.JS is using HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should prompt users to login again for important operations on your app.

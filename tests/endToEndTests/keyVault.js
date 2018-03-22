@@ -2,9 +2,9 @@
 var KeyVault = require('azure-keyvault');
 var AuthenticationContext = require('adal-node').AuthenticationContext;
 
-var clientId = process.env.KEY_VAULT_CLIENT_ID;
-var clientSecret = process.env.KEY_VAULT_CLIENT_SECRET;
-var vaultUri = "https://ADALTestInfo.vault.azure.net";
+var clientId = "c1152cc3-3be9-4556-8204-d7a238657c15";
+var clientSecret = process.env.rohitsecret;
+var vaultUri = "https://rohitjs.vault.azure.net";
 
 // Authenticator - retrieves the access token 
 var authenticator = function (challenge, callback) {

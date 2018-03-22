@@ -2,7 +2,7 @@
 describe('E2ETests', function () {
 
     var keyVault = require('./keyVault');
-    var passworkKey = 'MSIDLAB5-manNonMFA1';
+    var passworkKey = 'password';
     keyVault.getSecret(passworkKey, function (result) {
         settings.password = result.value;
     });
@@ -36,10 +36,10 @@ describe('E2ETests', function () {
     var settings = {
         appUrl: 'http://adaljsspa.azurewebsites.net/',
         instance: 'https://login.microsoftonline.com',
-        tenant: 'd34a1bb7-3481-4d5f-8b94-f3cc27bf8eac',
+        tenant: 'rohit1.onmicrosoft.com',
         urlNavigate: this.instance + this.tenant + '/oauth2/authorize',
-        assignedUser: 'manNonMFA1@msidlab5.onmicrosoft.com',
-        unassignedUser: 'adaljstestuser1@rohit1.onmicrosoft.com',
+        assignedUser: 'poker20@rohit1.onmicrosoft.com',
+        unassignedUser: 'poker20@rohit1.onmicrosoft.com',
         clientID: '3f4adad0-057c-47f4-99f1-6e2e78ad4f8e',
         AppIdExternalApi: 'c22b3114-88ce-48fc-b728-3591a2e420a6',
     };

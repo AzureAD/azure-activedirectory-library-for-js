@@ -1,14 +1,16 @@
 Active Directory Authentication Library (ADAL) for JavaScript
 ====================================
-|[Getting Started](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki)| [Docs](https://aka.ms/aaddev)| [Samples](https://github.com/azure-samples?query=active-directory)| [Support](README.md#community-help-and-support)
+|[Getting Started](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki)| [Docs](https://aka.ms/aaddev)| [Samples](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Code-samples)| [Support](README.md#community-help-and-support)
 | --- | --- | --- | --- |
 
 Active Directory Authentication Library for JavaScript (ADAL JS) helps you to use Azure AD for handling authentication in your single page applications.
 This library works with both plain JS as well as AngularJS applications.
 
-[![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=master)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)[![npm](https://img.shields.io/npm/v/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)[![npm](https://img.shields.io/npm/dm/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)
+[![Build Status](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js.svg?branch=dev)](https://travis-ci.org/AzureAD/azure-activedirectory-library-for-js)[![npm](https://img.shields.io/npm/v/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)[![npm](https://img.shields.io/npm/dm/adal-angular.svg)](https://www.npmjs.com/package/adal-angular)
 
-You can learn in detail about ADAL JS functionality and usage documented in the [Wiki](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki).
+##  Usage
+
+You can learn in detail about ADAL JS installation and usage documented in the [ADAL Basics Wiki](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/ADAL-basics).
 
 ## Versions
 
@@ -22,7 +24,9 @@ We encourage and welcome contributions to the library. Please read the [contribu
 
 ## Samples and Documentation
 
-[We provide a full suite of sample applications and documentation on GitHub](https://github.com/azure-samples?query=active-directory) to help you get started with learning the Azure Identity system. This includes tutorials for native clients such as Windows, Windows Phone, iOS, OSX, Android, and Linux; and a detailed guide to registering your app with Azure Active Directory. We also provide full walkthroughs for authentication flows such as OAuth2, OpenID Connect, Graph API, and other awesome features.
+Please refer these [code samples using ADAL.js](https://github.com/AzureAD/azure-activedirectory-library-for-js/wiki/Code-samples) based on your application scenario.
+
+You can also find a [full suite of sample applications](https://github.com/azure-samples?query=active-directory) and [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-developers-guide) to help you get started with learning the Azure Identity system. This includes tutorials for multiple platforms; and a detailed guide to registering your app with Azure Active Directory. We also provide full walkthroughs for authentication flows such as OAuth2, OpenID Connect, Graph API, and other awesome features.
 
 ## Community Help and Support
 

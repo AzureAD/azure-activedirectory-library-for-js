@@ -93,3 +93,6 @@ samples/owin/OwinSample/Scripts/adal.js
 
 #codecoverage
 coverage
+
+#npm
+package-lock.json

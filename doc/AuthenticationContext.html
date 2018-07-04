@@ -372,6 +372,35 @@
 	
         <tr>
             
+                <td class="name"><code>ERROR</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+                <td class="default">
+                
+                    error
+                
+                </td>
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>STORAGE</code></td>
             
             
@@ -419,6 +448,35 @@
                 <td class="default">
                 
                     |
+                
+                </td>
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>CACHE_DELIMETER</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+                <td class="default">
+                
+                    ||
                 
                 </td>
             
@@ -683,7 +741,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line64">line 64</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line69">line 69</a>
     </li></ul></dd>
     
     
@@ -1000,7 +1058,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line546">line 546</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line637">line 637</a>
     </li></ul></dd>
     
     
@@ -1163,7 +1221,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line590">line 590</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line696">line 696</a>
     </li></ul></dd>
     
     
@@ -1199,7 +1257,8 @@
     
     
     <div class="description">
-        Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authenticationrequest constructor will be called.
+        Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authentication
+request constructor will be called.
     </div>
     
 
@@ -1303,7 +1362,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line639">line 639</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line749">line 749</a>
     </li></ul></dd>
     
     
@@ -1372,7 +1431,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line698">line 698</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line811">line 811</a>
     </li></ul></dd>
     
     
@@ -1489,7 +1548,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line723">line 723</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line841">line 841</a>
     </li></ul></dd>
     
     
@@ -1629,7 +1688,147 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1622">line 1622</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1857">line 1857</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="errorPii"><span class="type-signature"></span>errorPii<span class="signature">(message, error)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Logs Pii messages when Logging Level is set to 0 and window.piiLoggingEnabled is set to true.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Message to log.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>error</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Error to log.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1890">line 1890</a>
     </li></ul></dd>
     
     
@@ -1746,7 +1945,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line352">line 352</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line408">line 408</a>
     </li></ul></dd>
     
     
@@ -1837,7 +2036,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line383">line 383</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line439">line 439</a>
     </li></ul></dd>
     
     
@@ -1928,7 +2127,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line889">line 889</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1020">line 1020</a>
     </li></ul></dd>
     
     
@@ -2019,7 +2218,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line907">line 907</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1038">line 1038</a>
     </li></ul></dd>
     
     
@@ -2158,7 +2357,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1068">line 1068</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1251">line 1251</a>
     </li></ul></dd>
     
     
@@ -2297,7 +2496,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line777">line 777</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line896">line 896</a>
     </li></ul></dd>
     
     
@@ -2434,7 +2633,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1122">line 1122</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1304">line 1304</a>
     </li></ul></dd>
     
     
@@ -2551,7 +2750,124 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1638">line 1638</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1873">line 1873</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="infoPii"><span class="type-signature"></span>infoPii<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Logs messages when Logging Level is set to 2 and window.piiLoggingEnabled is set to true.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Message to log.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1906">line 1906</a>
     </li></ul></dd>
     
     
@@ -2668,7 +2984,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line875">line 875</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1006">line 1006</a>
     </li></ul></dd>
     
     
@@ -2853,7 +3169,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1599">line 1599</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1829">line 1829</a>
     </li></ul></dd>
     
     
@@ -2922,7 +3238,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line192">line 192</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line203">line 203</a>
     </li></ul></dd>
     
     
@@ -2958,7 +3274,8 @@
     
     
     <div class="description">
-        Redirects user to logout endpoint.After logout, it will redirect to postLogoutRedirectUri if added as a property on the config object.
+        Redirects user to logout endpoint.
+After logout, it will redirect to postLogoutRedirectUri if added as a property on the config object.
     </div>
     
 
@@ -2991,7 +3308,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line737">line 737</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line856">line 856</a>
     </li></ul></dd>
     
     
@@ -3108,7 +3425,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line686">line 686</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line799">line 799</a>
     </li></ul></dd>
     
     
@@ -3271,7 +3588,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line399">line 399</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line455">line 455</a>
     </li></ul></dd>
     
     
@@ -3340,7 +3657,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line986">line 986</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1164">line 1164</a>
     </li></ul></dd>
     
     
@@ -3457,7 +3774,124 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1646">line 1646</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1881">line 1881</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="verbosePii"><span class="type-signature"></span>verbosePii<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Logs messages when Logging Level is set to 3 and window.piiLoggingEnabled is set to true.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Message to log.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1914">line 1914</a>
     </li></ul></dd>
     
     
@@ -3574,7 +4008,124 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1630">line 1630</a>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1865">line 1865</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="warnPii"><span class="type-signature"></span>warnPii<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Logs  Pii messages when Logging Level is set to 1 and window.piiLoggingEnabled is set to true.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Message to log.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="adal.js.html">adal.js</a>, <a href="adal.js.html#line1898">line 1898</a>
     </li></ul></dd>
     
     
@@ -3621,7 +4172,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Oct 20 2017 15:19:15 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Jul 04 2018 14:57:31 GMT+0200 (MESZ)
 </footer>
 
 <script> prettyPrint(); </script>

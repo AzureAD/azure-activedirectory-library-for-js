@@ -43,7 +43,9 @@
     "karma": "^0.12.24",
     "karma-jasmine": "^0.1.5",
     "bower": "^1.3.3",
-    "grunt-jasmine-node": "~0.2.1"
+    "grunt-jasmine-node": "~0.2.1",
+    "catharsis": "^0.8.9",
+    "taffydb": "^2.7.3"
   },
   "directories": {
     "test": "tests"

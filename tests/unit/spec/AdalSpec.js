@@ -431,7 +431,7 @@ describe('Adal', function () {
         adal.config.displayCall = null;
         adal.config.clientId = 'client';
         adal.config.tenant = 'testtenant';
-        adal.config.appendIdTokenHintToLogoutUri = true;
+        adal.config.appendIdTokenHintToPostLogoutRedirectUri = true;
         adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
         spyOn(adal, 'promptUser');
         adal.logOut();

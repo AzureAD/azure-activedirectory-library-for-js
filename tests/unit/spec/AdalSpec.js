@@ -423,7 +423,32 @@ describe('Adal', function () {
         spyOn(adal, 'promptUser');
         adal.logOut();
         expect(adal.promptUser).toHaveBeenCalledWith('https://login.microsoftonline.com/adfs/ls/?wa=wsignout1.0');
-    })
+    });
+
+    it('appends id token hint to logout redirect if given', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.tenant = 'testtenant';
+        adal.config.appendIdTokenHintToLogoutUri = true;
+        adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
+        spyOn(adal, 'promptUser');
+        adal.logOut();
+        expect(adal.promptUser.mostRecentCall.args[0]).toMatch(/&id_token_hint=.+$/);
+      });
+
+    it('doesn\'t append id token hint to logout redirect if not given', function () {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.IDTOKEN, IDTOKEN_MOCK);
+        storageFake.setItem(adal.CONSTANTS.STORAGE.USERNAME, 'test user');
+        adal.config.displayCall = null;
+        adal.config.clientId = 'client';
+        adal.config.tenant = 'testtenant';
+        adal.config.postLogoutRedirectUri = 'https://contoso.com/logout';
+        spyOn(adal, 'promptUser');
+        adal.logOut();
+        expect(adal.promptUser.mostRecentCall.args[0]).not.toMatch(/&id_token_hint=.+$/);
+    });
 
     it('is callback if has error or access token or idtoken', function () {
         expect(adal.isCallback('not a callback')).toBe(false);

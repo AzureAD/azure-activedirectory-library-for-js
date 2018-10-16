@@ -14,7 +14,7 @@ You can learn in detail about ADAL JS installation and usage documented in the [
 
 ## Versions
 
-Current version - **1.0.17**  
+Current version - **1.0.18**  
 Minimum recommended version - 1.0.11  
 You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
 

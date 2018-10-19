@@ -1098,4 +1098,20 @@ describe('Adal', function () {
         expect(Logging.level).toEqual(2);
         Logging.piiLoggingEnabled = false;
     })
+
+    it('checks if localStorage is available', function () {
+        expect(adal._supportsLocalStorage()).toBe(true);
+    })
+
+    it('reports localStorage unavailable if window.localStorage is null', function () {
+        window.localStorage = null;
+        expect(adal._supportsLocalStorage()).toBe(false);
+    })
+
+    it('reports localStorage unavailable if window.localStorage fails to save', function () {
+        window.localStorage.setItem = function(key, value) {
+            return;
+        }
+        expect(adal._supportsLocalStorage()).toBe(false);
+    })
 });

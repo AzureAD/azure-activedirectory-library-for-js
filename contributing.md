@@ -19,7 +19,7 @@ Example for JS:
 ```
 $ git clone git@github.com:username/azure-activedirectory-library-for-js.git
 $ cd azure-activedirectory-library-for-js
-$ git remote add upstream git@github.com:MSOpenTech/azure-activedirectory-library-for-js.git
+$ git remote add upstream git@github.com:AzureAD/azure-activedirectory-library-for-js.git
 ```
 
 Now decide if you want your feature or bug fix to go into the dev branch
@@ -122,5 +122,5 @@ feature branch.  Post a comment in the pull request afterwards; GitHub does
 not send out notifications when you add commits.
 
 
-[on GitHub]: https://github.com/MSOpenTech/azure-activedirectory-library-for-js
-[issue tracker]: https://github.com/MSOpenTech/azure-activedirectory-library-for-js/issues
+[on GitHub]: https://github.com/AzureAD/azure-activedirectory-library-for-js
+[issue tracker]: https://github.com/AzureAD/azure-activedirectory-library-for-js/issues

@@ -42,10 +42,16 @@ Instantiate the global variable AuthenticationContext with a minimal required co
 ```JavaScript
 window.config = {
     clientId: '[Enter your client_id here, e.g. g075edef-0efa-453b-997b-de1337c29185]',
-    popUp: true
+    popUp: true,
+    callback : callbackFunction
 };
 
 var authContext = new AuthenticationContext(config);
+
+function callbackFunction(errorDesc, token, error, tokenType)
+{
+}
+
 ```
 
 #### 2. Login the user
@@ -89,7 +95,7 @@ If the silent token acquisition fails for some reasons such as an expired sessio
 }
 ```
 
-**Note:** In ADAL JS, you will have to explicitly call the handleWindowCallback method on page load to handle the response from the server in case of redirect flows like login without popup and acquireTokenRedirect. There is no need to call this function for popup flows like loginPopup and acquireTokenPopup.
+**Note:** In ADAL JS, you will have to explicitly call the handleWindowCallback method on page load to handle the response from the server in case of redirect flows like login without popup and acquireTokenRedirect. There is no need to call this function for popup flows like loginPopup and acquireTokenPopup.  This method must be called for processing the response received from AAD. It extracts the hash, processes the token or error, saves it in the cache and calls the registered callback function in your initialization with the result.   
 
 ```JavaScript
 if (authenticationContext.isCallback(window.location.hash)) {

@@ -75,9 +75,10 @@ If the silent token acquisition fails for some reasons such as an expired sessio
      if (error) { //acquire token failure
          if (config.popUp) {
              // If using popup flows
-             authenticationContext.acquireTokenPopup(webApiConfig.resourceId, null, null, onAccessToken);
+             authenticationContext.acquireTokenPopup(webApiConfig.resourceId, null, null,  function (errorDesc, token, error) {});
          }
          else {
+         // In this case the callback passed in the Authentication request constructor will be called.
              authenticationContext.acquireTokenRedirect(webApiConfig.resourceId, null, null);
          }
      }

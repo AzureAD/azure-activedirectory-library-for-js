@@ -88,7 +88,7 @@ If the silent token acquisition fails for some reasons such as an expired sessio
 }
 ```
 
-**Note:** In ADAL JS, you will have to explicitly call the handleWindowCallback method on page load to handle the response from the server in case of redirect flows - login without popup and acquireTokenRedirect.
+**Note:** In ADAL JS, you will have to explicitly call the handleWindowCallback method on page load to handle the response from the server in case of redirect flows like login without popup and acquireTokenRedirect. There is no need to call this function for popup flows like loginPopup and acquireTokenPopup.
 
 ```JavaScript
 if (authenticationContext.isCallback(window.location.hash)) {

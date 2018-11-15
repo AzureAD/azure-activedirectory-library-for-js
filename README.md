@@ -50,12 +50,12 @@ var authContext = new AuthenticationContext(config);
 
 #### 2. Login the user
 
-Your app must login the user to establish user context. The login operates in popup mode if you set the option `popUp: true` as shown in the config above.
+Your app must login the user to establish user context. The login operates in popup mode if you set the option `popUp: true` instead of a full redirect as shown in the config above.Defaults to `false.
 
 ```JavaScript
 var user = authenticationContext.getCachedUser();
 if (user) {
-    // Use the logged in user information
+    // Use the logged in user information to call your own api
     onLogin(null, user);
 }
 else {

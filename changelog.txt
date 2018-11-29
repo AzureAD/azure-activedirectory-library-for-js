@@ -1,3 +1,14 @@
+Version 1.0.18
+=========================
+* Fixed circular reference error in JSON.stringify https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/806
+* Set user to null in clear cache https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/807
+* Fixed minor iframe border issue https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/788 https://github.com/AzureAD/azure-activedirectory-library-for-js/pull/789
+* Remove dependency on node version 0.10 and 0.11. https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/799
+* Check if callback function exists before calling it. https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/794
+* Cache the values of _supportsLocalStorage and _supportsSessionStorage. https://github.com/AzureAD/azure-activedirectory-library-for-js/pull/786
+* Fixed issue with interceptor https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/731
+* Fixed issue with responseType id_token token https://github.com/AzureAD/azure-activedirectory-library-for-js/issues/736
+
 Version 1.0.17
 =========================
 * Added sid support. When the session id parameter is provided in the id_token, use that instead of the upn

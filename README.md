@@ -56,7 +56,7 @@ function callbackFunction(errorDesc, token, error, tokenType)
 
 #### 2. Login the user
 
-Your app must login the user to establish user context. The login operates in popup mode if you set the option `popUp: true` instead of a full redirect as shown in the config above.Defaults to `false. The callback function passed in the Authentication request constructor will be called after the login with success or failure results.
+Your app must login the user to establish user context. The login operates in popup mode if you set the option `popUp: true` instead of a full redirect as shown in the config above. Defaults to `false`. The callback function passed in the Authentication request constructor will be called after the login with success or failure results.
 
 ```JavaScript
 var user = authenticationContext.getCachedUser();

@@ -125,7 +125,7 @@ You can learn further details about ADAL.js functionality documented in the [ADA
 
 ## Versions
 
-Current version - **1.0.18**  
+Current version - **1.0.17**  
 Minimum recommended version - 1.0.11  
 You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
 

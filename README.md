@@ -59,14 +59,14 @@ function callbackFunction(errorDesc, token, error, tokenType)
 Your app must login the user to establish user context. The login operates in popup mode if you set the option `popUp: true` instead of a full redirect as shown in the config above. Defaults to `false`. The callback function passed in the Authentication request constructor will be called after the login with success or failure results.
 
 ```JavaScript
-var user = authenticationContext.getCachedUser();
+var user = authContext.getCachedUser();
 if (user) {
     // Use the logged in user information to call your own api
     onLogin(null, user);
 }
 else {
     // Initiate login
-    authenticationContext.login();
+    authContext.login();
 }
 ```
 
@@ -77,15 +77,15 @@ Next, you can get access tokens for the APIs your app needs to call using the ac
 If the silent token acquisition fails for some reasons such as an expired session or password change, you will need to invoke one of the interactive methods to acquire tokens.
 
  ```JavaScript
- authenticationContext.acquireToken(webApiConfig.resourceId, function (errorDesc, token, error) {
+ authContext.acquireToken(webApiConfig.resourceId, function (errorDesc, token, error) {
      if (error) { //acquire token failure
          if (config.popUp) {
              // If using popup flows
-             authenticationContext.acquireTokenPopup(webApiConfig.resourceId, null, null,  function (errorDesc, token, error) {});
+             authContext.acquireTokenPopup(webApiConfig.resourceId, null, null,  function (errorDesc, token, error) {});
          }
          else {
          // In this case the callback passed in the Authentication request constructor will be called.
-             authenticationContext.acquireTokenRedirect(webApiConfig.resourceId, null, null);
+             authContext.acquireTokenRedirect(webApiConfig.resourceId, null, null);
          }
      }
      else {
@@ -98,8 +98,8 @@ If the silent token acquisition fails for some reasons such as an expired sessio
 **Note:** In ADAL JS, you will have to explicitly call the handleWindowCallback method on page load to handle the response from the server in case of redirect flows like login without popup and acquireTokenRedirect. There is no need to call this function for popup flows like loginPopup and acquireTokenPopup.  This method must be called for processing the response received from AAD. It extracts the hash, processes the token or error, saves it in the cache and calls the registered callback function in your initialization with the result.   
 
 ```JavaScript
-if (authenticationContext.isCallback(window.location.hash)) {
-    authenticationContext.handleWindowCallback();
+if (authContext.isCallback(window.location.hash)) {
+    authContext.handleWindowCallback();
 }
 ```
 

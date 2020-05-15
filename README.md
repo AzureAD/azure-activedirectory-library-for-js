@@ -21,10 +21,10 @@ Via NPM:
 Via CDN:
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.17/js/adal.min.js"></script>
-    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.17/js/adal-angular.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.18/js/adal.min.js"></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.18/js/adal-angular.min.js"></script>
 
-CDN will be updated to latest version 1.0.17.
+CDN will be updated to latest version 1.0.18.
 
 Via Bower:
 
@@ -332,7 +332,7 @@ Install grunt and run the command
 We encourage and welcome contributions to the library. Please read the [contributing guide](./contributing.md) before starting.
 
 ## Versions
-This is a GA released version. Current version - **1.0.17**  
+This is a GA released version. Current version - **1.0.18**  
 Minimum recommended version - 1.0.11  
 You can find the changes for each version in the [change log](https://github.com/AzureAD/azure-activedirectory-library-for-js/blob/master/changelog.txt).
 

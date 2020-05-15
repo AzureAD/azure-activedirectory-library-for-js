@@ -1,3 +1,7 @@
+Version 1.0.18
+=========================
+* Fix incorrectly placed delimiter (#903)
+
 Version 1.0.17
 =========================
 * Added sid support. When the session id parameter is provided in the id_token, use that instead of the upn

@@ -38,7 +38,7 @@
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.2.0",
     "grunt-karma": "^0.9.x",
-    "atob": "~1.1.2",
+    "atob": "~2.1.2",
     "karma-chrome-launcher": "^0.1.5",
     "karma": "^0.12.24",
     "karma-jasmine": "^0.1.5",

@@ -86,6 +86,13 @@ describe('Adal', function () {
             }
         };
     }();
+    var eventListeners = {};
+    var addEventListenerFake = function (type, callback) {
+        if (!eventListeners[type]) {
+            eventListeners[type] = [];
+        }
+        eventListeners[type].push(callback);
+    };
 
     beforeEach(function () {
 
@@ -111,6 +118,7 @@ describe('Adal', function () {
             innerWidth: 100,
             innerHeight: 100
         };
+        window.addEventListener = addEventListenerFake;
         window.localStorage = storageFake;
         window.sessionStorage = storageFake;
         // Init adal 
@@ -128,6 +136,17 @@ describe('Adal', function () {
         window.renewStates = [];
         adal._activeRenewals = {};
         adal.CONSTANTS.LOADFRAME_TIMEOUT = 800;
+    });
+
+    it('cleans up the user when an external browsing context logs out', function () {
+        adal._user = { profile: { 'upn': 'test@testuser.com' }, userName: 'test@domain.com' };
+        var externalLogoutStorageEvent = { key: adal.CONSTANTS.STORAGE.IDTOKEN, oldValue: 'token', newValue: '' };
+
+        waitsFor(function () {
+            var externalLogoutStorageListener = eventListeners['storage'][0];
+            externalLogoutStorageListener(externalLogoutStorageEvent);
+            return adal._user === null;
+        }, 'user not cleared', 1000);
     });
 
     it('gets specific resource for defined endpoint mapping', function () {
@@ -1033,11 +1052,9 @@ describe('Adal', function () {
     });
 
     it('tests default value of redirect uri', function () {
-        global.window = {
-            location: {
-                hash: '#/hash',
-                href: 'https://www.testurl.com/#/hash?q1=p1'
-            }
+        global.window.location = {
+            hash: '#/hash',
+            href: 'https://www.testurl.com/#/hash?q1=p1'
         };
         AdalModule.prototype._singletonInstance = null;
         var localConfig = { clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e' };

@@ -683,7 +683,6 @@ describe('Adal', function () {
             return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
         }, 'token renew status not updated', 1000);
         runs(function () {
-            adal._callBackMappedToRenewStates[adal.config.state]('Token renewal operation failed due to timeout', null, 'Token Renewal Failed');
             expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
             expect(errDesc).toBe('Token renewal operation failed due to timeout');
             expect(token).toBe(null);

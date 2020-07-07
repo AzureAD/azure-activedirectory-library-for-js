@@ -643,6 +643,7 @@ describe('Adal', function () {
     });
 
     it('tests the load frame timeout method', function () {
+        adal._activeRenewals[RESOURCE1] = '123456|' + RESOURCE1 + '|1591896469';
         adal._loadFrameTimeout('urlnavigation', 'frameName', RESOURCE1);
         expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_IN_PROGRESS);
 
@@ -682,12 +683,10 @@ describe('Adal', function () {
             return storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1) === adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED;
         }, 'token renew status not updated', 1000);
         runs(function () {
-            adal._callBackMappedToRenewStates[adal.config.state]('Token renewal operation failed due to timeout', null, 'Token Renewal Failed');
             expect(storageFake.getItem(adal.CONSTANTS.STORAGE.RENEW_STATUS + RESOURCE1)).toBe(adal.CONSTANTS.TOKEN_RENEW_STATUS_CANCELED);
             expect(errDesc).toBe('Token renewal operation failed due to timeout');
             expect(token).toBe(null);
             expect(err).toBe('Token Renewal Failed');
-
         });
     });
 

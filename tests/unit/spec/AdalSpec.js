@@ -48,7 +48,12 @@ describe('Adal', function () {
     };
 
     var angularMock = {};
-    var conf = { loginResource: 'defaultResource', tenant: 'testtenant', clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl: true };
+    var conf = { 
+        loginResource: 'defaultResource', 
+        tenant: 'testtenant', 
+        clientId: 'e9a5a8b6-8af7-4719-9821-0deef255f68e', navigateToLoginRequestUrl: true,
+        cacheLocation: 'sessionStorage'
+    };
     var testPage = 'this is a song';
     var STORAGE_PREFIX = 'adal';
     var STORAGE_ACCESS_TOKEN_KEY = STORAGE_PREFIX + '.access.token.key';
@@ -1100,7 +1105,7 @@ describe('Adal', function () {
     })
 
     it("_matchNonce verifies nonce", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce");
+        adal._saveItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce", true);
 
         const matches = adal._matchNonce({
             profile: {
@@ -1112,7 +1117,7 @@ describe('Adal', function () {
     });
 
     it("_matchNonce reject bad nonce", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "");
+        adal._saveItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "", true);
 
         const matches = adal._matchNonce({
             profile: {
@@ -1124,7 +1129,7 @@ describe('Adal', function () {
     });
 
     it("_matchNonce reject nonce with delimiter", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce||");
+        adal._saveItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce", true);
 
         const matches = adal._matchNonce({
             profile: {
@@ -1136,7 +1141,7 @@ describe('Adal', function () {
     });
 
     it("_matchState verifies state (login)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state");
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state", true);
 
         const matches = adal._matchState({
             stateResponse: "state"
@@ -1146,7 +1151,7 @@ describe('Adal', function () {
     });
 
     it("_matchState rejects bad state (login)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state2");
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state2", true);
 
         const matches = adal._matchState({
             stateResponse: "state"
@@ -1156,17 +1161,20 @@ describe('Adal', function () {
     });
 
     it("_matchState rejects state with delimiter (login)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state||");
+        adal.config.cacheLocation = "localStorage";
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state", true);
+        adal
 
         const matches = adal._matchState({
             stateResponse: ""
         });
 
         expect(matches).toBe(false);
+        adal.config.cacheLocation = "sessionStorage";
     });
 
     it("_matchState verifies state (renew)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state");
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state", true);
 
         const matches = adal._matchState({
             stateResponse: "state"
@@ -1176,7 +1184,7 @@ describe('Adal', function () {
     });
 
     it("_matchState rejects bad state (renew)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state2");
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state2", true);
 
         const matches = adal._matchState({
             stateResponse: "state"
@@ -1186,12 +1194,14 @@ describe('Adal', function () {
     });
 
     it("_matchState rejects state with delimiter (renew)", () => {
-        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state||");
+        adal.config.cacheLocation = "localStorage";
+        adal._saveItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state", true);
 
         const matches = adal._matchState({
             stateResponse: ""
         });
 
         expect(matches).toBe(false);
+        adal.config.cacheLocation = "sessionStorage";
     });
 });

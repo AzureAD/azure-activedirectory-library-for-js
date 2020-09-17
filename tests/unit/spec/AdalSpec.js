@@ -1098,4 +1098,100 @@ describe('Adal', function () {
         expect(Logging.level).toEqual(2);
         Logging.piiLoggingEnabled = false;
     })
+
+    it("_matchNonce verifies nonce", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce");
+
+        const matches = adal._matchNonce({
+            profile: {
+                nonce: "nonce"
+            }
+        });
+
+        expect(matches).toBe(true);
+    });
+
+    it("_matchNonce reject bad nonce", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "");
+
+        const matches = adal._matchNonce({
+            profile: {
+                nonce: "nonce"
+            }
+        });
+
+        expect(matches).toBe(false);
+    });
+
+    it("_matchNonce reject nonce with delimiter", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.NONCE_IDTOKEN, "nonce||");
+
+        const matches = adal._matchNonce({
+            profile: {
+                nonce: ""
+            }
+        });
+
+        expect(matches).toBe(false);
+    });
+
+    it("_matchState verifies state (login)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state");
+
+        const matches = adal._matchState({
+            stateResponse: "state"
+        });
+
+        expect(matches).toBe(true);
+    });
+
+    it("_matchState rejects bad state (login)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state2");
+
+        const matches = adal._matchState({
+            stateResponse: "state"
+        });
+
+        expect(matches).toBe(false);
+    });
+
+    it("_matchState rejects state with delimiter (login)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state||");
+
+        const matches = adal._matchState({
+            stateResponse: ""
+        });
+
+        expect(matches).toBe(false);
+    });
+
+    it("_matchState verifies state (renew)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state");
+
+        const matches = adal._matchState({
+            stateResponse: "state"
+        });
+
+        expect(matches).toBe(true);
+    });
+
+    it("_matchState rejects bad state (renew)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state2");
+
+        const matches = adal._matchState({
+            stateResponse: "state"
+        });
+
+        expect(matches).toBe(false);
+    });
+
+    it("_matchState rejects state with delimiter (renew)", () => {
+        storageFake.setItem(adal.CONSTANTS.STORAGE.STATE_RENEW, "state||");
+
+        const matches = adal._matchState({
+            stateResponse: ""
+        });
+
+        expect(matches).toBe(false);
+    });
 });

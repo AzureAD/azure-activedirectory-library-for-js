@@ -1163,7 +1163,6 @@ describe('Adal', function () {
     it("_matchState rejects state with delimiter (login)", () => {
         adal.config.cacheLocation = "localStorage";
         adal._saveItem(adal.CONSTANTS.STORAGE.STATE_LOGIN, "state", true);
-        adal
 
         const matches = adal._matchState({
             stateResponse: ""

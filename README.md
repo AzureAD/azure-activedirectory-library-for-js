@@ -1,7 +1,7 @@
 ---
 
-This library, ADAL for JavaScript, will no longer receive new feature improvements. Instead, use the new library
-[MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js).
+This library, ADAL for JavaScript, will no longer receive new feature improvements, and this repository has been archived. Instead, use the new library
+[MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) (the code for ADAL.js and ADAL Angular has also been moved to the MSAL.js repository).
 
 * If you are starting a new project, you can get started with the
   [MSAL.js docs](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki)
